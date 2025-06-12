@@ -1,0 +1,56 @@
+<div class="register-page">
+    <div class="register-container">
+        <div class="logo">
+            <a href="/">
+                <img src="images/music.png" alt="icon" class="icon" />
+                <span class="brand-name">SoundWave</span>
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Create Account</h2>
+                <p>Sign up to get started</p>
+            </div>
+
+            <form class="card-content">
+                <div class="input-group">
+                    <label for="name">Username</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required />
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required />
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input [type]="hide ? 'password' : 'text'" id="password" name="password"
+                            placeholder="Create a password" required />
+                        <button type="button" class="toggle-password" (click)="togglePassword()">
+                            @if (hide) {
+                            <img src="images/eye.png" alt="Show" height="30px" width="30px" />
+                            } @else {
+                            <img src="images/eye-off.png" alt="Hide" height="30px" width="30px" />
+                            }
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword"
+                        placeholder="Confirm your password" required />
+                </div>
+
+                <button type="submit" class="btn-primary">Create Account</button>
+
+                <div class="signup">
+                    <p>Don't have an account? <a href="account/login">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
