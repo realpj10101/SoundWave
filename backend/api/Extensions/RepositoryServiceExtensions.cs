@@ -1,4 +1,5 @@
 using api.Interfaces;
+using api.Repositories;
 using api.Services;
 
 namespace api.Extensions;
@@ -9,6 +10,7 @@ public static class RepositoryServiceExtensions
     {
         #region Player
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
         #endregion
 
         return services;
