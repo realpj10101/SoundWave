@@ -1,52 +1,30 @@
-using api.Settings;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+using System.Text.Json.Serialization;
+using api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region MongoDbSettings
+builder.Services.AddControllers()
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+builder.Services.AddSignalR();
 
-///// get values from this file: appsettings.Development.json /////
-// get section
-builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection(nameof(MongoDbSettings)));
+builder.Services.AddApplicationService(builder.Configuration);
+builder.Services.AddIdentityService(builder.Configuration);
+builder.Services.AddRepositoryServices();
 
-// get values
-builder.Services.AddSingleton<IMongoDbSettings>(serviceProvider =>
-    serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
-
-// get connectionString to the db
-builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
+builder.Services.AddAuthorization(options =>
 {
-    MongoDbSettings uri = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-
-    return new MongoClient(uri.ConnectionString);
+    options.AddPolicy("admin", policy =>
+        policy.RequireRole("admin"));
 });
 
-#endregion MongoDbSettings
-
-#region Cors: baraye ta'eede Angular HttpClient requests
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-        policy
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials() 
-            .WithOrigins("http://localhost:4200"));
-});
-
-#endregion Cors
-
-// Add services to the container.
-
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
+
+app.UseCors();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

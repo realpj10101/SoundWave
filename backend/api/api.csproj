@@ -12,6 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="6.0.0" />
+      <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
       <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
     </ItemGroup>
 
