@@ -3,7 +3,7 @@ using api.Models;
 
 namespace api.DTOs;
 
-public static class Mapper
+public static class Mappers
 {
     public static AppUser ConvertRegisterDtoToAppUser(RegisterDto registerDto)
     {

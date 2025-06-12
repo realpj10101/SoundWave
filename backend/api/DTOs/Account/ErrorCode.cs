@@ -9,5 +9,7 @@ public enum ErrorCode
     IsEmailNotConfirmed,
     IsRefreshTokenExpired,
     IsAccountCreationFailed,
-    IsSessionExpired
+    IsSessionExpired,
+    IsNotFound,
+    IsFailed
 }
