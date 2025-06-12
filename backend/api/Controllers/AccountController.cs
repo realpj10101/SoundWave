@@ -20,7 +20,7 @@ public class AccountController(IAccountRepository accountRepository) : BaseApiCo
             await accountRepository.RegisterAsync(userInput, cancellationToken);
 
         return opResult.IsSuccess
-            ? Ok(opResult.IsSuccess)
+            ? Ok(opResult.Result)
             : opResult.Error?.Code switch
             {
                 ErrorCode.NetIdentityFailed => BadRequest(opResult.Error.Message),
