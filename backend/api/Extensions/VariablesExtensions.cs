@@ -8,6 +8,7 @@ public class AppVariablesExtensions
 
     public const string CollectionUsers = "users";
     public const string CollectionFollows = "follows";
+    public const string CollectionTracks = "tracks";
     public const string CollectionComments = "comments";
     public const string CollectionLikes = "likes";
     public const string CollectionTeams = "teams";

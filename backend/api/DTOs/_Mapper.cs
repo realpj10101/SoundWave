@@ -1,5 +1,7 @@
 using api.DTOs.Account;
+using api.DTOs.Track;
 using api.Models;
+using MongoDB.Bson;
 
 namespace api.DTOs;
 
@@ -21,5 +23,15 @@ public static class Mappers
             Token = tokenValue,
             UserName = appUser.UserName
         };
+    }
+
+    public static AudioFile ConvertCreateTrackToTrack(CreateAudioFile createAudio, ObjectId? uploaderId)
+    {
+        return new AudioFile(
+            UploaderId: uploaderId,
+            FileName: createAudio.FileName,
+            FileData: createAudio.FileData,
+            UploadedAt: DateTime.UtcNow
+        );
     }
 }

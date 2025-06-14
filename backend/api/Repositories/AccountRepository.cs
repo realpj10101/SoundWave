@@ -15,7 +15,7 @@ public class AccountRepository : IAccountRepository
 {
     #region Vars and Constructor
 
-    private readonly IMongoCollection<AppUser>? _collection;
+    private readonly IMongoCollection<AppUser>? _collection;    
     private readonly UserManager<AppUser> _userManager;
     private readonly ITokenService _tokenService;
 
