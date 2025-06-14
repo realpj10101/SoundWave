@@ -32,6 +32,16 @@
     align-items: center;
     gap: 1rem;
 
+    .user-menu-btn {
+      background-color: black;
+      backdrop-filter: blure(10px);
+      
+      span {
+        color: #f97316;
+        font-size: 2rem;
+      }
+    }
+
     .login-button {
       color: white;
       border-radius: 0.375rem; 

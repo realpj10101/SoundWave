@@ -5,12 +5,19 @@
   </div>
 
   <div class="action-buttons">
+    @if (accountService.loggedInUserSig(); as user) {
+    <button mat-mini-fab aria-label="User menu" class="user-menu-btn">
+      <span class="user-initial">{{ user.userName[0] | titlecase }}</span>
+    </button>
+    }
+    @else {
     <a routerLink="/account/login">
       <button mat-button routerLink="/account/login" class="login-button">Login</button>
     </a>
     <a routerLink="account/register">
       <button mat-raised-button class="get-started-button">Get Started</button>
     </a>
+    }
   </div>
 </div>
 <mat-divider></mat-divider>
