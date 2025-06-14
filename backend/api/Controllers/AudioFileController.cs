@@ -3,20 +3,27 @@ using api.DTOs;
 using api.DTOs.Account;
 using api.DTOs.Helpers;
 using api.DTOs.Track;
+using api.Extensions;
 using api.Interfaces;
 using api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace api.Controllers;
 
-public class AudioFileController(IAudioFileRepository _audioFileRepository) : BaseApiController
+[Authorize]
+public class AudioFileController(IAudioFileRepository _audioFileRepository, ITokenService _tokenService) : BaseApiController
 {
-    [HttpPost("upload/{uploaderName}")]
+    [HttpPost("upload")]
     public async Task<ActionResult<Response>> Upload(
-        string uploaderName, [FromForm] IFormFile file, CancellationToken cancellationToken
+     [FromForm] IFormFile file, CancellationToken cancellationToken
     )
     {
-        Console.WriteLine(uploaderName);
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
+
+        if (userId is null)
+            return Unauthorized("You are not logged in. Please login again");
 
         if (file == null || file.Length == 0)
             return BadRequest("File is empty");
@@ -31,12 +38,11 @@ public class AudioFileController(IAudioFileRepository _audioFileRepository) : Ba
         await file.CopyToAsync(ms);
 
         CreateAudioFile createAudioFile = new(
-            TrackUploader: uploaderName,
             FileName: file.FileName,
             FileData: ms.ToArray()
         );
 
-        OperationResult<AudioFile> opResult = await _audioFileRepository.UploadAsync(createAudioFile, cancellationToken);
+        OperationResult<AudioFile> opResult = await _audioFileRepository.UploadAsync(createAudioFile, userId, cancellationToken);
 
         return opResult.IsSuccess
             ? Ok(new Response(Message: "File uploaded successfully."))

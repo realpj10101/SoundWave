@@ -34,27 +34,8 @@ public class AudioFileRepository : IAudioFileRepository
     //     throw new NotImplementedException();
     // }
 
-    public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, CancellationToken cancellationToken)
+    public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken)
     {
-        ObjectId? userId = await _collectionUsers.AsQueryable()
-            .Where(doc => doc.UserName == audio.TrackUploader.ToLower())
-            .Select(doc => doc.Id)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        Console.WriteLine(audio.TrackUploader.ToLower());
-        Console.WriteLine(userId);
-
-        if (userId is null || userId.Equals(ObjectId.Empty))
-        {
-            return new OperationResult<AudioFile>(
-                false,
-                Error: new CustomError(
-                    ErrorCode.IsNotFound,
-                    "User is not found!"
-                )
-            );
-        }
-
         AudioFile audioFile = Mappers.ConvertCreateTrackToTrack(audio, userId);
 
         await _collection.InsertOneAsync(audioFile, null, cancellationToken);
