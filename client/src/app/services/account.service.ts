@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { LoggedInUser, Login, Register } from '../models/account.model';
 import { map, Observable, take } from 'rxjs';
 import { ApiResponse } from '../models/helpers/apiResponse.model';
@@ -99,7 +99,7 @@ export class AccountService {
       if (returnUrl)
         this.router.navigate([returnUrl]);
       else
-        this.router.navigate(['members']);
+        this.router.navigate(['dashboard']);
 
       if (isPlatformBrowser(this.platformId)) // we make sure this code is ran on the browser and NOT server
         localStorage.removeItem('returnUrl');
