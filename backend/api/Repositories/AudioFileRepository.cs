@@ -24,15 +24,15 @@ public class AudioFileRepository : IAudioFileRepository
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
     }
 
-    // public Task<IEnumerable<AudioFile>> GetAllAsync(CancellationToken cancellationToken)
-    // {
-    //     throw new NotImplementedException();
-    // }
+    public Task<IEnumerable<AudioFile>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 
-    // public Task<OperationResult<AudioFile>> GetByTrackNameAsync(string trackName, CancellationToken cancellationToken)
-    // {
-    //     throw new NotImplementedException();
-    // }
+    public Task<OperationResult<AudioFile>> GetByTrackNameAsync(string trackName, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 
     public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken)
     {
