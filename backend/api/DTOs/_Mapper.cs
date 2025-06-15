@@ -25,13 +25,23 @@ public static class Mappers
         };
     }
 
-    public static AudioFile ConvertCreateTrackToTrack(CreateAudioFile createAudio, ObjectId? uploaderId)
+    public static AudioFile ConvertCreateAudioToAudio(CreateAudioFile createAudio, string userName)
     {
         return new AudioFile(
-            UploaderId: uploaderId,
+            UploaderName: userName,
             FileName: createAudio.FileName,
             FileData: createAudio.FileData,
             UploadedAt: DateTime.UtcNow
+        );
+    }
+
+    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(AudioFile audioFile, string userName)
+    {
+        return new AudioFileResponse(
+            UploaderName: userName,
+            FileName: audioFile.FileName,
+            FileData: audioFile.FileData,
+            UploadedAt: audioFile.UploadedAt
         );
     }
 }

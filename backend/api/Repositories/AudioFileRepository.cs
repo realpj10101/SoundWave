@@ -3,6 +3,7 @@ using api.DTOs.Account;
 using api.DTOs.Helpers;
 using api.DTOs.Track;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using api.Settings;
@@ -15,7 +16,7 @@ namespace api.Repositories;
 public class AudioFileRepository : IAudioFileRepository
 {
     private readonly IMongoCollection<AudioFile> _collection;
-    private readonly IMongoCollection<AppUser>? _collectionUsers;    
+    private readonly IMongoCollection<AppUser>? _collectionUsers;
 
     public AudioFileRepository(IMongoClient client, IMyMongoDbSettings dbSettings)
     {
@@ -24,26 +25,63 @@ public class AudioFileRepository : IAudioFileRepository
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
     }
 
-    public Task<IEnumerable<AudioFile>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<PagedList<AudioFile>?> GetAllAsync(CancellationToken cancellationToken, AudioFileParams audioFileParams)
     {
-        throw new NotImplementedException();
+        PagedList<AudioFile> audioFiles = await PagedList<AudioFile>.CreatePagedListAsync(
+            CreateQuery(audioFileParams), audioFileParams.PageNumber, audioFileParams.PageSize, cancellationToken
+        );
+
+        return audioFiles;
     }
 
-    public Task<OperationResult<AudioFile>> GetByTrackNameAsync(string trackName, CancellationToken cancellationToken)
+    public Task<OperationResult<AudioFileResponse>> GetByTrackNameAsync(string trackName, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
     public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken)
     {
-        AudioFile audioFile = Mappers.ConvertCreateTrackToTrack(audio, userId);
+        string? userName = await _collectionUsers.AsQueryable()
+            .Where(doc => doc.Id == userId)
+            .Select(doc => doc.NormalizedUserName)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (userName is null)
+        {
+            return new OperationResult<AudioFile>(
+                false,
+                Error: new CustomError(
+                    Code: ErrorCode.IsNotFound,
+                    Message: "User is not found"
+                )
+            );
+        }
+
+        AudioFile audioFile = Mappers.ConvertCreateAudioToAudio(audio, userName);
 
         await _collection.InsertOneAsync(audioFile, null, cancellationToken);
 
         return new OperationResult<AudioFile>(
             true,
             audioFile,
-            null
+            Error: null
         );
+    }
+
+    private IMongoQueryable<AudioFile> CreateQuery(AudioFileParams audioFileParams)
+    {
+        IMongoQueryable<AudioFile> query = _collection.AsQueryable();
+
+        if (!string.IsNullOrEmpty(audioFileParams.Search))
+        {
+            audioFileParams.Search = audioFileParams.Search.ToUpper();
+
+            query = query.Where(
+                audio => audio.FileName.Contains(audioFileParams.Search, StringComparison.CurrentCultureIgnoreCase)
+                || audio.UploaderName.Contains(audioFileParams.Search, StringComparison.CurrentCultureIgnoreCase)
+            );
+        }
+
+        return query;
     }
 }

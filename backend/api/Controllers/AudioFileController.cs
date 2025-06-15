@@ -52,4 +52,20 @@ public class AudioFileController(IAudioFileRepository _audioFileRepository, ITok
                 _ => BadRequest("Operation failed!. Try again or contact administrator")
             };
     }
+
+    // [HttpGet]
+    // public async Task<ActionResult<IEnumerable<AudioFileResponse>>> GetAll(CancellationToken cancellationToken)
+    // {
+    //     ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
+
+    //     if (userId is null)
+    //         return Unauthorized("You are not logged in. Please login again");
+
+    //     IEnumerable<AudioFileResponse>? audioFileResponses = await _audioFileRepository.GetAllAsync(cancellationToken);
+
+    //     if (audioFileResponses is null)
+    //         return NoContent();
+
+    //     return Ok(audioFileResponses);
+    // }
 }

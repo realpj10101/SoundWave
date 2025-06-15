@@ -8,7 +8,7 @@ public record AudioFile(
     [Optional]
     [property: BsonId, BsonRepresentation(BsonType.ObjectId)]
     ObjectId Id,
-    ObjectId? UploaderId,
+    string UploaderName,
     string FileName,
     byte[] FileData,
     DateTime UploadedAt
