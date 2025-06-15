@@ -35,12 +35,15 @@ public static class Mappers
         );
     }
 
-    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(AudioFile audioFile)
+    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(this AudioFile audioFile)
     {
+        string base64 = Convert.ToBase64String(audioFile.FileData);
+        string dataUri = $"data:audio/mpeg;base64,{base64}";
+
         return new AudioFileResponse(
             UploaderName: audioFile.UploaderName,
             FileName: audioFile.FileName,
-            FileData: audioFile.FileData,
+            FileDataBase64: dataUri,
             UploadedAt: audioFile.UploadedAt
         );
     }

@@ -1,0 +1,30 @@
+<div class="audio-card">
+  <div class="header">
+    <div class="user-info">
+      <!-- <img class="avatar" src="images/menu.png" alt="Avatar" /> -->
+      <div>
+        <h3 class="title">{{ audioInput?.fileName }}</h3>
+        <p class="artist">{{ audioInput?.uploaderName }}</p>
+      </div>
+    </div>
+    <span class="duration">3:45</span> 
+  </div>
+
+  <div class="waveform" (click)="togglePlay()">
+    <div class="play-button">
+      @if (isPlaying()) {
+        <button><mat-icon>pause</mat-icon></button>
+      } @else {
+        <button><mat-icon>play_arrow</mat-icon></button>
+      }
+    </div>
+
+    <div class="bars">
+      @for (bar of bars; track $index) {
+        <div class="bar" [ngStyle]="{ height: bar + '%' }"></div>
+      }
+    </div>
+  </div>
+
+  <audio [src]="audioInput?.fileDataBase64" #audioElem></audio>
+</div>

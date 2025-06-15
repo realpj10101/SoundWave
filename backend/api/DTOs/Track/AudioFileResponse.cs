@@ -1,8 +1,9 @@
 namespace api.DTOs.Track;
 
-public record AudioFileResponse (
+public record AudioFileResponse(
     string UploaderName,
     string FileName,
-    byte[] FileData,
+    string FileDataBase64,
+    // byte[] FileData,
     DateTime UploadedAt
 );

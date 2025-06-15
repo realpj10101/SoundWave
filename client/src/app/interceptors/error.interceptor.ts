@@ -33,7 +33,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             if (isPlatformBrowser(platformId))
               localStorage.clear();
 
-            router.navigate(['registerplayer/login'])
+            router.navigate(['account/login'])
             break;
           case 403: // Forbiden
             router.navigate(['/no-access']);

@@ -1,6 +1,6 @@
 export interface Audio {
     uploaderName: string;
     fileName: string;
-    fileData: Uint8Array;
+    fileDataBase64: string;
     uploadedAt: Date;
 }

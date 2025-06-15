@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { SidebarComponent } from "../sidebar/sidebar.component";
 import { AudioService } from '../../services/audio.service';
 import { Observable, Subscription } from 'rxjs';
 import { Audio } from '../../models/audio.model';
@@ -11,13 +10,15 @@ import { PaginatedResult } from '../../models/helpers/paginatedResult';
 import { AudioCardComponent } from "../audio-card/audio-card.component";
 
 @Component({
-  selector: 'app-dashboard',
-  imports: [SidebarComponent, AudioCardComponent, MatPaginatorModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  selector: 'app-audio-list',
+  imports: [
+    MatPaginatorModule,
+    AudioCardComponent,
+],
+  templateUrl: './audio-list.component.html',
+  styleUrl: './audio-list.component.scss'
 })
-export class DashboardComponent {
-  isSidebarOpen = false;
+export class AudioListComponent {
   private audioService = inject(AudioService);
   audios$: Observable<Audio[] | null> | undefined;
   subscribed: Subscription | undefined;
@@ -26,10 +27,6 @@ export class DashboardComponent {
   audioParams: AudioParams | undefined;
   pageSizeOptions = [5, 10, 25];
   pageEvent: PageEvent | undefined;
-
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
 
   private _fB = inject(FormBuilder);
 
