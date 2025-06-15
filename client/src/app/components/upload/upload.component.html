@@ -1,0 +1,62 @@
+<div class="upload-container">
+    <app-sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()"></app-sidebar>
+
+    <button class="mobile-toggle" (click)="toggleSidebar()">
+        ☰
+    </button>
+
+    <div class="upload-inner">
+        <h1 class="page-title">Upload Your Track</h1>
+        <p class="page-sub">Share your music with the world</p>
+
+        <!-- @if (uploader && uploader.queue && uploader.queue.length) { -->
+        <form (ngSubmit)="uploader?.uploadAll()">
+            <mat-card class="upload-card">
+                <mat-card-header>
+                    <mat-card-title>Audio File</mat-card-title>
+                    <mat-card-subtitle>MP3 up to 40 MB</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content>
+                    <div class="drop-zone" ng2FileDrop [uploader]="uploader" (fileOver)="fileOverBase($event)"
+                        [class.file-over]="fileOverBase">
+                        @if (uploader?.queue?.length === 0) {
+                        <div class="placeholder">
+                            <img src="images/cloud-upload.png" alt="">
+                            <p>Drag & drop your MP3 here</p>
+                            <button type="button" mat-flat-button color="accent" class="choose-button" (click)="fileInput.click()">
+                                Choose File
+                            </button>
+                            <input #fileInput type="file" accept="audio/*" ng2FileSelect [uploader]="uploader" hidden />
+                        </div>
+                        } @else {
+                        <div class="uploaded-info">
+                            <img src="images/audio.png" alt="" height="40px">
+                            <div class="file-meta">
+                                <p class="name">{{ uploader!.queue[0]!.file!.name }}</p>
+                                <p class="size">
+                                    {{ (uploader!.queue[0]!.file!.size! / 1024 / 1024).toFixed(2) }} MB
+                                </p>
+                            </div>
+                            <button mat-icon-button color="warn" aria-label="Remove file"
+                                (click)="uploader?.clearQueue()">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                        }
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <div class="btn-group">
+                <button mat-flat-button class="cancel-btn" color="warn" type="button" routerLink="/dashboard">
+                    Cancel
+                </button>
+                <button mat-raised-button color="accent" class="upload-btn" type="submit" [disabled]="!uploader?.queue?.length">
+                    Upload Track
+                </button>
+            </div>
+        </form>
+        <!-- } -->
+    </div>
+</div>

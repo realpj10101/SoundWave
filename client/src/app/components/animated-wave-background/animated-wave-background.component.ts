@@ -21,6 +21,7 @@ export class AnimatedWaveBackgroundComponent implements AfterViewInit, OnDestroy
   private time: number = 0;
   private ctx!: CanvasRenderingContext2D | null;
   private isBrowser: boolean;
+  private resizeHandler!: () => void;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -28,12 +29,15 @@ export class AnimatedWaveBackgroundComponent implements AfterViewInit, OnDestroy
 
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
+    setTimeout(() => this.startCanvasAnimation(), 0);
+  }
 
+  private startCanvasAnimation() {
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d');
     if (!this.ctx) return;
 
-    const resizeCanvas = () => {
+    this.resizeHandler = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
@@ -76,28 +80,29 @@ export class AnimatedWaveBackgroundComponent implements AfterViewInit, OnDestroy
     const animate = () => {
       if (!this.ctx) return;
       this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
       drawWave(120, 0.8, this.time * 0.007, canvas.height * 0.6, '#ea580c', 0.4);
       drawWave(150, 1.2, this.time * 0.005, canvas.height * 0.65, '#dc2626', 0.35);
       drawWave(180, 1.0, this.time * 0.008, canvas.height * 0.7, '#f97316', 0.3);
       drawWave(100, 1.5, this.time * 0.01, canvas.height * 0.75, '#b91c1c', 0.25);
       drawWave(200, 0.6, this.time * 0.006, canvas.height * 0.8, '#fb923c', 0.2);
       drawWave(80, 2.0, this.time * 0.01, canvas.height * 0.85, '#991b1b', 0.15);
-    
+
       this.time += 1;
       this.animationId = requestAnimationFrame(animate);
     };
 
-    resizeCanvas();
+    this.resizeHandler();
     animate();
-
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', this.resizeHandler);
   }
 
   ngOnDestroy(): void {
     if (this.isBrowser) {
       cancelAnimationFrame(this.animationId);
-      window.removeEventListener('resize', () => {});
+      if (this.resizeHandler) {
+        window.removeEventListener('resize', this.resizeHandler);
+      }
     }
   }
 }

@@ -8,7 +8,6 @@ import { SidebarComponent } from "../sidebar/sidebar.component";
   imports: [SidebarComponent]
 })
 export class DashboardComponent {
-  searchQuery = '';
   isSidebarOpen = false;
 
   toggleSidebar() {

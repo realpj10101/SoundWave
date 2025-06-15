@@ -1,4 +1,4 @@
-import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./components/navbar/navbar.component";
 import { FooterComponent } from "./components/footer/footer.component";
@@ -10,29 +10,24 @@ import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet, RouterModule, NavbarComponent, FooterComponent, MatDividerModule, AnimatedWaveBackgroundComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent  {
   private _accountService = inject(AccountService);
   private _platformId = inject(PLATFORM_ID);
 
-  ngOnInit(): void {
-    this.initUserOnPageRefresh();
-  }
-
-  initUserOnPageRefresh(): void {
+  constructor() {
     if (isPlatformBrowser(this._platformId)) {
-      const loggedInPlayerStr = localStorage.getItem('loggedInUser');
-      // const currentTeam = localStorage.getItem('currentTeam');
+      const loggedInUserStr = localStorage.getItem('loggedInUser');
+      console.log(loggedInUserStr);
 
-      if (loggedInPlayerStr) {
-        // First, check if user's token is not expired.
-        this._accountService.authorizeLoggedInPlayer();
+      if (loggedInUserStr) {
+        this._accountService.authorizeLoggedInUser();
 
-        // Then, set the authorized logged-in user
-        this._accountService.setCurrentPlayer(JSON.parse(loggedInPlayerStr))
+        this._accountService.setCurrentUser(JSON.parse(loggedInUserStr))
       }
     }
   }

@@ -22,7 +22,7 @@ export class AccountService {
     return this.http.post<LoggedInUser>(this.baseApiUrl + 'register', userInput).pipe(
       map(res => {
         if (res) {
-          this.setCurrentPlayer(res);
+          this.setCurrentUser(res);
 
           this.navigateToReturnUrl(); // navigate to url wich player tried before log-in. else: default
 
@@ -38,7 +38,7 @@ export class AccountService {
     return this.http.post<LoggedInUser>(this.baseApiUrl + 'login', userInput).pipe(
       map(res => {
         if (res) {
-          this.setCurrentPlayer(res);
+          this.setCurrentUser(res);
 
           this.navigateToReturnUrl();
 
@@ -50,7 +50,7 @@ export class AccountService {
     );
   }
 
-  authorizeLoggedInPlayer(): void {
+  authorizeLoggedInUser(): void {
     this.http.get<ApiResponse>(this.baseApiUrl)
       .pipe(
         take(1))
@@ -66,8 +66,8 @@ export class AccountService {
       });
   }
 
-  setCurrentPlayer(loggedInUser: LoggedInUser): void {
-    this.setLoggedInPlayerRoles(loggedInUser);
+  setCurrentUser(loggedInUser: LoggedInUser): void {
+    this.setLoggedInUserRoles(loggedInUser);
 
     this.loggedInUserSig.set(loggedInUser);
 
@@ -75,7 +75,7 @@ export class AccountService {
       localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
   }
 
-  setLoggedInPlayerRoles(loggedInUser: LoggedInUser): void {
+  setLoggedInUserRoles(loggedInUser: LoggedInUser): void {
     loggedInUser.roles = []; // We have to initialize it before pushing. Otherwise, it's 'undefined' and push will not work.
 
     const roles: string | string[] = JSON.parse(atob(loggedInUser.token.split('.')[1])).role; // get the token's 2nd part then select role

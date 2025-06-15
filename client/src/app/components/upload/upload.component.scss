@@ -1,0 +1,152 @@
+.upload-container {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+
+  .mobile-toggle {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 50;
+    background: #1f2937;
+    color: #f97316;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    // display: none;
+    border-radius: 0.375rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
+
+
+  .upload-inner {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+  }
+
+  .page-sub {
+    color: #aaa;
+    margin-top: -1rem;
+  }
+
+  .upload-card {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    color: #fff;
+
+    mat-card-title,
+    mat-card-subtitle {
+      color: #fff;
+    }
+
+    mat-card-subtitle {
+      color: #999;
+    }
+  }
+
+  .drop-zone {
+    border: 2px dashed #555;
+    border-radius: 10px;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: #2b2b2b;
+
+    &.file-over {
+      border-color: #f97316;
+      background-color: rgba(249, 115, 22, 0.1);
+    }
+
+    .placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+
+      .choose-button {
+        background-color: white;
+        color: #f97316;
+        border: #f97316 solid 2px;
+        border-radius: 5px;
+
+        &:hover {
+          background-color: #f97316;
+          color: white;
+        }
+      }
+
+      p {
+        margin: 0;
+        color: #bbb;
+      }
+
+      button {
+        margin-top: 0.5rem;
+      }
+    }
+
+    .uploaded-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+
+      mat-icon.icon-lg {
+        font-size: 36px;
+        color: #4ade80;
+      }
+
+      .file-meta {
+        flex: 1;
+        text-align: left;
+
+        .name {
+          font-weight: 600;
+          color: #fff;
+        }
+
+        .size {
+          font-size: 0.9rem;
+          color: #aaa;
+        }
+      }
+
+      button {
+        align-self: flex-start;
+      }
+    }
+  }
+
+  .btn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+
+    .cancel-btn {
+      border-radius: 5px;
+      background-color: #999;
+    }
+
+    .upload-btn {
+      color: #f97316;
+      border: #f97316 solid 2px;
+      border-radius: 5px;
+
+      &:hover {
+        background-color: #f97316;
+        color: white;
+      }
+    }
+  }
+}
