@@ -6,20 +6,34 @@
     ☰
   </button>
 
+  <section class="search">
+    <div class="info">
+      <h1>Discover Music</h1>
+      <h4>Find your next favorite track</h4>
+    </div>
+
+    <div class="search-box">
+      <img class="search-img" src="images/search.png" alt="" height="20px">
+      <input type="text" [formControl]="SearchCtrl" placeholder="Search tracks, artists" class="search">
+      <button (click)="updateAudioParams(); getAll()">
+        Search
+      </button>
+    </div>
+  </section>
+
   <section class="audio-container">
     <div class="audios">
       @for (audio of audios; track $index) {
-      <!-- <audio src="{{ audio.fileDataBase64 }}" controls></audio> -->
       <app-audio-card [audioInput]="audio"></app-audio-card>
       }
     </div>
 
     @if (pagination && audioParams) {
-    <!-- <mat-paginator #paginator (page)="handlePageEvent($event)" [length]="pagination.totalItems"
+    <mat-paginator #paginator (page)="handlePageEvent($event)" [length]="pagination.totalItems"
       [pageSize]="audioParams.pageSize" [disabled]="false" [showFirstLastButtons]="true"
       [pageSizeOptions]="true ? pageSizeOptions : []" [hidePageSize]="false" [pageIndex]="audioParams.pageNumber - 1"
       aria-label="Select page" class="paginator">
-  </mat-paginator> -->
+    </mat-paginator>
     }
   </section>
 </div>

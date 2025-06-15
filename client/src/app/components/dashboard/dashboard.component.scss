@@ -1,7 +1,61 @@
 .dashboard-layout {
   display: flex;
-  // height: 100vh;
+  flex-direction: column;
+  gap: 1rem;
 
+  .search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    .info {
+      color: white;
+      
+      h1 {
+        font-size: 3rem;
+        margin: 0;
+      }
+
+      h4 {
+        color: #9ca3af;
+      }
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background-color: #222; // optional, dark UI
+      padding: 8px 12px;
+      border-radius: 8px;
+      gap: 8px;
+    
+      .search-img {
+        height: 20px;
+        width: 20px;
+      }
+    
+      .search {
+        flex: 1; // take up remaining space
+        background: transparent;
+        border: none;
+        color: white;
+        padding: 4px 8px;
+        outline: none;
+      }
+    
+      button {
+        background: linear-gradient(to right, #ff4e50, #f9d423); // sample gradient
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px;
+        color: black;
+        cursor: pointer;
+      }
+    }
+  }
+  // height: 100vh;
 
   .mobile-toggle {
     position: fixed;
@@ -76,8 +130,24 @@
         }
       }
     }
-    
-    
+  }
+
+  .audio-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+
+    .audios {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .paginator {
+      display: flex;
+      justify-content: center;
+    }
   }
 
   @media (max-width: 768px) {

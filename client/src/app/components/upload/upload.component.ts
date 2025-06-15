@@ -39,13 +39,6 @@ export class UploadComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeUploader();
-    if (isPlatformBrowser(this.platformId)) {
-      this.uploader = new FileUploader({
-        url: '/api/tracks',
-        allowedMimeType: ['audio/mpeg', 'audio/mp3'],
-        maxFileSize: 40 * 1024 * 1024
-      });
-    }
   }
 
   toggleSidebar() {

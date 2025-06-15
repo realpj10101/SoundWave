@@ -6,13 +6,15 @@ import { Audio } from '../../models/audio.model';
 import { Pagination } from '../../models/helpers/pagination';
 import { AudioParams } from '../../models/helpers/audio-params';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PaginatedResult } from '../../models/helpers/paginatedResult';
 import { AudioCardComponent } from "../audio-card/audio-card.component";
 
 @Component({
   selector: 'app-dashboard',
-  imports: [SidebarComponent, AudioCardComponent, MatPaginatorModule],
+  imports: [
+    SidebarComponent, AudioCardComponent, MatPaginatorModule, FormsModule, ReactiveFormsModule
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
@@ -73,6 +75,12 @@ export class DashboardComponent {
       this.audioParams.pageNumber = e.pageIndex + 1;
 
       this.getAll();
+    }
+  }
+
+  updateAudioParams(): void {
+    if (this.audioParams) {
+      this.audioParams.search = this.SearchCtrl.value;
     }
   }
 }
