@@ -35,10 +35,10 @@ public static class Mappers
         );
     }
 
-    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(AudioFile audioFile, string userName)
+    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(AudioFile audioFile)
     {
         return new AudioFileResponse(
-            UploaderName: userName,
+            UploaderName: audioFile.UploaderName,
             FileName: audioFile.FileName,
             FileData: audioFile.FileData,
             UploadedAt: audioFile.UploadedAt

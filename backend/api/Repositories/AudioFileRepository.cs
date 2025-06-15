@@ -25,7 +25,7 @@ public class AudioFileRepository : IAudioFileRepository
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
     }
 
-    public async Task<PagedList<AudioFile>?> GetAllAsync(CancellationToken cancellationToken, AudioFileParams audioFileParams)
+    public async Task<PagedList<AudioFile>?> GetAllAsync(AudioFileParams audioFileParams, CancellationToken cancellationToken)
     {
         PagedList<AudioFile> audioFiles = await PagedList<AudioFile>.CreatePagedListAsync(
             CreateQuery(audioFileParams), audioFileParams.PageNumber, audioFileParams.PageSize, cancellationToken

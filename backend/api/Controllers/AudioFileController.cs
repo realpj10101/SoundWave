@@ -4,8 +4,10 @@ using api.DTOs.Account;
 using api.DTOs.Helpers;
 using api.DTOs.Track;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
+using api.Models.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -53,19 +55,35 @@ public class AudioFileController(IAudioFileRepository _audioFileRepository, ITok
             };
     }
 
-    // [HttpGet]
-    // public async Task<ActionResult<IEnumerable<AudioFileResponse>>> GetAll(CancellationToken cancellationToken)
-    // {
-    //     ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AudioFileResponse>>> GetAll([FromQuery] AudioFileParams audioFileParams, CancellationToken cancellationToken)
+    {
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
 
-    //     if (userId is null)
-    //         return Unauthorized("You are not logged in. Please login again");
+        if (userId is null)
+            return Unauthorized("You are not logged in. Please login again");
 
-    //     IEnumerable<AudioFileResponse>? audioFileResponses = await _audioFileRepository.GetAllAsync(cancellationToken);
+        PagedList<AudioFile>? pagedAudioFiles = await _audioFileRepository.GetAllAsync(audioFileParams, cancellationToken);
 
-    //     if (audioFileResponses is null)
-    //         return NoContent();
+        if (pagedAudioFiles.Count == 0)
+            return NoContent();
 
-    //     return Ok(audioFileResponses);
-    // }
+        PaginationHeader paginationHeader = new(
+            CurrentPage: pagedAudioFiles.CurrentPage,
+            ItemsPerPage: pagedAudioFiles.PageSize,
+            TotalItems: pagedAudioFiles.TotalItems,
+            TotalPages: pagedAudioFiles.TotalPages
+        );
+
+        Response.AddPaginationHeader(paginationHeader);
+
+        List<AudioFileResponse> audioFileResponses = [];
+
+        foreach (AudioFile audioFile in pagedAudioFiles)
+        {
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile));
+        }
+
+        return audioFileResponses;
+    }
 }

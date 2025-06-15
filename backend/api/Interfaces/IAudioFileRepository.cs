@@ -10,6 +10,6 @@ namespace api.Interfaces;
 public interface IAudioFileRepository
 {
     public Task<OperationResult<AudioFileResponse>> GetByTrackNameAsync(string audioName, CancellationToken cancellationToken);
-    public Task<PagedList<AudioFile>?> GetAllAsync(CancellationToken cancellationToken, AudioFileParams audioFileParams);
+    public Task<PagedList<AudioFile>?> GetAllAsync( AudioFileParams audioFileParams, CancellationToken cancellationToken);
     public Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken);
 }
