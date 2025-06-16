@@ -4,4 +4,5 @@ export interface Audio {
     fileDataBase64: string;
     uploadedAt: Date;
     isLiking: boolean;
+    likersCount: number
 }

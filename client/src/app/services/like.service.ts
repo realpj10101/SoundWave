@@ -19,4 +19,8 @@ export class LikeService {
   delete(targetAudioName: string): Observable<ApiResponse> {
     return this._http.delete<ApiResponse>(this._apiUrl + 'remove/' + targetAudioName);
   }
+
+  getLikesCount(targetAudioName: string): Observable<number> {
+    return this._http.get<number>(this._apiUrl + 'get-likes-count/' + targetAudioName);
+  }
 }

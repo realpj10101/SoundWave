@@ -15,7 +15,8 @@ using MongoDB.Bson;
 namespace api.Controllers;
 
 [Authorize]
-public class AudioFileController(IAudioFileRepository _audioFileRepository, ITokenService _tokenService) : BaseApiController
+public class AudioFileController(
+    IAudioFileRepository _audioFileRepository, ITokenService _tokenService, ILikeRepository _likeRepository) : BaseApiController
 {
     [HttpPost("upload")]
     public async Task<ActionResult<Response>> Upload(
@@ -78,10 +79,13 @@ public class AudioFileController(IAudioFileRepository _audioFileRepository, ITok
         Response.AddPaginationHeader(paginationHeader);
 
         List<AudioFileResponse> audioFileResponses = [];
-
+        
+        bool isLiking;
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile));
+            isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
+
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
         }
 
         return audioFileResponses;

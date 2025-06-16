@@ -5,6 +5,7 @@ public record AudioFileResponse(
     string FileName,
     string FileDataBase64,
     bool IsLiking,
+    int LikersCount,
     // byte[] FileData,
     DateTime UploadedAt
 );

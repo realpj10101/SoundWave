@@ -46,6 +46,7 @@ public static class Mappers
             FileName: audioFile.FileName,
             FileDataBase64: dataUri,
             IsLiking: IsLiking,
+            LikersCount: audioFile.LikersCount,
             UploadedAt: audioFile.UploadedAt
         );
     }

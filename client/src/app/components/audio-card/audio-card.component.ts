@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, signal, ViewChild } from '@angular/core';
 import { Audio } from '../../models/audio.model';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -15,17 +15,19 @@ import { ApiResponse } from '../../models/helpers/apiResponse.model';
   templateUrl: './audio-card.component.html',
   styleUrl: './audio-card.component.scss'
 })
-export class AudioCardComponent {
+export class AudioCardComponent implements OnInit {
   @Input('audioInput') audioInput: Audio | undefined;
   @ViewChild('audioElem') audioElem!: ElementRef<HTMLAudioElement>;
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
+  count: number | undefined;
 
   isPlaying = signal(false);
   bars: number[] = [];
 
   ngOnInit() {
     this.generateBars();
+    this.count = this.audioInput?.likersCount;
   }
 
   togglePlay() {
@@ -51,6 +53,7 @@ export class AudioCardComponent {
           next: (res: ApiResponse) => {
             if (this.audioInput) {
               this.audioInput.isLiking = true;
+              this.getLikesCount();
 
               this._snack.open(res.message, 'Close', {
                 duration: 7000,
@@ -70,6 +73,7 @@ export class AudioCardComponent {
           next: (res: ApiResponse) => {
             if (this.audioInput)
               this.audioInput.isLiking = false;
+              this.getLikesCount();
 
             this._snack.open(res.message, 'close', {
               duration: 7000,
@@ -78,5 +82,12 @@ export class AudioCardComponent {
             })
           }
         })
+  }
+
+  getLikesCount(): void {
+    if (this.audioInput)
+      this._likeService.getLikesCount(this.audioInput.fileName).subscribe({
+        next: (res: number) => this.count = res
+    });
   }
 }

@@ -187,10 +187,11 @@ public class LikeRepository : ILikeRepository
         return lS;
     }
 
-    public Task<bool> CheckIsLikingAsync(ObjectId userId, AudioFile audioFile, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<bool> CheckIsLikingAsync(ObjectId userId, AudioFile audioFile, CancellationToken cancellationToken)
+        => await _collection.Find<Like>(
+            doc => doc.LikerId == userId && doc.LikedAudioId == audioFile.Id
+        ).AnyAsync(cancellationToken);
+
 
     public Task<PagedList<AudioFile>> GetAllAsync(LikeParams likeParams, CancellationToken cancellationToken)
     {
@@ -199,11 +200,11 @@ public class LikeRepository : ILikeRepository
 
     public async Task<int> GetLikesCount(string targetAudioName, CancellationToken cancellationToken)
     {
-        int likeCount = await _collectionAudios.AsQueryable()
+        int likersCount = await _collectionAudios.AsQueryable()
             .Where(doc => doc.FileName == targetAudioName)
             .Select(item => item.LikersCount)
             .FirstOrDefaultAsync(cancellationToken);
 
-        return likeCount;    
+        return likersCount;
     }
 }
