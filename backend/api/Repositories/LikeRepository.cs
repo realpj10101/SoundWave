@@ -116,9 +116,74 @@ public class LikeRepository : ILikeRepository
         return lS;
     }
 
-    public Task<LikeStatus> DeleteAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken)
+    public async Task<LikeStatus> DeleteAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        LikeStatus lS = new();
+
+        ObjectId? targetId =
+            await _audioFileRepository.GetObjectIdByAudioNameAsync(targetAudioName, cancellationToken);
+
+        if (targetId is null)
+        {
+            lS.IsTargetAudioNotFound = true;
+
+            return lS;
+        }
+
+        using IClientSessionHandle session = await _client.StartSessionAsync(null, cancellationToken);
+
+        session.StartTransaction();
+
+        try
+        {
+            DeleteResult deleteResult = await _collection.DeleteOneAsync(
+                doc => doc.LikerId == userId
+                    && doc.LikedAudioId == targetId, cancellationToken
+            );
+
+            if (deleteResult.DeletedCount < 1)
+            {
+                lS.IsAlreadyDisLiked = true;
+
+                return lS;
+            }
+
+            #region UpdateCounters
+
+            UpdateDefinition<AppUser> updateLikingsCount = Builders<AppUser>.Update
+                .Inc(appUser => appUser.LikingsCount, -1);
+
+            await _colletionUsers.UpdateOneAsync<AppUser>(session, appUser =>
+                appUser.Id == userId, updateLikingsCount, null, cancellationToken);
+
+            UpdateDefinition<AudioFile> updateLikersCount = Builders<AudioFile>.Update
+                .Inc(audio => audio.LikersCount, -1);
+
+            await _collectionAudios.UpdateOneAsync<AudioFile>(session, audio =>
+                audio.Id == targetId, updateLikersCount, null, cancellationToken);
+
+            #endregion
+
+            await session.CommitTransactionAsync(cancellationToken);
+
+            lS.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            await session.AbortTransactionAsync(cancellationToken);
+
+            _logger.LogError(
+                "Like failed."
+                + "MESSAGE:" + ex.Message
+                + "TRACE:" + ex.StackTrace
+            );
+        }
+        finally
+        {
+            _logger.LogInformation("MongoDB transaction/session finished.");
+        }
+
+        return lS;
     }
 
     public Task<bool> CheckIsLikingAsync(ObjectId userId, AudioFile audioFile, CancellationToken cancellationToken)

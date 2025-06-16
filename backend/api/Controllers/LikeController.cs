@@ -30,4 +30,23 @@ public class LikeController(
             ? BadRequest($"{targetAudioName} is already liked.")
             : BadRequest("Liking failed. Please try again or contact the administrator.");
     }
+
+    [HttpDelete("remove/{targetAudioName}")]
+    public async Task<ActionResult<Response>> Delete(string targetAudioName, CancellationToken cancellationToken)
+    {
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
+
+        if (userId is null)
+            return Unauthorized("You are not logged in. Please login again");
+
+        LikeStatus lS = await _likeRepository.DeleteAsync(userId.Value, targetAudioName, cancellationToken);
+
+        return lS.IsSuccess
+            ? Ok(new Response(Message: $"You dislike {targetAudioName} successfully"))
+            : lS.IsTargetAudioNotFound
+            ? NotFound($"{targetAudioName} was not found.")
+            : lS.IsAlreadyDisLiked
+            ? BadRequest($"{targetAudioName} is already disliked.")
+            : BadRequest("Disliking failed. Please try again or contact the administrator.");
+    }
 }
