@@ -36,7 +36,7 @@ public static class Mappers
         );
     }
 
-    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(this AudioFile audioFile)
+    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(this AudioFile audioFile, bool IsLiking = false)
     {
         string base64 = Convert.ToBase64String(audioFile.FileData);
         string dataUri = $"data:audio/mpeg;base64,{base64}";
@@ -45,6 +45,7 @@ public static class Mappers
             UploaderName: audioFile.UploaderName,
             FileName: audioFile.FileName,
             FileDataBase64: dataUri,
+            IsLiking: IsLiking,
             UploadedAt: audioFile.UploadedAt
         );
     }

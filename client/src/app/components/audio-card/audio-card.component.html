@@ -7,23 +7,35 @@
         <p class="artist">{{ audioInput?.uploaderName }}</p>
       </div>
     </div>
-    <span class="duration">3:45</span> 
+    <span class="duration">3:45</span>
   </div>
 
   <div class="waveform" (click)="togglePlay()">
     <div class="play-button">
       @if (isPlaying()) {
-        <button><mat-icon>pause</mat-icon></button>
+      <button><mat-icon>pause</mat-icon></button>
       } @else {
-        <button><mat-icon>play_arrow</mat-icon></button>
+      <button><mat-icon>play_arrow</mat-icon></button>
       }
     </div>
 
     <div class="bars">
       @for (bar of bars; track $index) {
-        <div class="bar" [ngStyle]="{ height: bar + '%' }"></div>
+      <div class="bar" [ngStyle]="{ height: bar + '%' }"></div>
       }
     </div>
+  </div>
+  <div class="action-btns">
+    @if (!audioInput?.isLiking) {
+    <button class="like" (click)="like()">
+      <img src="images/favorite.png" alt="" height="30px">
+    </button>
+    }
+    @else {
+    <button class="like" (click)="dislike()">
+      <img src="images/favorite-red.png" alt="" height="30px">
+    </button>
+    }
   </div>
 
   <audio [src]="audioInput?.fileDataBase64" #audioElem></audio>
