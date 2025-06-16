@@ -49,4 +49,17 @@ public class LikeController(
             ? BadRequest($"{targetAudioName} is already disliked.")
             : BadRequest("Disliking failed. Please try again or contact the administrator.");
     }
+
+    [HttpGet("get-likes-count/{targetAudioName}")]
+    public async Task<ActionResult<int>> GetLikesCount(string targetAudioName, CancellationToken cancellationToken)
+    {
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
+
+        if (userId is null)
+            return Unauthorized("You are not logged in. Please login again");
+
+        int likeCount = await _likeRepository.GetLikesCount(targetAudioName, cancellationToken);
+
+        return likeCount;
+    }
 }

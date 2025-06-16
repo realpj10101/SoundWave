@@ -11,4 +11,5 @@ public interface ILikeRepository
     public Task<LikeStatus> DeleteAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken);
     public Task<bool> CheckIsLikingAsync(ObjectId userId, AudioFile audioFile, CancellationToken cancellationToken);
     public Task<PagedList<AudioFile>> GetAllAsync(LikeParams likeParams, CancellationToken cancellationToken);
+    public Task<int> GetLikesCount(string targetAudioName, CancellationToken cancellationToken);
 }

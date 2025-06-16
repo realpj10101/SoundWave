@@ -7,6 +7,7 @@ using api.Models.Helpers;
 using api.Settings;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace api.Repositories;
 
@@ -194,5 +195,15 @@ public class LikeRepository : ILikeRepository
     public Task<PagedList<AudioFile>> GetAllAsync(LikeParams likeParams, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<int> GetLikesCount(string targetAudioName, CancellationToken cancellationToken)
+    {
+        int likeCount = await _collectionAudios.AsQueryable()
+            .Where(doc => doc.FileName == targetAudioName)
+            .Select(item => item.LikersCount)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return likeCount;    
     }
 }
