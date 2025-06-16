@@ -31,6 +31,7 @@ public static class Mappers
             UploaderName: userName,
             FileName: createAudio.FileName,
             FileData: createAudio.FileData,
+            LikersCount: 0,
             UploadedAt: DateTime.UtcNow
         );
     }
@@ -45,6 +46,14 @@ public static class Mappers
             FileName: audioFile.FileName,
             FileDataBase64: dataUri,
             UploadedAt: audioFile.UploadedAt
+        );
+    }
+
+    public static Like ConvertLikeIdsToLike(ObjectId likerId, ObjectId likedId)
+    {
+        return new Like(
+            LikerId: likerId,
+            LikedAudioId: likedId
         );
     }
 }

@@ -10,4 +10,5 @@ public class AppUser : MongoIdentityUser<ObjectId>
     public string? IdentifierHash { get; init; }
     public string Bio { get; init; } = string.Empty;
     public DateTime LastActive { get; init; }
+    public int LikingsCount { get; init; }
 }

@@ -39,6 +39,16 @@ public class AudioFileRepository : IAudioFileRepository
         throw new NotImplementedException();
     }
 
+    public async Task<ObjectId?> GetObjectIdByAudioNameAsync(string audioName, CancellationToken cancellationToken)
+    {
+        ObjectId? audioId = await _collection.AsQueryable()
+            .Where(audio => audio.FileName == audioName)
+            .Select(item => item.Id)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        return ValidationsExtensions.TestValidateObjectId(audioId);
+    }
+
     public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken)
     {
         string? userName = await _collectionUsers.AsQueryable()

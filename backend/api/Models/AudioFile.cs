@@ -11,5 +11,6 @@ public record AudioFile(
     string UploaderName,
     string FileName,
     byte[] FileData,
+    int LikersCount,
     DateTime UploadedAt
 );
