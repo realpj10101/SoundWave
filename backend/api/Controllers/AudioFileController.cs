@@ -79,7 +79,7 @@ public class AudioFileController(
         Response.AddPaginationHeader(paginationHeader);
 
         List<AudioFileResponse> audioFileResponses = [];
-        
+
         bool isLiking;
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
@@ -89,5 +89,41 @@ public class AudioFileController(
         }
 
         return audioFileResponses;
+    }
+
+    [HttpGet("get-user-audios")]
+    public async Task<ActionResult<IEnumerable<AudioFileResponse>>> GetUserAudios([FromQuery] AudioFileParams audioFileParams, CancellationToken cancellationToken)
+    {
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
+
+        if (userId is null)
+            return Unauthorized("You are not logged in. Please login again");
+
+
+        PagedList<AudioFile>? pagedAudioFiles = await _audioFileRepository.GetUserAudioFiles(userId, audioFileParams, cancellationToken);
+
+        if (pagedAudioFiles.Count == 0)
+            return NoContent();
+
+        PaginationHeader paginationHeader = new(
+         CurrentPage: pagedAudioFiles.CurrentPage,
+         ItemsPerPage: pagedAudioFiles.PageSize,
+         TotalItems: pagedAudioFiles.TotalItems,
+         TotalPages: pagedAudioFiles.TotalPages
+     );
+
+        Response.AddPaginationHeader(paginationHeader);
+
+        List<AudioFileResponse> audioFileResponses = [];
+
+           bool isLiking;
+        foreach (AudioFile audioFile in pagedAudioFiles)
+        {
+            isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
+
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
+        }
+
+        return audioFileResponses;        
     }
 }

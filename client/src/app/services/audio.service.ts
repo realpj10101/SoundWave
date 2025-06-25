@@ -22,6 +22,12 @@ export class AudioService {
     return this.paginationHendler.getPaginatedResult<Audio[]>(this._apiUrl, params);
   }
 
+  getUserAudios(audioParams: AudioParams): Observable<PaginatedResult<Audio[]>> {
+    const params = this.getHttpParams(audioParams);
+    
+    return this.paginationHendler.getPaginatedResult<Audio[]>(this._apiUrl + '/get-user-audios', params);
+  }
+
   private getHttpParams(audioParams: AudioParams): HttpParams {
     let params = new HttpParams();
 

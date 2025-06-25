@@ -49,6 +49,21 @@ public class AudioFileRepository : IAudioFileRepository
         return ValidationsExtensions.TestValidateObjectId(audioId);
     }
 
+    public async Task<PagedList<AudioFile>?> GetUserAudioFiles(ObjectId? userId, AudioFileParams audioFileParams, CancellationToken cancellationToken)
+    {
+        string? userName = await _collectionUsers.AsQueryable()
+            .Where(doc => doc.Id == userId)
+            .Select(item => item.NormalizedUserName)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        IMongoQueryable<AudioFile> query = _collection.AsQueryable();
+
+        query = query.Where(doc => doc.UploaderName == userName);
+
+        return await PagedList<AudioFile>
+            .CreatePagedListAsync(query, audioFileParams.PageNumber, audioFileParams.PageSize, cancellationToken);
+    }
+
     public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken)
     {
         string? userName = await _collectionUsers.AsQueryable()

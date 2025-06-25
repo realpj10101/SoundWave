@@ -13,6 +13,7 @@ public static class RepositoryServiceExtensions
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<ILikeRepository, LikeRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         #endregion
 
         return services;
