@@ -1,7 +1,9 @@
 using api.Controllers.Helpers;
 using api.DTOs.Account;
 using api.Extensions;
+using api.Extensions.Validations;
 using api.Interfaces;
+using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -25,5 +27,18 @@ public class UserController(IUserRepository _userRepository, ITokenService _toke
         return updateResult is null || !updateResult.IsModifiedCountAvailable
             ? BadRequest("upadte failed! Try again later")
             : Ok(new { message = "User has been updated successfully" });
+    }
+
+    [HttpPost("add-photo")]
+    public async Task<ActionResult<Photo>> AddPhoto(
+        [AllowedFileExtensions, FileSize(250_000, 4_000_000)]
+        IFormFile file, CancellationToken cancellationToken
+    )
+    {
+        if (file is null) return BadRequest("No file is selected with this request");
+
+        Photo? photo = await _userRepository.UploadPhotoAsync(file, User.GetHashedUserId(), cancellationToken);
+
+        return photo is null ? BadRequest("Add photo failed. See logger") : photo;
     }
 }

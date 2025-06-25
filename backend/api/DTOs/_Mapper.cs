@@ -58,4 +58,14 @@ public static class Mappers
             LikedAudioId: likedId
         );
     }
+
+    public static Photo ConvertPhotoUrlsToPhoto(string[] photoUrls, bool isMain)
+    {
+        return new(
+            Url_165: photoUrls[0],
+            Url_256: photoUrls[1],
+            Url_enlarged: photoUrls[2],
+            IsMain: isMain
+        );
+    }
 }

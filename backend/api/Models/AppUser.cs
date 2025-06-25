@@ -11,4 +11,10 @@ public class AppUser : MongoIdentityUser<ObjectId>
     public string Bio { get; init; } = string.Empty;
     public DateTime LastActive { get; init; }
     public int LikingsCount { get; init; }
+    public Photo Photo { get; set; } = new Photo(
+        Url_165: "",
+        Url_256: "",
+        Url_enlarged: "",
+        IsMain: false
+    );
 }

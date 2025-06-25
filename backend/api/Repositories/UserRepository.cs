@@ -1,3 +1,4 @@
+using api.DTOs;
 using api.DTOs.Account;
 using api.Extensions;
 using api.Interfaces;
@@ -12,16 +13,21 @@ public class UserRepository : IUserRepository
 {
     private readonly IMongoCollection<AppUser> _collection;
     private readonly ITokenService _tokenService;
+    private readonly ILogger<UserRepository> _logger;
+    private readonly IPhotoService _photoService;
 
     public UserRepository(
         IMongoClient client, IMyMongoDbSettings dbSettings,
-        ITokenService tokenService
+        ITokenService tokenService, ILogger<UserRepository> logger,
+        IPhotoService photoService
     )
     {
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collection = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
 
         _tokenService = tokenService;
+        _photoService = photoService;
+        _logger = logger;
     }
 
     public async Task<UpdateResult?> UpdateUserAsync(UserUpdateDto userUpdateDto, string? hashedUserId, CancellationToken cancellationToken)
@@ -48,5 +54,54 @@ public class UserRepository : IUserRepository
             null,
             cancellationToken
         );
+    }
+
+    public async Task<AppUser?> GetByIdAsync(ObjectId userId, CancellationToken cancellationToken)
+    {
+        AppUser? appUser = await _collection.Find<AppUser>(user
+            => user.Id == userId).SingleOrDefaultAsync(cancellationToken);
+
+        if (appUser is null) return null;
+
+        return appUser;
+    }
+
+    public async Task<Photo?> UploadPhotoAsync(IFormFile file, string? hashedUserId, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(hashedUserId)) return null;
+
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
+
+        if (userId is null) return null;
+
+        AppUser? appUser = await GetByIdAsync(userId.Value, cancellationToken);
+        if (appUser is null)
+        {
+            _logger.LogError("appUser is Null / not found");
+            return null;
+        }
+
+        string[]? imageUrls = await _photoService.AddPhotoToDiskAsync(file, userId.Value);
+
+        if (imageUrls is not null)
+        {
+            Photo photo;
+
+            photo = string.IsNullOrWhiteSpace(appUser.Photo.Url_enlarged)
+                ? Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true)
+                : Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true);
+
+            appUser.Photo = photo;
+
+            var updatedUser = Builders<AppUser>.Update
+                .Set(doc => doc.Photo, appUser.Photo);
+
+            UpdateResult result = await _collection.UpdateOneAsync<AppUser>(doc => doc.Id == userId, updatedUser, null, cancellationToken);
+
+            return result.ModifiedCount == 1 ? photo : null;
+        }
+
+        _logger.LogError("PhotoService saving photo to disk failed.");
+        return null;
     }
 }
