@@ -1,4 +1,5 @@
 using api.DTOs;
+using api.Enums;
 using api.Extensions;
 using api.Helpers;
 using api.Interfaces;
@@ -193,9 +194,22 @@ public class LikeRepository : ILikeRepository
         ).AnyAsync(cancellationToken);
 
 
-    public Task<PagedList<AudioFile>> GetAllAsync(LikeParams likeParams, CancellationToken cancellationToken)
+    public async Task<PagedList<AudioFile>> GetAllAsync(LikeParams likeParams, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        if (likeParams.Predicate == LikePredicateEnum.Likings)
+        {
+            IMongoQueryable<AudioFile> query = _collection.AsQueryable<Like>()
+                .Where(like => like.LikerId == likeParams.UserId)
+                .Join(_collectionAudios.AsQueryable<AudioFile>(),
+                    like => like.LikedAudioId,
+                    audio => audio.Id,
+                    (like, audio) => audio);
+
+            return await PagedList<AudioFile>
+                .CreatePagedListAsync(query, likeParams.PageNumber, likeParams.PageSize, cancellationToken);
+        }
+
+        return [];
     }
 
     public async Task<int> GetLikesCount(string targetAudioName, CancellationToken cancellationToken)

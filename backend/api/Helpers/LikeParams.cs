@@ -6,6 +6,8 @@ namespace api.Helpers;
 public class LikeParams : PaginationParams
 {
     public ObjectId? AudioId { get; set; }
+
+    public ObjectId? UserId { get; set; }
     
     public LikePredicateEnum Predicate { get; set; }
 }

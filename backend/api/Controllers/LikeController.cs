@@ -1,7 +1,10 @@
 using api.Controllers.Helpers;
 using api.DTOs;
+using api.DTOs.Track;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
+using api.Models;
 using api.Models.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -61,5 +64,39 @@ public class LikeController(
         int likeCount = await _likeRepository.GetLikesCount(targetAudioName, cancellationToken);
 
         return likeCount;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AudioFileResponse>>> GetAll([FromQuery] LikeParams likeParams, CancellationToken cancellationToken)
+    {
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
+
+        if (userId is null)
+            return Unauthorized("You are not logged in. Please login again");
+
+        likeParams.UserId = userId;
+
+        PagedList<AudioFile> pagedAudioFiles = await _likeRepository.GetAllAsync(likeParams, cancellationToken);
+
+        if (pagedAudioFiles.Count == 0) return NoContent();
+
+        Response.AddPaginationHeader(new(
+            pagedAudioFiles.CurrentPage,
+            pagedAudioFiles.PageSize,
+            pagedAudioFiles.TotalItems,
+            pagedAudioFiles.TotalPages
+        ));
+
+        List<AudioFileResponse> audioFileResponses = [];
+
+        bool isLiking;
+        foreach (AudioFile audioFile in pagedAudioFiles)
+        {
+            isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
+
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
+        }
+
+        return audioFileResponses;
     }
 }
