@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, Output, signal, ViewChild, EventEmitter } from '@angular/core';
 import { Audio } from '../../models/audio.model';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -18,6 +18,7 @@ import { ApiResponse } from '../../models/helpers/apiResponse.model';
 export class AudioCardComponent implements OnInit {
   @Input('audioInput') audioInput: Audio | undefined;
   @ViewChild('audioElem') audioElem!: ElementRef<HTMLAudioElement>;
+  @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
   count: number | undefined;

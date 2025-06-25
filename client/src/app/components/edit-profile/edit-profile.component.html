@@ -1,1 +1,49 @@
-<p>edit-profile works!</p>
+<section class="container">
+    <app-sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()"></app-sidebar>
+
+    <button class="mobile-toggle" (click)="toggleSidebar()">
+        ☰
+    </button>
+
+    <div class="top">
+        <h1 class="settings">Settings</h1>
+        <p class="details">Manage your account settings and preferences</p>
+    </div>
+    <div class="bottom">
+        <div class="custom-tabs">
+            <mat-tab-group class="custom-tab-group" mat-stretch-tabs="true">
+                <mat-tab label="Profile">
+                    <div class="container">
+                        <div class="main-side">
+                            <h1 class="info">Profile Information</h1>
+                            <p class="text">Update your profile and how others see you</p>
+                        </div>
+                        <div class="bottom-side">
+                            <img src="images/member.png" alt="">
+                            <button class="photo-btn">
+                                <!-- <img src="images/edit.png" class="edit-img" alt="" height="20px"> -->
+                                Change Photo
+                            </button>
+                        </div>
+                        <div class="input-group">
+                            <label for="email">Bio</label>
+                            <input type="email" id="email" [formControl]="BioCtrl" placeholder="Enter your Bio" />
+                            <div class="button-container">
+                                <button type="submit"  (click)="updateUser()" class="submit-button">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Notifications">
+
+                </mat-tab>
+                <mat-tab label="Privay">
+
+                </mat-tab>
+                <mat-tab label="Account">
+
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+</section>
