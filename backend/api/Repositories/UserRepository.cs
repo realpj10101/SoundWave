@@ -87,14 +87,20 @@ public class UserRepository : IUserRepository
         {
             Photo photo;
 
-            photo = string.IsNullOrWhiteSpace(appUser.Photo.Url_enlarged)
+            photo = appUser.Photos.Count == 0
                 ? Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true)
-                : Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true);
+                : Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: false);
 
-            appUser.Photo = photo;
+            appUser.Photos.Add(photo);
+
+            // photo = string.IsNullOrWhiteSpace(appUser.Photo.Url_enlarged)
+            //     ? Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true)
+            //     : Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true);
+
+            // appUser.Photo = photo;
 
             var updatedUser = Builders<AppUser>.Update
-                .Set(doc => doc.Photo, appUser.Photo);
+                .Set(doc => doc.Photos, appUser.Photos);
 
             UpdateResult result = await _collection.UpdateOneAsync<AppUser>(doc => doc.Id == userId, updatedUser, null, cancellationToken);
 

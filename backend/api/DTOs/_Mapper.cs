@@ -13,6 +13,7 @@ public static class Mappers
         {
             Email = registerDto.Email,
             UserName = registerDto.UserName,
+            Photos = []
         };
     }
 
@@ -21,8 +22,18 @@ public static class Mappers
         return new LoggedInDto
         {
             Token = tokenValue,
-            UserName = appUser.UserName
+            UserName = appUser.UserName,
+            ProfilePhotoUrl = appUser.Photos.FirstOrDefault(photo => photo.IsMain)?.Url_165
         };
+    }
+
+    public static MemberDto ConvertAppUserToMemberDto(AppUser appUser)
+    {
+        return new MemberDto(
+            UserName: appUser.NormalizedUserName!,
+            Bio: appUser.Bio,
+            Photos: appUser.Photos
+        );
     }
 
     public static AudioFile ConvertCreateAudioToAudio(CreateAudioFile createAudio, string userName)
