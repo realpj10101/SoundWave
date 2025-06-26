@@ -2,7 +2,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    // background-color: #1f2937;
 
     .top {
         display: flex;
@@ -14,10 +13,18 @@ main {
             flex-wrap: wrap;
             gap: 1rem;
 
-            .buttons {
-                display: flex;
-                justify-content: space-evenly;
-                align-items: center;
+            .photos {
+                width: 165px;
+
+                img {
+                    border-radius: 5%;
+                }
+
+                .buttons {
+                    display: flex;
+                    justify-content: space-evenly;
+                    align-items: center;
+                }
             }
 
             @mixin uploaderMixin {

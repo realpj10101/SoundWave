@@ -11,6 +11,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { Member } from '../../models/member.model';
+import { ApiResponse } from '../../models/helpers/apiResponse.model';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-photo-editor',
@@ -23,19 +25,18 @@ import { Member } from '../../models/member.model';
   styleUrl: './photo-editor.component.scss'
 })
 export class PhotoEditorComponent implements OnInit {
-  // @Input('memberInput') member: LoggedInUser | undefined; // from user-edit
   @Input('memberInput') member: Member | undefined;
   loggedInUser: LoggedInUser | null | undefined;
   errorGlob: string | undefined;
   apiUrl: string = environment.apiUrl;
   uploader: FileUploader | undefined;
   hasBaseDropZoneOver = false;
-  private accountService = inject(AccountService);
-  private userService = inject(UserService);
-  private snackBar = inject(MatSnackBar);
+  private _accountService = inject(AccountService);
+  private _userService = inject(UserService);
+  private _snackBar = inject(MatSnackBar);
 
   constructor() {
-    this.loggedInUser = this.accountService.loggedInUserSig();
+    this.loggedInUser = this._accountService.loggedInUserSig();
   }
 
   ngOnInit(): void {
@@ -67,7 +68,7 @@ export class PhotoEditorComponent implements OnInit {
         if (res) {
           const photo = JSON.parse(res);
           console.log(res);
-          
+
           this.setNavbarProfilePhoto(photo)
         }
       }
@@ -79,7 +80,60 @@ export class PhotoEditorComponent implements OnInit {
 
       this.loggedInUser.profilePhotoUrl = url_165;
 
-      this.accountService.loggedInUserSig.set(this.loggedInUser);
+      this._accountService.loggedInUserSig.set(this.loggedInUser);
     }
+  }
+
+  setMainPhotoComp(url_165In: string): void {
+
+    this._userService.setMainPhoto(url_165In)
+      .pipe(take(1))
+      .subscribe({
+        next: (res: ApiResponse) => {
+          if (res && this.member) {
+
+            for (const photo of this.member.photos) {
+              // unset user previous main photo
+              if (photo.isMain === true)
+                photo.isMain = false;
+
+              if (photo.url_165 === url_165In) {
+                photo.isMain = true;
+
+                this.loggedInUser!.profilePhotoUrl = url_165In;
+                this._accountService.setCurrentUser(this.loggedInUser!);
+                console.log(this.loggedInUser);
+
+              }
+            }
+
+            this._snackBar.open(res.message, 'close', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 7000
+            });
+
+            console.log(this.member.photos);
+          }
+        }
+      });
+  }
+
+  deletePhotoComp(url_165In: string, index: number): void {
+    this._userService.deletePhoto(url_165In)
+      .pipe(take(1))
+      .subscribe({
+        next: (res: ApiResponse) => {
+          if (res && this.member) {
+            this.member.photos.splice(index, 1);
+
+            this._snackBar.open(res.message, 'close', {
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+              duration: 7000
+            });
+          }
+        }
+      })
   }
 }

@@ -18,11 +18,11 @@ import { take } from 'rxjs';
   imports: [
     SidebarComponent, MatTabsModule, FormsModule, ReactiveFormsModule,
     PhotoEditorComponent
-],
+  ],
   templateUrl: './edit-profile.component.html',
   styleUrl: './edit-profile.component.scss'
 })
-export class EditProfileComponent implements OnInit  {
+export class EditProfileComponent implements OnInit {
   private _userService = inject(UserService);
   private _memberService = inject(MemberService);
   private _fB = inject(FormBuilder);
@@ -41,7 +41,7 @@ export class EditProfileComponent implements OnInit  {
   }
 
   ngOnInit(): void {
-      this.getMember();
+    this.getMember();
   }
 
   toggleSidebar() {
@@ -50,12 +50,12 @@ export class EditProfileComponent implements OnInit  {
 
   getMember(): void {
     if (isPlatformBrowser(this.platFormId)) {
-      const loggedInplayerStr: string | null = localStorage.getItem('loggedInUser');
+      const loggedInUserStr: string | null = localStorage.getItem('loggedInUser');
 
-      if (loggedInplayerStr) {
-        const loggedInPlayer: LoggedInUser = JSON.parse(loggedInplayerStr);
+      if (loggedInUserStr) {
+        const loggedInUser: LoggedInUser = JSON.parse(loggedInUserStr);
 
-        this._memberService.getByUserName(loggedInPlayer.userName)?.pipe(take(1)).subscribe(member => {
+        this._memberService.getByUserName(loggedInUser.userName)?.pipe(take(1)).subscribe(member => {
           if (member) {
             this.member = member;
 
