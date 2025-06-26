@@ -7,7 +7,13 @@
   <div class="action-buttons">
     <ng-container *ngIf="loggedInUserSig && loggedInUserSig() as user; else loggedOutButtons">
       <button mat-mini-fab aria-label="User menu" class="user-menu-btn">
-        <span class="user-initial">{{ user.userName[0] | titlecase }}</span>
+        @if (user.profilePhotoUrl) {
+        <img class="top-avatar"  src="{{apiUrl + user.profilePhotoUrl}}" fill priority
+          alt="{{user.userName[0]}}">
+        <!-- // localhost:5000/storage/photo/sldkfjlsj92374.web -->
+        } @else {
+        <p>{{ user.userName[0] | titlecase }}</p>
+        }
       </button>
     </ng-container>
 

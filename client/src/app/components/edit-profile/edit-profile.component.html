@@ -20,10 +20,10 @@
                         </div>
                         <div class="bottom-side">
                             <img src="images/member.png" alt="">
-                            <button class="photo-btn">
-                                <!-- <img src="images/edit.png" class="edit-img" alt="" height="20px"> -->
-                                Change Photo
-                            </button>
+                            <!-- <button class="photo-btn">
+                                
+                            </button> -->
+                            <app-photo-editor [memberInput]="loggedInUser"></app-photo-editor>
                         </div>
                         <div class="input-group">
                             <label for="email">Bio</label>
