@@ -6,6 +6,7 @@ using api.Models;
 using api.Settings;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace api.Repositories;
 
@@ -109,5 +110,70 @@ public class UserRepository : IUserRepository
 
         _logger.LogError("PhotoService saving photo to disk failed.");
         return null;
+    }
+
+    public async Task<UpdateResult?> SetMainPhotoAsync(string hashedUserId, string photoUrlIn, CancellationToken cancellationToken)
+    {
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
+
+        if (userId is null) return null;
+
+        #region Unset the previous main photo 
+
+        FilterDefinition<AppUser>? filterOld = Builders<AppUser>.Filter
+            .Where(appUser =>
+                appUser.Id == userId && appUser.Photos.Any<Photo>(photo => photo.IsMain == true));
+
+        UpdateDefinition<AppUser>? updateOld = Builders<AppUser>.Update
+            .Set(appUser => appUser.Photos.FirstMatchingElement().IsMain, false);
+
+        await _collection.UpdateOneAsync(filterOld, updateOld, null, cancellationToken);
+
+        #endregion
+
+        #region set the new main photo
+
+        FilterDefinition<AppUser>? filterNew = Builders<AppUser>.Filter
+            .Where(appUser =>
+                appUser.Id == userId && appUser.Photos.Any<Photo>(photo => photo.Url_165 == photoUrlIn));
+
+        UpdateDefinition<AppUser> updateNew = Builders<AppUser>.Update
+            .Set(appUser => appUser.Photos.FirstMatchingElement().IsMain, true);
+
+        return await _collection.UpdateOneAsync(filterNew, updateNew, null, cancellationToken);
+
+        #endregion
+    }
+
+    public async Task<UpdateResult?> DeletePhotoAsync(string hashedUserId, string? urlIn, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(urlIn)) return null;
+
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
+
+        if (userId is null) return null;
+
+        Photo photo = await _collection.AsQueryable()
+            .Where(appUser => appUser.Id == userId) // filter by user email
+            .SelectMany(appUser => appUser.Photos) // flatten
+            .Where(photo => photo.Url_165 == urlIn)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (photo is null) return null;
+
+        if (photo.IsMain) return null;
+
+        bool isDelereSuccess = await _photoService.DeletePhotoFromDisk(photo);
+        if (!isDelereSuccess)
+        {
+            _logger.LogError("Delete Photo from disk failed");
+
+            return null;
+        }
+
+        var update = Builders<AppUser>.Update
+            .PullFilter(appUser => appUser.Photos, photo => photo.Url_165 == urlIn);
+
+        return await _collection.UpdateOneAsync<AppUser>(appUser => appUser.Id == userId, update, null, cancellationToken);
     }
 }

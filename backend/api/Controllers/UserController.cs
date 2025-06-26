@@ -5,6 +5,7 @@ using api.Extensions.Validations;
 using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -40,5 +41,37 @@ public class UserController(IUserRepository _userRepository, ITokenService _toke
         Photo? photo = await _userRepository.UploadPhotoAsync(file, User.GetHashedUserId(), cancellationToken);
 
         return photo is null ? BadRequest("Add photo failed. See logger") : photo;
+    }
+
+    [HttpPut("set-main-photo")]
+    public async Task<ActionResult> SetMainPhoto(string photoUrlIn, CancellationToken cancellationToken)
+    {
+        string? hashedUserId = User.GetHashedUserId();
+
+        if (string.IsNullOrEmpty(hashedUserId))
+            return Unauthorized("You are not logged in. Please login again");
+
+        UpdateResult? updateResult =
+            await _userRepository.SetMainPhotoAsync(hashedUserId, photoUrlIn, cancellationToken);
+
+        return updateResult is null || !updateResult.IsModifiedCountAvailable
+            ? BadRequest("Update failed. Try agian later")
+            : Ok(new { message = "User has been updated successfully." });
+    }
+
+    [HttpPut("delete-photo")]
+    public async Task<ActionResult> DeletePhoto(string photoUrlIn, CancellationToken cancellationToken)
+    {
+        string? hashedUserId = User.GetHashedUserId();
+
+        if (string.IsNullOrEmpty(hashedUserId))
+            return Unauthorized("You are not logged in. Please login again.");
+
+        UpdateResult? updateResult =
+            await _userRepository.DeletePhotoAsync(hashedUserId, photoUrlIn, cancellationToken);
+
+        return updateResult is null || !updateResult.IsModifiedCountAvailable
+            ? BadRequest("Photo delection failed. Try again or conctact the support")
+            : Ok(new { message = "Photo deleted successfully." });
     }
 }
