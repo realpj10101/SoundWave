@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Member } from '../../models/member.model';
 import { ApiResponse } from '../../models/helpers/apiResponse.model';
 import { take } from 'rxjs';
+import { Photo } from '../../models/photo.model';
 
 @Component({
   selector: 'app-photo-editor',
@@ -64,12 +65,16 @@ export class PhotoEditorComponent implements OnInit {
         file.withCredentials = false;
       }
 
-      this.uploader.onSuccessItem = (item, res) => {
-        if (res) {
-          const photo = JSON.parse(res);
-          console.log(res);
+      this.uploader.onSuccessItem = (item, response, status, header) => {
+        if (response) {
+          const photo: Photo = JSON.parse(response);
+          this.member?.photos.push(photo);
 
-          this.setNavbarProfilePhoto(photo)
+          console.log(photo);
+
+          // set navbar profile photo when first photo is uploaded
+          if (this.member?.photos.length === 1)
+            this.setNavbarProfilePhoto(photo.url_165);
         }
       }
     }
