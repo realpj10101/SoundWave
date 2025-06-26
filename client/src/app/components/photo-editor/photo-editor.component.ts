@@ -10,19 +10,21 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { Member } from '../../models/member.model';
 
 @Component({
   selector: 'app-photo-editor',
   imports: [
     CommonModule,
     MatIconModule, MatFormFieldModule, MatCardModule, MatButtonModule,
-    FileUploadModule
+    FileUploadModule, NgOptimizedImage
   ],
   templateUrl: './photo-editor.component.html',
   styleUrl: './photo-editor.component.scss'
 })
 export class PhotoEditorComponent implements OnInit {
-  @Input('memberInput') member: LoggedInUser | undefined; // from user-edit
+  // @Input('memberInput') member: LoggedInUser | undefined; // from user-edit
+  @Input('memberInput') member: Member | undefined;
   loggedInUser: LoggedInUser | null | undefined;
   errorGlob: string | undefined;
   apiUrl: string = environment.apiUrl;

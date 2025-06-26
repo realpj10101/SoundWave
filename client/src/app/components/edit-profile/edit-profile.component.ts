@@ -1,4 +1,4 @@
-import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { LoggedInUser } from '../../models/account.model';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
@@ -9,6 +9,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiResponse } from '../../models/helpers/apiResponse.model';
 import { isPlatformBrowser } from '@angular/common';
 import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
+import { MemberService } from '../../services/member.service';
+import { Member } from '../../models/member.model';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-edit-profile',
@@ -19,13 +22,15 @@ import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
   templateUrl: './edit-profile.component.html',
   styleUrl: './edit-profile.component.scss'
 })
-export class EditProfileComponent {
+export class EditProfileComponent implements OnInit  {
   private _userService = inject(UserService);
+  private _memberService = inject(MemberService);
   private _fB = inject(FormBuilder);
   private _snack = inject(MatSnackBar);
   isSidebarOpen = false;
-  private platformId = inject(PLATFORM_ID);
+  private platFormId = inject(PLATFORM_ID);
   loggedInUser: LoggedInUser | undefined;
+  member: Member | undefined;
 
   userFg = this._fB.group({
     bioCtrl: ''
@@ -35,16 +40,28 @@ export class EditProfileComponent {
     return this.userFg.get('bioCtrl') as FormControl;
   }
 
+  ngOnInit(): void {
+      this.getMember();
+  }
+
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
 
-  getUser(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const loggedInUserStr: string | null = localStorage.getItem('loggedInUser');
+  getMember(): void {
+    if (isPlatformBrowser(this.platFormId)) {
+      const loggedInplayerStr: string | null = localStorage.getItem('loggedInUser');
 
-      if (loggedInUserStr) {
-        this.loggedInUser = JSON.parse(loggedInUserStr);
+      if (loggedInplayerStr) {
+        const loggedInPlayer: LoggedInUser = JSON.parse(loggedInplayerStr);
+
+        this._memberService.getByUserName(loggedInPlayer.userName)?.pipe(take(1)).subscribe(member => {
+          if (member) {
+            this.member = member;
+
+            // this.initControllersValues(member);
+          }
+        });
       }
     }
   }

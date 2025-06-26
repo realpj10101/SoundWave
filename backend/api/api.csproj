@@ -18,6 +18,9 @@
       <PackageReference Include="MongoDB.Driver" Version="2.30.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="wwwroot\" />
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\image-processing\image-processing.csproj" />
