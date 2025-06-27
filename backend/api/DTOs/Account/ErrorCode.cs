@@ -11,5 +11,6 @@ public enum ErrorCode
     IsAccountCreationFailed,
     IsSessionExpired,
     IsNotFound,
-    IsFailed
+    IsFailed,
+    SaveFailed
 }

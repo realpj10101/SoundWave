@@ -37,12 +37,9 @@ public class AudioFileController(
         if (!file.FileName.EndsWith(".mp3"))
             return BadRequest("Only mp3 files are allowed.");
 
-        using var ms = new MemoryStream();
-        await file.CopyToAsync(ms);
-
         CreateAudioFile createAudioFile = new(
             FileName: file.FileName,
-            FileData: ms.ToArray()
+            File: file
         );
 
         OperationResult<AudioFile> opResult = await _audioFileRepository.UploadAsync(createAudioFile, userId, cancellationToken);

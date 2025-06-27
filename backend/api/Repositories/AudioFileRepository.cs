@@ -17,12 +17,15 @@ public class AudioFileRepository : IAudioFileRepository
 {
     private readonly IMongoCollection<AudioFile> _collection;
     private readonly IMongoCollection<AppUser>? _collectionUsers;
+    private readonly IAudioService _audioservice;
 
-    public AudioFileRepository(IMongoClient client, IMyMongoDbSettings dbSettings)
+    public AudioFileRepository(IMongoClient client, IMyMongoDbSettings dbSettings, IAudioService audioService)
     {
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collection = database.GetCollection<AudioFile>(AppVariablesExtensions.CollectionTracks);
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
+
+        _audioservice = audioService;
     }
 
     public async Task<PagedList<AudioFile>?> GetAllAsync(AudioFileParams audioFileParams, CancellationToken cancellationToken)
@@ -66,6 +69,17 @@ public class AudioFileRepository : IAudioFileRepository
 
     public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken)
     {
+        if (userId is null)
+        {
+            return new OperationResult<AudioFile>(
+                false,
+                Error: new CustomError(
+                    ErrorCode.IsFailed,
+                    "user id can not be null"
+                )
+            );
+        }
+
         string? userName = await _collectionUsers.AsQueryable()
             .Where(doc => doc.Id == userId)
             .Select(doc => doc.NormalizedUserName)
@@ -82,14 +96,33 @@ public class AudioFileRepository : IAudioFileRepository
             );
         }
 
-        AudioFile audioFile = Mappers.ConvertCreateAudioToAudio(audio, userName);
+        string? filePath = await _audioservice.SaveAudioToDiskAsync(audio.File, userId.Value);
+        if (filePath is null)
+        {
+            return new OperationResult<AudioFile>(
+                false,
+                Error: new CustomError(
+                    Code: ErrorCode.SaveFailed,
+                    Message: "Saving audio to disk failed"
+                )
+            );
+        }
+
+        AudioFile audioFile = new(
+            Id: ObjectId.GenerateNewId(),
+            UploaderName: userName,
+            FileName: audio.FileName,
+            FilePath: filePath,
+            LikersCount: 0,
+            UploadedAt: DateTime.UtcNow
+        );
 
         await _collection.InsertOneAsync(audioFile, null, cancellationToken);
 
         return new OperationResult<AudioFile>(
             true,
             audioFile,
-            Error: null
+            null
         );
     }
 

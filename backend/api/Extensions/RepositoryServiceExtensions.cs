@@ -19,6 +19,7 @@ public static class RepositoryServiceExtensions
         services.AddScoped<IPhotoService, PhotoService>();
         services.AddScoped<IPhotoModifySaveService, PhotoModifySaveService>();
         services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<IAudioService, AudioService>();
         #endregion
 
         return services;

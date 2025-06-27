@@ -10,7 +10,7 @@ public record AudioFile(
     ObjectId Id,
     string UploaderName,
     string FileName,
-    byte[] FileData,
+    string FilePath,
     int LikersCount,
     DateTime UploadedAt
 );
