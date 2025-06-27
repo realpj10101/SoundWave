@@ -33,6 +33,10 @@ export class DashboardComponent {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
 
+  closeSideBar() {
+    this.isSidebarOpen = false;
+  }
+
   private _fB = inject(FormBuilder);
 
   filterFg = this._fB.group({

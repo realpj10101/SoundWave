@@ -42,6 +42,7 @@ public class AudioFileController(
             : opResult.Error?.Code switch
             {
                 ErrorCode.IsNotFound => BadRequest(opResult.Error.Message),
+                ErrorCode.IsAlreadyExist => BadRequest(opResult.Error.Message),
                 _ => BadRequest("Operation failed!. Try again or contact administrator")
             };
     }

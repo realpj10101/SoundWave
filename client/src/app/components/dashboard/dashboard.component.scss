@@ -3,60 +3,6 @@
   flex-direction: column;
   gap: 1rem;
 
-  .search {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: space-around;
-
-    .info {
-      color: white;
-      
-      h1 {
-        font-size: 3rem;
-        margin: 0;
-      }
-
-      h4 {
-        color: #9ca3af;
-      }
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      background-color: #222; // optional, dark UI
-      padding: 8px 12px;
-      border-radius: 8px;
-      gap: 8px;
-    
-      .search-img {
-        height: 20px;
-        width: 20px;
-      }
-    
-      .search {
-        flex: 1; // take up remaining space
-        background: transparent;
-        border: none;
-        color: white;
-        padding: 4px 8px;
-        outline: none;
-      }
-    
-      button {
-        background: linear-gradient(to right, #ff4e50, #f9d423); // sample gradient
-        border: none;
-        border-radius: 4px;
-        padding: 6px 12px;
-        color: black;
-        cursor: pointer;
-      }
-    }
-  }
-  // height: 100vh;
-
   .mobile-toggle {
     position: fixed;
     top: 1rem;
@@ -73,143 +19,203 @@
     cursor: pointer;
   }
 
-  .main-content {
-    margin-left: 16rem;
-    padding: 1.5rem;
-    flex: 1;
-    overflow-y: auto;
 
-    .header {
+  .container {
+    padding: 1rem;
+
+    .search {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      margin-bottom: 2rem;
       flex-wrap: wrap;
-      gap: 1rem;
-    }
+      justify-content: space-around;
 
-    .title {
-      font-size: 1.875rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      color: #9ca3af;
-    }
-
-    .search-wrapper {
-      position: relative;
-      width: 24rem;
-
-      .search-icon {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-        width: 1rem;
-        height: 1rem;
-      }
-
-      .search-input {
-        width: 100%;
-        padding: 0.5rem 1rem 0.5rem 2.5rem;
-        background-color: #1f2937;
-        border: 1px solid #374151;
+      .info {
         color: white;
-        border-radius: 0.375rem;
 
-        &::placeholder {
+        h1 {
+          font-size: 3rem;
+          margin: 0;
+        }
+
+        h4 {
           color: #9ca3af;
         }
+      }
 
-        &:focus {
+      .search-box {
+        display: flex;
+        align-items: center;
+        background-color: #222; // optional, dark UI
+        padding: 8px 12px;
+        border-radius: 8px;
+        gap: 8px;
+
+        .search-img {
+          height: 20px;
+          width: 20px;
+        }
+
+        .search {
+          flex: 1; // take up remaining space
+          background: transparent;
+          border: none;
+          color: white;
+          padding: 4px 8px;
           outline: none;
-          border-color: #f97316;
+        }
+
+        button {
+          background: linear-gradient(to right, #ff4e50, #f9d423); // sample gradient
+          border: none;
+          border-radius: 4px;
+          padding: 6px 12px;
+          color: black;
+          cursor: pointer;
         }
       }
     }
-  }
 
-  .audio-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
+    // height: 100vh;
+    .main-content {
+      margin-left: 16rem;
+      padding: 1.5rem;
+      flex: 1;
+      overflow-y: auto;
 
-    .audios {
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .title {
+        font-size: 1.875rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: #9ca3af;
+      }
+
+      .search-wrapper {
+        position: relative;
+        width: 24rem;
+
+        .search-icon {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #9ca3af;
+          width: 1rem;
+          height: 1rem;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 0.5rem 1rem 0.5rem 2.5rem;
+          background-color: #1f2937;
+          border: 1px solid #374151;
+          color: white;
+          border-radius: 0.375rem;
+
+          &::placeholder {
+            color: #9ca3af;
+          }
+
+          &:focus {
+            outline: none;
+            border-color: #f97316;
+          }
+        }
+      }
+    }
+
+    .audio-container {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-    }
+      width: 100%;
 
-    .paginator {
-      display: flex;
-      justify-content: center;
-      backdrop-filter: blur(10px);
-      background-color: rgba(55, 65, 81, 0.7); // dark gray with transparency
-      border-radius: 12px;
-      padding: 8px;
-      font-weight: bold;
-    
-      // Style paginator container
-      ::ng-deep .mat-mdc-paginator-container {
-        background-color: transparent;
-        color: #f97316;
+      .audios {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
       }
-    
-      // Style icons (next, previous, first, last)
-      ::ng-deep .mat-mdc-icon-button {
+
+      .paginator {
+        display: flex;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        background-color: rgba(55, 65, 81, 0.7); // dark gray with transparency
+        border-radius: 12px;
+        padding: 8px;
         font-weight: bold;
-        color: #f97316;
-      }
-    
-      // Style dropdown select text and arrow
-      ::ng-deep .mat-mdc-select-value,
-      ::ng-deep .mat-mdc-select-arrow {
-        color: #f97316;
-      }
-    
-      // Style dropdown input box background
-      ::ng-deep .mat-mdc-text-field-wrapper {
-        background-color: transparent;
-      }
-    
-      // Style dropdown panel (when open)
-      ::ng-deep .mat-mdc-select-panel {
-        background-color: #1f2937; // darker gray (Tailwind's gray-800)
-        color: #f97316;
-      }
-    
-      // Style each option inside dropdown
-      ::ng-deep .mat-mdc-option {
-        color: #f97316;
-    
-        &.mdc-list-item--selected {
-          background-color: #374151; // Tailwind's gray-700
-        }
-    
-        &:hover {
-          background-color: #4b5563; // Tailwind's gray-600
-        }
-      }
-    
-      // Style range label text
-      ::ng-deep .mat-mdc-paginator-range-label {
-        color: #f97316;
-      }
-    }
-    
-  }
 
-  @media (max-width: 768px) {
-    .main-content {
-      margin-left: 0;
+        // Style paginator container
+        ::ng-deep .mat-mdc-paginator-container {
+          background-color: transparent;
+          color: #f97316;
+        }
+
+        // Style icons (next, previous, first, last)
+        ::ng-deep .mat-mdc-icon-button {
+          font-weight: bold;
+          color: #f97316;
+        }
+
+        // Style dropdown select text and arrow
+        ::ng-deep .mat-mdc-select-value,
+        ::ng-deep .mat-mdc-select-arrow {
+          color: #f97316;
+        }
+
+        // Style dropdown input box background
+        ::ng-deep .mat-mdc-text-field-wrapper {
+          background-color: transparent;
+        }
+
+        // Style dropdown panel (when open)
+        ::ng-deep .mat-mdc-select-panel {
+          background-color: #1f2937; // darker gray (Tailwind's gray-800)
+          color: #f97316;
+        }
+
+        // Style each option inside dropdown
+        ::ng-deep .mat-mdc-option {
+          color: #f97316;
+
+          &.mdc-list-item--selected {
+            background-color: #374151; // Tailwind's gray-700
+          }
+
+          &:hover {
+            background-color: #4b5563; // Tailwind's gray-600
+          }
+        }
+
+        // Style range label text
+        ::ng-deep .mat-mdc-paginator-range-label {
+          color: #f97316;
+        }
+      }
+
     }
 
-    .mobile-toggle {
-      display: block;
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+      }
+
+      .mobile-toggle {
+        display: block;
+      }
     }
+
   }
 }

@@ -47,7 +47,7 @@ public class AudioFileRepository : IAudioFileRepository
         ObjectId? audioId = await _collection.AsQueryable()
             .Where(audio => audio.FileName == audioName)
             .Select(item => item.Id)
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
 
         return ValidationsExtensions.TestValidateObjectId(audioId);
     }
@@ -76,6 +76,19 @@ public class AudioFileRepository : IAudioFileRepository
                 Error: new CustomError(
                     ErrorCode.IsFailed,
                     "user id can not be null"
+                )
+            );
+        }
+
+        AudioFile existAudioFile = await _collection.Find(doc => doc.FileName == audio.FileName).FirstOrDefaultAsync(cancellationToken);
+
+        if (existAudioFile is not null)
+        {
+            return new OperationResult<AudioFile>(
+                false,
+                Error: new CustomError(
+                    ErrorCode.IsAlreadyExist,
+                    "This audio is already exist"
                 )
             );
         }

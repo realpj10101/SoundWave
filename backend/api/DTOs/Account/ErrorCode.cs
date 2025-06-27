@@ -12,5 +12,6 @@ public enum ErrorCode
     IsSessionExpired,
     IsNotFound,
     IsFailed,
-    SaveFailed
+    SaveFailed,
+    IsAlreadyExist
 }
