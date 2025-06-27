@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, Signal, ViewEncapsulation } from '@angular/core';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
@@ -13,7 +13,13 @@ import { AudioCardComponent } from "../audio-card/audio-card.component";
 import { RouterModule } from '@angular/router';
 import { AudioService } from '../../services/audio.service';
 import { AudioParams } from '../../models/helpers/audio-params';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
+import { MemberService } from '../../services/member.service';
+import { Member } from '../../models/member.model';
+import { LoggedInUser } from '../../models/account.model';
+import { isPlatformBrowser } from '@angular/common';
+import { AccountService } from '../../services/account.service';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-profile',
@@ -27,14 +33,21 @@ import { Subscription } from 'rxjs';
 export class ProfileComponent implements OnInit {
   isSidebarOpen = false;
   private _likeService = inject(LikeService);
+  private _memberService = inject(MemberService);
+  private _accountService = inject(AccountService);
   private _audioService = inject(AudioService);
-  audioParams: AudioParams | undefined;
-  audios: Audio[] | undefined;
+  private platFormId = inject(PLATFORM_ID);
   readonly likings = 'Liked';
   readonly myTracks = 'My Tracks';
+  audioParams: AudioParams | undefined;
+  audios: Audio[] | undefined;
   likeParams = new LikeParams();
   subscribed: Subscription | undefined;
   pagination: Pagination | undefined;
+  member: Member | undefined;
+  loggedInUser: LoggedInUser | undefined;
+  loggedInUserSig: Signal<LoggedInUser | null> | undefined;
+  apiUrl: string = environment.apiUrl;
 
   pageOptions = [3, 9, 12];
   pageEvent: PageEvent | undefined;
@@ -44,8 +57,8 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.getAll();  
-    
+    this.loggedInUserSig = this._accountService.loggedInUserSig;
+
     this.audioParams = new AudioParams();
 
     this.getUserAudios();

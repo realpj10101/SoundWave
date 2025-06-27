@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, Signal } from '@angular/core';
 import { LoggedInUser } from '../../models/account.model';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
@@ -12,6 +12,8 @@ import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
 import { MemberService } from '../../services/member.service';
 import { Member } from '../../models/member.model';
 import { take } from 'rxjs';
+import { environment } from '../../../environments/environment.development';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-edit-profile',
@@ -25,12 +27,15 @@ import { take } from 'rxjs';
 export class EditProfileComponent implements OnInit {
   private _userService = inject(UserService);
   private _memberService = inject(MemberService);
+  private _accountService = inject(AccountService);
   private _fB = inject(FormBuilder);
   private _snack = inject(MatSnackBar);
   isSidebarOpen = false;
   private platFormId = inject(PLATFORM_ID);
   loggedInUser: LoggedInUser | undefined;
   member: Member | undefined;
+  apiUrl: string = environment.apiUrl;
+  loggedInUserSig: Signal<LoggedInUser | null> | undefined;
 
   userFg = this._fB.group({
     bioCtrl: ''
@@ -41,6 +46,8 @@ export class EditProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loggedInUserSig = this._accountService.loggedInUserSig;
+
     this.getMember();
   }
 

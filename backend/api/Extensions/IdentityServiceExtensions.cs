@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using api.Models;
 using api.Settings;
@@ -28,7 +30,7 @@ public static class IdentityServiceExtensions
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenValue)),
                         ValidateIssuer = false,
                         ValidateAudience = false,
-                        ValidateLifetime = true
+                        ValidateLifetime = true,
                     };
                 });
         }
@@ -69,8 +71,8 @@ public static class IdentityServiceExtensions
             .AddDefaultTokenProviders();
         }
         #endregion MongoIdentity & Role
-        
-          #region Policy
+
+        #region Policy
         services.AddAuthorizationBuilder()
             .AddPolicy("RequiredAdminRole", policy => policy.RequireRole("admin"))
             .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("admin", "moderator"));

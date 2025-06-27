@@ -7,7 +7,12 @@
 
     <div class="top">
         <div class="left-side">
+            @if (loggedInUserSig && loggedInUserSig(); as user) {
+            <img src="{{apiUrl + user.profilePhotoUrl}}" class="profile-img" alt="">
+            }
+            @else {
             <img src="images/member.png" class="profile-img" alt="">
+            }
             <div class="actions">
                 <h1>Parsa Jafary</h1>
                 <div class="members">
@@ -52,9 +57,11 @@
         <div class="custom-tabs">
             <mat-tab-group class="custom-tab-group" mat-stretch-tabs="true" (selectedTabChange)="onTabChange($event)">
                 <mat-tab label="{{myTracks}}">
-                    @if (audios && audios.length > 0) {
+                    <div class="audio-cards">
+                        @if (audios && audios.length > 0) {
                         @for (audio of audios; track $index) {
-                        <app-audio-card [audioInput]="audio" (dislikeAudioNameOut)="removeDislikeAudioFromAudios($event)" />
+                        <app-audio-card [audioInput]="audio"
+                            (dislikeAudioNameOut)="removeDislikeAudioFromAudios($event)" />
                         }
                         }
                         @else {
@@ -63,19 +70,23 @@
                             <button routerLink="/upload" class="explore-btn">Upload Music</button>
                         </div>
                         }
+                    </div>
                 </mat-tab>
                 <mat-tab label="{{likings}}">
-                    @if (audios && audios.length > 0) {
-                    @for (audio of audios; track $index) {
-                    <app-audio-card [audioInput]="audio" (dislikeAudioNameOut)="removeDislikeAudioFromAudios($event)" />
-                    }
-                    }
-                    @else {
-                    <div class="no-content">
-                        <h3 class="heading">Jigar, go listen music</h3>
-                        <button routerLink="/dashboard" class="explore-btn">Explore Music</button>
+                    <div class="audio-cards">
+                        @if (audios && audios.length > 0) {
+                        @for (audio of audios; track $index) {
+                        <app-audio-card [audioInput]="audio"
+                            (dislikeAudioNameOut)="removeDislikeAudioFromAudios($event)" />
+                        }
+                        }
+                        @else {
+                        <div class="no-content">
+                            <h3 class="heading">Jigar, go listen music</h3>
+                            <button routerLink="/dashboard" class="explore-btn">Explore Music</button>
+                        </div>
+                        }
                     </div>
-                    }
                 </mat-tab>
                 <mat-tab label="Playlists (0)">Playlists</mat-tab>
             </mat-tab-group>

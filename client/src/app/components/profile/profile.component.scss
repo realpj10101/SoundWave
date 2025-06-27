@@ -149,6 +149,13 @@
     border: 1px solid #1f2937;
     border-radius: 8px;
     width: 100%;
+
+    .audio-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
   
     .mat-mdc-tab-label-container {
     //   background: transparent;

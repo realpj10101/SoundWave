@@ -19,7 +19,12 @@
                             <p class="text">Update your profile and how others see you</p>
                         </div>
                         <div class="bottom-side">
-                            <img src="images/member.png" alt="">
+                            @if (loggedInUserSig && loggedInUserSig(); as user) {
+                                <img src="{{apiUrl + user.profilePhotoUrl}}" class="profile-img" alt="">
+                                }
+                                @else {
+                                <img src="images/member.png" class="profile-img" alt="">
+                                }
                             <!-- <button class="photo-btn">
                                 
                             </button> -->
