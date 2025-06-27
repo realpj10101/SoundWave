@@ -1,7 +1,7 @@
 export interface Audio {
     uploaderName: string;
     fileName: string;
-    fileDataBase64: string;
+    filePath: string;
     uploadedAt: Date;
     isLiking: boolean;
     likersCount: number

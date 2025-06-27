@@ -39,5 +39,5 @@
     <p style="color: red;">{{count}}</p>
   </div>
 
-  <audio [src]="audioInput?.fileDataBase64" #audioElem></audio>
+  <audio [src]="apiUrl + audioInput?.filePath" #audioElem></audio>
 </div>

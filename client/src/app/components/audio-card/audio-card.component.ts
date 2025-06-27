@@ -6,6 +6,7 @@ import { LikeService } from '../../services/like.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs';
 import { ApiResponse } from '../../models/helpers/apiResponse.model';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-audio-card',
@@ -22,6 +23,7 @@ export class AudioCardComponent implements OnInit {
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
   count: number | undefined;
+  apiUrl = environment.apiUrl
 
   isPlaying = signal(false);
   bars: number[] = [];
