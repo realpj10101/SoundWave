@@ -4,6 +4,7 @@ using api.DTOs.Account;
 using api.DTOs.Helpers;
 using api.DTOs.Track;
 using api.Extensions;
+using api.Extensions.Validations;
 using api.Helpers;
 using api.Interfaces;
 using api.Models;
@@ -20,22 +21,14 @@ public class AudioFileController(
 {
     [HttpPost("upload")]
     public async Task<ActionResult<Response>> Upload(
-     [FromForm] IFormFile file, CancellationToken cancellationToken
+     [FromForm, AllowedFileExtensions, FileSize(250_000, 40_000_000)]
+     IFormFile file, CancellationToken cancellationToken
     )
     {
         ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
 
         if (userId is null)
             return Unauthorized("You are not logged in. Please login again");
-
-        if (file == null || file.Length == 0)
-            return BadRequest("File is empty");
-
-        if (file.Length > 40_000_000)
-            return BadRequest("File is more than 40MB");
-
-        if (!file.FileName.EndsWith(".mp3"))
-            return BadRequest("Only mp3 files are allowed.");
 
         CreateAudioFile createAudioFile = new(
             FileName: file.FileName,
