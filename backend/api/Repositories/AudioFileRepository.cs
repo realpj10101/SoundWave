@@ -127,6 +127,7 @@ public class AudioFileRepository : IAudioFileRepository
             FileName: audio.FileName,
             FilePath: filePath,
             LikersCount: 0,
+            AdderCount: 0,
             UploadedAt: DateTime.UtcNow
         );
 

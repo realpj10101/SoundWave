@@ -56,6 +56,14 @@ public static class Mappers
         );
     }
 
+    public static Playlist ConvertPlaylistIdToPlaylist(ObjectId adderId, ObjectId addedId)
+    {
+        return new Playlist(
+            AdderId: adderId,
+            AddedAudioId: addedId
+        );
+    }
+
     public static Photo ConvertPhotoUrlsToPhoto(string[] photoUrls, bool isMain)
     {
         return new(

@@ -12,5 +12,6 @@ public record AudioFile(
     string FileName,
     string FilePath,
     int LikersCount,
+    int AdderCount,
     DateTime UploadedAt
 );
