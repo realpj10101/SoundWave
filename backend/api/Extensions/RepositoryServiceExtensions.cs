@@ -10,7 +10,7 @@ public static class RepositoryServiceExtensions
 {
     public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
     {
-        #region Player
+        #region 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
@@ -20,6 +20,7 @@ public static class RepositoryServiceExtensions
         services.AddScoped<IPhotoModifySaveService, PhotoModifySaveService>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IAudioService, AudioService>();
+        services.AddScoped<IPlaylistRepository, PlaylistRepository>();
         #endregion
 
         return services;
