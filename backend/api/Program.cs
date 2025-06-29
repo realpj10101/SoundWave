@@ -11,6 +11,7 @@ builder.Services.AddSignalR();
 builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddIdentityService(builder.Configuration);
 builder.Services.AddRepositoryServices();
+builder.Services.AddOpenApi();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -18,8 +19,14 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("admin"));
 });
 
-
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseSwaggerUI(options => { options.SwaggerEndpoint("/openapi/v1.json", "SoundWave"); }
+    );
+}
 
 // app.UseHttpsRedirection();
 

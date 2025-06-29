@@ -48,7 +48,7 @@ public class PlaylistController(
             : pS.IsTargetAudioNotFound
             ? NotFound($"{targetAudioName} was not found")
             : pS.IsAlreadyRemoved
-            ? BadRequest("${targetAudioName} is not on the playlist")
+            ? BadRequest($"{targetAudioName} is not on the playlist")
             : BadRequest("Remove from playlist failed try again or contact the administrator");
     }
 }
