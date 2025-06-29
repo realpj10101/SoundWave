@@ -14,7 +14,7 @@ public class PlaylistController(
     ITokenService tokenService
 ) : BaseApiController
 {
-    [HttpPost("add/{targetAudioName")]
+    [HttpPost("add/{targetAudioName}")]
     public async Task<ActionResult<Response>> Add(string targetAudioName, CancellationToken cancellationToken)
     {
         ObjectId? userId = await tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
