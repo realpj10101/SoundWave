@@ -17,7 +17,7 @@ namespace api.Controllers;
 
 [Authorize]
 public class AudioFileController(
-    IAudioFileRepository _audioFileRepository, ITokenService _tokenService, ILikeRepository _likeRepository) : BaseApiController
+    IAudioFileRepository _audioFileRepository, ITokenService _tokenService, ILikeRepository _likeRepository, IPlaylistRepository _playlistRepository) : BaseApiController
 {
     [HttpPost("upload")]
     public async Task<ActionResult<Response>> Upload(
@@ -72,9 +72,12 @@ public class AudioFileController(
         List<AudioFileResponse> audioFileResponses = [];
 
         bool isLiking;
+        bool isAdding;
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
             isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
+
+            isAdding = await _playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);
 
             audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
         }
@@ -107,14 +110,17 @@ public class AudioFileController(
 
         List<AudioFileResponse> audioFileResponses = [];
 
-           bool isLiking;
+        bool isLiking;
+        bool isAdding;
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
             isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
 
+            isAdding = await _playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);
+
             audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
         }
 
-        return audioFileResponses;        
+        return audioFileResponses;
     }
 }

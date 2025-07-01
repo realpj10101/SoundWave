@@ -36,14 +36,16 @@ public static class Mappers
         );
     }
 
-    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(this AudioFile audioFile, bool IsLiking = false)
+    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(this AudioFile audioFile, bool isLiking = false, bool isAdding = false)
     {
         return new AudioFileResponse(
             UploaderName: audioFile.UploaderName,
             FileName: audioFile.FileName,
             FilePath: audioFile.FilePath,
-            IsLiking: IsLiking,
+            IsLiking: isLiking,
+            IsAdding: isAdding,
             LikersCount: audioFile.LikersCount,
+            AddersCount: audioFile.AdderCount,
             UploadedAt: audioFile.UploadedAt
         );
     }
