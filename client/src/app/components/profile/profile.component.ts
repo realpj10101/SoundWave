@@ -20,6 +20,8 @@ import { LoggedInUser } from '../../models/account.model';
 import { isPlatformBrowser } from '@angular/common';
 import { AccountService } from '../../services/account.service';
 import { environment } from '../../../environments/environment.development';
+import { PlaylistParams } from '../../models/helpers/playlist-params';
+import { PlaylistService } from '../../services/playlist.service';
 
 @Component({
   selector: 'app-profile',
@@ -33,15 +35,16 @@ import { environment } from '../../../environments/environment.development';
 export class ProfileComponent implements OnInit {
   isSidebarOpen = false;
   private _likeService = inject(LikeService);
-  private _memberService = inject(MemberService);
   private _accountService = inject(AccountService);
   private _audioService = inject(AudioService);
-  private platFormId = inject(PLATFORM_ID);
+  private _playlistService = inject(PlaylistService);
   readonly likings = 'Liked';
   readonly myTracks = 'My Tracks';
+  readonly playlist = 'Playlist'
   audioParams: AudioParams | undefined;
   audios: Audio[] | undefined;
   likeParams = new LikeParams();
+  playlistParams = new PlaylistParams();
   subscribed: Subscription | undefined;
   pagination: Pagination | undefined;
   member: Member | undefined;
@@ -78,6 +81,19 @@ export class ProfileComponent implements OnInit {
     })
   }
 
+  getUserPlaylist(): void {
+    this.audios = [];
+
+    this._playlistService.getAll(this.playlistParams).subscribe({
+      next: (res: PaginatedResult<Audio[]>) => {
+        if (res.body && res.pagination) {
+          this.audios = res.body;
+          this.pagination = res.pagination;
+        }
+      }
+    })
+  }
+
   getUserAudios(): void {
     if (this.audioParams)
       this.subscribed = this._audioService.getUserAudios(this.audioParams).subscribe({
@@ -98,6 +114,9 @@ export class ProfileComponent implements OnInit {
     }
     else if (event.tab.textLabel == this.myTracks) {
       this.getUserAudios();
+    }
+    else if (event.tab.textLabel == this.playlist) {
+      this.getUserPlaylist();
     }
   }
 

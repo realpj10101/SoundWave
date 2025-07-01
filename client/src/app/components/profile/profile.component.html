@@ -88,7 +88,19 @@
                         }
                     </div>
                 </mat-tab>
-                <mat-tab label="Playlists (0)">Playlists</mat-tab>
+                <mat-tab label="{{playlist}}">
+                    @if (audios && audios.length > 0) {
+                    @for (audio of audios; track $index) {
+                    <app-audio-card [audioInput]="audio" (dislikeAudioNameOut)="removeDislikeAudioFromAudios($event)" />
+                    }
+                    }
+                    @else {
+                    <div class="no-content">
+                        <h3 class="heading">Jigar, go listen music</h3>
+                        <button routerLink="/dashboard" class="explore-btn">Explore Music</button>
+                    </div>
+                    }
+                </mat-tab>
             </mat-tab-group>
         </div>
     </div>
