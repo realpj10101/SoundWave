@@ -4,5 +4,7 @@ export interface Audio {
     filePath: string;
     uploadedAt: Date;
     isLiking: boolean;
-    likersCount: number
+    isAdding: boolean;
+    likersCount: number;
+    addersCount: number;
 }

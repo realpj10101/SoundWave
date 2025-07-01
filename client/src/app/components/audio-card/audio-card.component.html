@@ -26,17 +26,32 @@
     </div>
   </div>
   <div class="action-btns">
-    @if (!audioInput?.isLiking) {
-    <button class="like" (click)="like()">
-      <img src="images/favorite.png" alt="" height="30px">
-    </button>
-    }
-    @else {
-    <button class="like" (click)="dislike()">
-      <img src="images/favorite-red.png" alt="" height="30px">
-    </button>
-    }
-    <p style="color: red;">{{count}}</p>
+    <div class="like-section">
+      @if (!audioInput?.isLiking) {
+      <button class="like" (click)="like()">
+        <img src="images/favorite.png" alt="" height="30px">
+      </button>
+      }
+      @else {
+      <button class="like" (click)="dislike()">
+        <img src="images/favorite-red.png" alt="" height="30px">
+      </button>
+      }
+      <p style="color: red;">{{count}}</p>
+    </div>
+    <div class="add-section">
+      @if (!audioInput?.isAdding) {
+      <button class="add" (click)="addToPlaylist()">
+        <img src="images/add.png" alt="" height="30px">
+      </button>
+      }
+      @else {
+      <button class="add" (click)="removeFromPlaylist()">
+        <img src="images/remove.png" alt="" height="30px">
+      </button>
+      }
+      <p style="color: gray;">{{adderCount}}</p>
+    </div>
   </div>
 
   <audio [src]="apiUrl + audioInput?.filePath" #audioElem></audio>

@@ -56,7 +56,7 @@ public class PlaylistController(
             : BadRequest("Remove from playlist failed try again or contact the administrator");
     }
 
-    [HttpGet("get-playlists-count/{targetAudioName}")]
+    [HttpGet("get-adders-count/{targetAudioName}")]
     public async Task<ActionResult<int>> GetLikesCount(string targetAudioName, CancellationToken cancellationToken)
     {
         ObjectId? userId = await tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);

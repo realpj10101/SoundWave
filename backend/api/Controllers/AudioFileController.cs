@@ -79,7 +79,7 @@ public class AudioFileController(
 
             isAdding = await _playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);
 
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking, isAdding));
         }
 
         return audioFileResponses;
@@ -118,7 +118,7 @@ public class AudioFileController(
 
             isAdding = await _playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);
 
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking, isAdding));
         }
 
         return audioFileResponses;

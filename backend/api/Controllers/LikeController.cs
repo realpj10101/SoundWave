@@ -12,7 +12,7 @@ using MongoDB.Bson;
 namespace api.Controllers;
 
 public class LikeController(
-    ILikeRepository _likeRepository, ITokenService _tokenService
+    ILikeRepository _likeRepository, ITokenService _tokenService, IPlaylistRepository _playlistRepository
 ) : BaseApiController
 {
     [HttpPost("add/{targetAudioName}")]
@@ -90,11 +90,14 @@ public class LikeController(
         List<AudioFileResponse> audioFileResponses = [];
 
         bool isLiking;
+        bool isAdding;
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
             isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
 
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking));
+            isAdding = await _playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);       
+
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking, isAdding));
         }
 
         return audioFileResponses;

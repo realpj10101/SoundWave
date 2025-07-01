@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs';
 import { ApiResponse } from '../../models/helpers/apiResponse.model';
 import { environment } from '../../../environments/environment.development';
+import { PlaylistService } from '../../services/playlist.service';
 
 @Component({
   selector: 'app-audio-card',
@@ -22,7 +23,9 @@ export class AudioCardComponent implements OnInit {
   @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
+  private _playlistService = inject(PlaylistService);
   count: number | undefined;
+  adderCount: number | undefined;
   apiUrl = environment.apiUrl
 
   isPlaying = signal(false);
@@ -31,6 +34,7 @@ export class AudioCardComponent implements OnInit {
   ngOnInit() {
     this.generateBars();
     this.count = this.audioInput?.likersCount;
+    this.adderCount = this.audioInput?.addersCount;
   }
 
   togglePlay() {
@@ -76,9 +80,9 @@ export class AudioCardComponent implements OnInit {
           next: (res: ApiResponse) => {
             if (this.audioInput)
               this.audioInput.isLiking = false;
-              this.getLikesCount();
+            this.getLikesCount();
 
-            this._snack.open(res.message, 'close', {
+            this._snack.open(res.message, 'Close', {
               duration: 7000,
               horizontalPosition: 'center',
               verticalPosition: 'top'
@@ -91,6 +95,51 @@ export class AudioCardComponent implements OnInit {
     if (this.audioInput)
       this._likeService.getLikesCount(this.audioInput.fileName).subscribe({
         next: (res: number) => this.count = res
-    });
+      });
+  }
+
+  addToPlaylist(): void {
+    if (this.audioInput)
+      this._playlistService.add(this.audioInput.fileName).pipe(
+        take(1))
+        .subscribe({
+          next: (res: ApiResponse) => {
+            if (this.audioInput)
+              this.audioInput.isAdding = true;
+            this.getAddersCount();
+
+            this._snack.open(res.message, 'Close', {
+              duration: 7000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            })
+          }
+        })
+  }
+
+  removeFromPlaylist(): void {
+    if (this.audioInput)
+      this._playlistService.remove(this.audioInput.fileName).pipe(
+        take(1))
+        .subscribe({
+          next: (res: ApiResponse) => {
+            if (this.audioInput)
+              this.audioInput.isAdding = false;
+            this.getAddersCount();
+
+            this._snack.open(res.message, 'Close', {
+              duration: 7000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            })
+          }
+        })
+  }
+
+  getAddersCount(): void {
+    if (this.audioInput)
+      this._playlistService.getAddersCount(this.audioInput.fileName).subscribe({
+        next: (res: number) => this.adderCount = res
+      })
   }
 }

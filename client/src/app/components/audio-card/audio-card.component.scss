@@ -92,15 +92,32 @@
 
   .action-btns {
     display: flex;
-    
-    .like {
-      background-color: #1f2937;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    gap: 1rem;
+    align-items: center;
 
-      &:hover {
-        background-color: #ea580c;
+    .like-section {
+      display: flex;
+
+      .like {
+        background-color: #1f2937;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #ea580c;
+        }
+      }
+    }
+
+    .add-section {
+      display: flex;
+
+      .add {
+        background-color: #1f2937;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
       }
     }
   }
