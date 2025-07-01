@@ -78,8 +78,11 @@ export class AudioCardComponent implements OnInit {
         take(1))
         .subscribe({
           next: (res: ApiResponse) => {
-            if (this.audioInput)
+            if (this.audioInput) {
               this.audioInput.isLiking = false;
+              this.dislikeAudioNameOut.emit(this.audioInput.fileName);
+            }
+
             this.getLikesCount();
 
             this._snack.open(res.message, 'Close', {
