@@ -21,6 +21,7 @@ export class AudioCardComponent implements OnInit {
   @Input('audioInput') audioInput: Audio | undefined;
   @ViewChild('audioElem') audioElem!: ElementRef<HTMLAudioElement>;
   @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
+  @Output('removeAudioOut') removedAudioOut = new EventEmitter<string>();
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
   private _playlistService = inject(PlaylistService);
@@ -126,8 +127,10 @@ export class AudioCardComponent implements OnInit {
         take(1))
         .subscribe({
           next: (res: ApiResponse) => {
-            if (this.audioInput)
+            if (this.audioInput) {
               this.audioInput.isAdding = false;
+              this.removedAudioOut.emit(this.audioInput.fileName)
+            }
             this.getAddersCount();
 
             this._snack.open(res.message, 'Close', {

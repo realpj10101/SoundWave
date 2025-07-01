@@ -127,6 +127,11 @@ export class ProfileComponent implements OnInit {
     this.audios = audios;
   }
 
+  removeAudioFromPlaylist(audioName: string): void {
+    const audios = this.audios?.filter(audio => audio.fileName !== audioName)
+    this.audios = audios;
+  }
+
   handlePageEvent(e: PageEvent): void {
     if (e.pageSize !== this.likeParams.pageSize)
       e.pageIndex = 0;
