@@ -13,7 +13,7 @@ using MongoDB.Driver.Linq;
 namespace api.Repositories;
 
 public class LikeRepository : ILikeRepository
-{   
+{
     #region DB and vars
 
     private readonly IMongoClient _client;

@@ -1,11 +1,14 @@
 using api.DTOs;
+using api.Enums;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using api.Models.Helpers;
 using api.Settings;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace api.Repositories;
 
@@ -29,11 +32,11 @@ public class PlaylistRepository : IPlaylistRepository
         _collection = dbName.GetCollection<Playlist>(AppVariablesExtensions.CollectionPlaylists);
         _collectionAudios = dbName.GetCollection<AudioFile>(AppVariablesExtensions.CollectionTracks);
         _collectionUsers = dbName.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
-        
+
         _tokenService = tokenService;
-        
+
         _audioFileRepository = audioFileRepository;
-        
+
         _logger = logger;
     }
 
@@ -51,8 +54,8 @@ public class PlaylistRepository : IPlaylistRepository
 
             return pS;
         }
-        
-        bool isAdding = await _collection.Find(doc => 
+
+        bool isAdding = await _collection.Find(doc =>
                 doc.AdderId == userId &&
                 doc.AddedAudioId == targetId).AnyAsync(cancellationToken);
 
@@ -62,11 +65,11 @@ public class PlaylistRepository : IPlaylistRepository
 
             return pS;
         }
-        
+
         Playlist playlist = Mappers.ConvertPlaylistIdToPlaylist(userId, targetId.Value);
 
         using IClientSessionHandle session = await _client.StartSessionAsync(null, cancellationToken);
-        
+
         session.StartTransaction();
 
         try
@@ -113,9 +116,9 @@ public class PlaylistRepository : IPlaylistRepository
 
     public async Task<PlaylistStatus> RemoveAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken)
     {
-        PlaylistStatus pS = new(); 
-        
-        ObjectId? targetId = 
+        PlaylistStatus pS = new();
+
+        ObjectId? targetId =
             await _audioFileRepository.GetObjectIdByAudioNameAsync(targetAudioName, cancellationToken);
 
         if (targetId is null)
@@ -124,9 +127,9 @@ public class PlaylistRepository : IPlaylistRepository
 
             return pS;
         }
-        
+
         using IClientSessionHandle session = await _client.StartSessionAsync(null, cancellationToken);
-        
+
         session.StartTransaction();
 
         try
@@ -147,20 +150,20 @@ public class PlaylistRepository : IPlaylistRepository
 
             UpdateDefinition<AppUser> updateFavoritesCount = Builders<AppUser>.Update
                 .Inc(appUser => appUser.FavoritesCount, -1);
-            
+
             await _collectionUsers.UpdateOneAsync(session, appUser =>
                     appUser.Id == userId, updateFavoritesCount, null, cancellationToken);
-            
+
             UpdateDefinition<AudioFile> updateAddersCount = Builders<AudioFile>.Update
                 .Inc(audio => audio.AdderCount, -1);
-            
+
             await _collectionAudios.UpdateOneAsync(session, audioFile =>
                     audioFile.Id == targetId, updateAddersCount, null, cancellationToken);
 
             #endregion
-            
+
             await session.CommitTransactionAsync(cancellationToken);
-            
+
             pS.IsSuccess = true;
         }
         catch (Exception ex)
@@ -179,5 +182,38 @@ public class PlaylistRepository : IPlaylistRepository
         }
 
         return pS;
+    }
+
+    public async Task<bool> CheckIsAddingAsync(ObjectId userId, AudioFile audioFile, CancellationToken cancellationToken) =>
+        await _collection.Find<Playlist>(
+            doc => doc.AdderId == userId && doc.AddedAudioId == audioFile.Id
+        ).AnyAsync(cancellationToken);
+
+    public async Task<PagedList<AudioFile>> GetAllAsync(PlaylistParams playlistParams, CancellationToken cancellationToken)
+    {
+        if (playlistParams.Predicate == PlaylistPredicateEnum.Addings)
+        {
+            IMongoQueryable<AudioFile> query = _collection.AsQueryable()
+                .Where(playlist => playlist.AdderId == playlistParams.UserId)
+                .Join(_collectionAudios.AsQueryable<AudioFile>(),
+                    playlist => playlist.AddedAudioId,
+                    audio => audio.Id,
+                    (playlist, audio) => audio);
+
+            return await PagedList<AudioFile>
+                .CreatePagedListAsync(query, playlistParams.PageNumber, playlistParams.PageSize, cancellationToken);
+        }
+
+        return [];
+    }
+
+    public async Task<int> GetPlaylistsCount(string targetAudioName, CancellationToken cancellationToken)
+    {
+        int playlistCounts = await _collectionAudios.AsQueryable()
+            .Where(doc => doc.FileName == targetAudioName)
+            .Select(item => item.AdderCount)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return playlistCounts;
     }
 }
