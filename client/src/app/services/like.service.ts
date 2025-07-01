@@ -9,7 +9,7 @@ import { Audio } from '../models/audio.model';
 import { PaginationHandler } from '../extensions/paginationHandler';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root'    
 })
 export class LikeService {
   private _http = inject(HttpClient);
