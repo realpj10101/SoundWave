@@ -1,0 +1,25 @@
+{
+    "build": {
+      "builder": "NIXPACKS",
+      "nixpacksPlan": {
+        "phases": {
+          "install": {
+            "cmds": []
+          },
+          "build": {
+            "cmds": [
+              "cd backend/api",
+              "dotnet restore",
+              "dotnet publish -c Release -o ./publish"
+            ]
+          },
+          "start": {
+            "cmds": [
+              "dotnet ./backend/api/publish/api.dll"
+            ]
+          }
+        }
+      }
+    }
+  }
+  
