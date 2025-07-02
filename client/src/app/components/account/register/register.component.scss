@@ -42,9 +42,9 @@
 }
 
 .card {
-  background: rgba(17, 24, 39, 0.6); 
+  background: rgba(17, 24, 39, 0.6);
   backdrop-filter: blur(12px);
-  border: 1px solid #1f2937; 
+  border: 1px solid #1f2937;
   padding: 2rem;
   border-radius: 0.5rem;
   color: white;
@@ -73,6 +73,16 @@
     .input-group {
       display: flex;
       flex-direction: column;
+
+      .inp-cont {
+        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+
+        mat-error {
+          color: red;
+        }
+      }
 
       label {
         color: white;

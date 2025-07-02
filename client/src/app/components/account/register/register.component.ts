@@ -3,11 +3,13 @@ import { AccountService } from '../../../services/account.service';
 import { FormBuilder, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Register } from '../../../models/account.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-register',
   imports: [
-    FormsModule, ReactiveFormsModule
+    FormsModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'

@@ -2,11 +2,13 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AccountService } from '../../../services/account.service';
 import { LoggedInUser, Login } from '../../../models/account.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-login',
   imports: [
-    FormsModule, ReactiveFormsModule
+    FormsModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'

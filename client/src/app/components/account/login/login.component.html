@@ -13,23 +13,46 @@
         <p>Sign in to your account to continue</p>
       </div>
 
-      <form class="card-content">
+      <form class="card-content" >
         <div class="input-group">
           <label for="email">Email</label>
-          <input type="email" id="email" placeholder="Enter your email" [formControl]="EmailCtrl" required />
+          <div class="inp-cont">
+            <input type="email" id="email" placeholder="Enter your email" [formControl]="EmailCtrl" required />
+            @if (EmailCtrl.hasError("required")) {
+            <mat-error>This field is required</mat-error>
+            }
+            @else if (EmailCtrl.hasError("pattern")) {
+            <mat-error>Enter valid email</mat-error>
+            }
+            @else if (EmailCtrl.hasError("maxlength")) {
+            <mat-error>Max 50 characters</mat-error>
+            }
+          </div>
         </div>
 
         <div class="input-group">
           <label for="password">Password</label>
-          <div class="password-wrapper">
-            <input [type]="hide ? 'password' : 'text'" id="password" placeholder="Enter your password" [formControl]="PasswordCtrl" required />
-            <button type="button" (click)="togglePassword()" class="toggle-password">
-              @if (hide) {
-              <img src="images/eye.png" alt="Show" height="30px" width="30px" />
-              } @else {
-              <img src="images/eye-off.png" alt="Hide" height="30px" width="30px" />
-              }
-            </button>
+          <div class="inp-cont">
+            <div class="password-wrapper">
+              <input [type]="hide ? 'password' : 'text'" id="password" placeholder="Enter your password"
+                [formControl]="PasswordCtrl" required />
+              <button type="button" (click)="togglePassword()" class="toggle-password">
+                @if (hide) {
+                <img src="images/eye.png" alt="Show" height="30px" width="30px" />
+                } @else {
+                <img src="images/eye-off.png" alt="Hide" height="30px" width="30px" />
+                }
+              </button>
+            </div>
+            @if (PasswordCtrl.hasError("required")) {
+            <mat-error>This field is required</mat-error>
+            }
+            @else if (PasswordCtrl.hasError("minlength")) {
+            <mat-error>Min 8 characters</mat-error>
+            }
+            @else if (PasswordCtrl.hasError("maxlength")) {
+            <mat-error>Max 20 characters</mat-error>
+            }
           </div>
         </div>
 
@@ -37,7 +60,7 @@
           <a href="#">Forgot password?</a>
         </div>
 
-        <button type="submit" class="btn-primary" (click)="login()">Sign In</button>
+        <button type="submit" mat-raised-button class="btn-primary" [disabled]="loginFg.invalid" (click)="login()">Sign In</button>
 
         <div class="signup">
           <p>Don't have an account? <a href="account/register">Sign up</a></p>

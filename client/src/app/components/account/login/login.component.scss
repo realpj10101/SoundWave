@@ -75,6 +75,16 @@
       display: flex;
       flex-direction: column;
 
+      .inp-cont {
+        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+
+        mat-error {
+          color: red;
+        }
+      }
+
       label {
         color: #fff;
         font-size: 0.875rem;
