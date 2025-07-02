@@ -33,6 +33,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             if (isPlatformBrowser(platformId))
               localStorage.clear();
 
+            console.log(err.error);
+            
+
             router.navigate(['account/login'])
             break;
           case 403: // Forbiden
