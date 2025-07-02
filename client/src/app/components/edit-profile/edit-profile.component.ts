@@ -14,12 +14,13 @@ import { Member } from '../../models/member.model';
 import { take } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { AccountService } from '../../services/account.service';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-edit-profile',
   imports: [
     SidebarComponent, MatTabsModule, FormsModule, ReactiveFormsModule,
-    PhotoEditorComponent
+    PhotoEditorComponent, MatSlideToggleModule
   ],
   templateUrl: './edit-profile.component.html',
   styleUrl: './edit-profile.component.scss'
@@ -36,6 +37,8 @@ export class EditProfileComponent implements OnInit {
   member: Member | undefined;
   apiUrl: string = environment.apiUrl;
   loggedInUserSig: Signal<LoggedInUser | null> | undefined;
+  checked = false;
+  disabled = false;
 
   userFg = this._fB.group({
     bioCtrl: ''
