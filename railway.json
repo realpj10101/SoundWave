@@ -3,19 +3,15 @@
       "builder": "NIXPACKS",
       "nixpacksPlan": {
         "phases": {
-          "install": {
-            "cmds": []
-          },
           "build": {
             "cmds": [
-              "cd backend/api",
-              "dotnet restore",
-              "dotnet publish -c Release -o ./publish"
+              "dotnet restore ./backend/api/api.csproj",
+              "dotnet publish ./backend/api/api.csproj -c Release -o ./publish"
             ]
           },
           "start": {
             "cmds": [
-              "dotnet ./backend/api/publish/api.dll"
+              "dotnet ./publish/api.dll"
             ]
           }
         }

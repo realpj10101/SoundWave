@@ -1,0 +1,2 @@
+[nixpacks]
+packages = ["dotnet-sdk_9"]
