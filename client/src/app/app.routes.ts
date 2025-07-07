@@ -6,14 +6,32 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { authGuard } from './gurds/auth.guard';
+import { authLoggedInGuard } from './gaurds/auth-logged-in.guard';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
-    { path: 'account/login', component: LoginComponent },
-    { path: 'account/register', component: RegisterComponent },
-    { path: 'dashboard', component: DashboardComponent },
-    { path: 'upload', component: UploadComponent },
-    { path: 'settings', component: EditProfileComponent },
-    { path: 'profile', component: ProfileComponent }
+
+    {
+        path: '',
+        runGuardsAndResolvers: 'always',
+        canActivate: [authGuard],
+        canDeactivate: [],
+        children: [
+            { path: 'dashboard', component: DashboardComponent },
+            { path: 'upload', component: UploadComponent },
+            { path: 'settings', component: EditProfileComponent },
+            { path: 'profile', component: ProfileComponent }
+        ]
+    },
+    {
+        path: '',
+        runGuardsAndResolvers: 'always',
+        canActivate: [authLoggedInGuard],
+        children: [
+            { path: 'account/login', component: LoginComponent },
+            { path: 'account/register', component: RegisterComponent },
+        ]
+    }
 ];
