@@ -8,11 +8,12 @@ import { EditProfileComponent } from './components/edit-profile/edit-profile.com
 import { ProfileComponent } from './components/profile/profile.component';
 import { authGuard } from './gurds/auth.guard';
 import { authLoggedInGuard } from './gaurds/auth-logged-in.guard';
+import { ServerErrorComponent } from './components/errors/server-error/server-error.component';
+import { NotFoundComponent } from './components/errors/not-found/not-found.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
-
     {
         path: '',
         runGuardsAndResolvers: 'always',
@@ -33,5 +34,7 @@ export const routes: Routes = [
             { path: 'account/login', component: LoginComponent },
             { path: 'account/register', component: RegisterComponent },
         ]
-    }
+    },
+    { path: 'server-error', component: ServerErrorComponent },
+    { path: '**', component: NotFoundComponent, pathMatch: 'full' }
 ];
