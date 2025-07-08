@@ -6,4 +6,4 @@ public interface ITokenService
 {
     public Task<string?> CreateToken(AppUser appUser, CancellationToken cancellationToken);
     public Task<ObjectId?> GetActualUserIdAsync(string? hashedUserId, CancellationToken cancellationToken);
-}
+}   

@@ -33,7 +33,6 @@ public class TokenService : ITokenService
         _userManager = userManager;
     }
 
-
     public async Task<string?> CreateToken(AppUser appUser, CancellationToken cancellationToken)
     {
         _ = _key ?? throw new ArgumentNullException("_key cannot be null", nameof(_key));
