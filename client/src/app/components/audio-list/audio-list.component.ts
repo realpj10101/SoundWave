@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, PLATFORM_ID } from '@angular/core';
 import { AudioService } from '../../services/audio.service';
 import { Observable, Subscription } from 'rxjs';
 import { Audio } from '../../models/audio.model';
@@ -8,6 +8,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { PaginatedResult } from '../../models/helpers/paginatedResult';
 import { AudioCardComponent } from "../audio-card/audio-card.component";
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-audio-list',
@@ -20,6 +21,8 @@ import { AudioCardComponent } from "../audio-card/audio-card.component";
 })
 export class AudioListComponent {
   private audioService = inject(AudioService);
+  private _platformId = inject(PLATFORM_ID);
+
   audios$: Observable<Audio[] | null> | undefined;
   subscribed: Subscription | undefined;
   pagination: Pagination | undefined;
@@ -41,7 +44,15 @@ export class AudioListComponent {
   ngOnInit(): void {
     this.audioParams = new AudioParams();
 
-    this.getAll();
+    if (isPlatformBrowser(this._platformId)) {
+      const userStr = localStorage.getItem('loggedInUser');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user.token) {
+          this.getAll();
+        }
+      }
+    }
   }
 
   ngOnDestroy(): void {

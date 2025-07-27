@@ -38,9 +38,12 @@ export class ProfileComponent implements OnInit {
   private _accountService = inject(AccountService);
   private _audioService = inject(AudioService);
   private _playlistService = inject(PlaylistService);
+  private _platformId = inject(PLATFORM_ID);
+
   readonly likings = 'Liked';
   readonly myTracks = 'My Tracks';
   readonly playlist = 'Playlist'
+
   audioParams: AudioParams | undefined;
   audios: Audio[] | undefined;
   likeParams = new LikeParams();
@@ -64,7 +67,15 @@ export class ProfileComponent implements OnInit {
 
     this.audioParams = new AudioParams();
 
-    this.getUserAudios();
+    if (isPlatformBrowser(this._platformId)) {
+      const userStr = localStorage.getItem('loggedInUser');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user.token) {
+          this.getUserAudios();
+        }
+      }
+    }
   }
 
   getAll(): void {
