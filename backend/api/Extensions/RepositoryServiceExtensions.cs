@@ -21,6 +21,8 @@ public static class RepositoryServiceExtensions
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IAudioService, AudioService>();
         services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+        services.AddScoped<IAiNluService, AiNluService>();
+        services.AddScoped<IAiRecommendService, AiRecommendService>();
         #endregion
 
         return services;

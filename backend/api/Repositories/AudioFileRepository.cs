@@ -1,3 +1,4 @@
+using System.Data.Common;
 using api.DTOs;
 using api.DTOs.Account;
 using api.DTOs.Helpers;
@@ -128,7 +129,12 @@ public class AudioFileRepository : IAudioFileRepository
             FilePath: filePath,
             LikersCount: 0,
             AdderCount: 0,
-            UploadedAt: DateTime.UtcNow
+            UploadedAt: DateTime.UtcNow,
+            Genres: audio.Genres,
+            Moods: audio.Moods,
+            Energy: 0.0,
+            TempoBpm: 0,
+            Tags: audio.Tags
         );
 
         await _collection.InsertOneAsync(audioFile, null, cancellationToken);
@@ -156,4 +162,76 @@ public class AudioFileRepository : IAudioFileRepository
 
         return query;
     }
+
+    public async Task<List<AudioFile>> RecommendAsync(AiFilterDto f, CancellationToken cancellationToken)
+    {
+        var filter = Builders<AudioFile>.Filter.Empty;
+        var fb = Builders<AudioFile>.Filter;
+        var filters = new List<FilterDefinition<AudioFile>>();
+
+        if (f.Moods is { Count: > 0 })
+        {
+            filters.Add(fb.AnyIn(x => x.Moods, f.Moods));
+        }
+
+        if (f.Genres is { Count: > 0 })
+        {
+            filters.Add(fb.AnyIn(x => x.Genres, f.Genres));
+        }
+        
+        if (f.EnergyRange is not null)
+        {
+            filters.Add(
+                fb.Gte(item => item.Energy, f.EnergyRange.Value.Min) &
+                fb.Lte(item => item.Energy, f.EnergyRange.Value.Max)
+            );
+        }
+
+        if (f.TempoRange is not null)
+        {
+            filters.Add(
+                fb.Gte(item => item.TempoBpm, f.TempoRange.Value.Min) &
+                fb.Lte(item => item.TempoBpm, f.TempoRange.Value.Max)
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(f.Text))
+        {
+            var text = f.Text.Trim();
+
+            filters.Add(
+                fb.Or(
+                    fb.Regex(item => item.FileName, new MongoDB.Bson.BsonRegularExpression(text, "i")),
+                    fb.Regex(item => item.UploaderName, new MongoDB.Bson.BsonRegularExpression(text, "i")),
+                    fb.AnyIn(item => item.Tags!, text.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                )
+            );
+        }
+
+        var finalFilter = filters.Count > 0
+            ? fb.And(filters)
+            : fb.Empty;
+
+        var query = _collection.Find(finalFilter);
+
+        if (string.Equals(f.Sort, "popular", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.SortByDescending(item => item.LikersCount);
+        }
+        else if (string.Equals(f.Sort, "recent", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.SortByDescending(item => item.UploadedAt);
+        }
+        else
+        {
+            query = query.SortByDescending(item => item.LikersCount);
+        }
+
+        int limit = f.Limit > 0 ? f.Limit : 30;
+
+        return await query
+            .Limit(limit)
+            .ToListAsync(cancellationToken);
+    }
 }
+

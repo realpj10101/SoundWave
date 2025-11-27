@@ -13,5 +13,10 @@ public record AudioFile(
     string FilePath,
     int LikersCount,
     int AdderCount,
-    DateTime UploadedAt
+    DateTime UploadedAt,
+    List<string>? Genres,
+    List<string>? Moods,
+    double? Energy,
+    int? TempoBpm,
+    List<string> Tags
 );

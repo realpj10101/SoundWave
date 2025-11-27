@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using api.Extensions;
-using Microsoft.Extensions.FileProviders;
+using api.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,7 @@
 using api.Settings;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using OpenAI;
 
 namespace api.Extensions;
 
@@ -33,6 +34,18 @@ public static class ApplicationServiceExtensions
                     policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200"));
             });
         #endregion Cors
+
+        #region Groq Settings
+        services.Configure<GrokSettings>(configuration.GetSection("Groq"));
+
+        services.AddHttpClient("GroqClient", (sp, client) =>
+        {
+            var cfg = sp.GetRequiredService<IOptions<GrokSettings>>().Value;
+
+            client.BaseAddress = new Uri(cfg.BaseUrl); 
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {cfg.ApiKey}");
+        });
+        #endregion
 
         return services;
     }

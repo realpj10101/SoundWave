@@ -22,7 +22,7 @@ public class AudioFileController(
     [HttpPost("upload")]
     public async Task<ActionResult<Response>> Upload(
      [FromForm, AllowedFileExtensions, FileSize(250_000, 40_000_000)]
-     IFormFile file, CancellationToken cancellationToken
+     CreateAudioFile file, CancellationToken cancellationToken
     )
     {
         ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
@@ -30,12 +30,8 @@ public class AudioFileController(
         if (userId is null)
             return Unauthorized("You are not logged in. Please login again");
 
-        CreateAudioFile createAudioFile = new(
-            FileName: file.FileName,
-            File: file
-        );
 
-        OperationResult<AudioFile> opResult = await _audioFileRepository.UploadAsync(createAudioFile, userId, cancellationToken);
+        OperationResult<AudioFile> opResult = await _audioFileRepository.UploadAsync(file, userId, cancellationToken);
 
         return opResult.IsSuccess
             ? Ok(new Response(Message: "File uploaded successfully."))
