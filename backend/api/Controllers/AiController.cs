@@ -12,7 +12,7 @@ namespace api.Controllers;
 public class AiController(IAiRecommendService _aiRecommendService, ITokenService _tokenService) : BaseApiController
 {
     [HttpPost("recommend")]
-    public async Task<ActionResult<IEnumerable<AudioFileResponse>>> Recommend(AskDto askDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<AiRecommendResponse>>> Recommend(AskDto askDto, CancellationToken cancellationToken)
     {
         ObjectId? userId = await _tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
 
