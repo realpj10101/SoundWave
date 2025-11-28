@@ -22,8 +22,7 @@ export class AppComponent  {
   constructor() {
     if (isPlatformBrowser(this._platformId)) {
       const loggedInUserStr = localStorage.getItem('loggedInUser');
-      console.log(loggedInUserStr);
-
+      
       if (loggedInUserStr) {
         this._accountService.authorizeLoggedInUser();
 

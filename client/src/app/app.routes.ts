@@ -10,10 +10,12 @@ import { authGuard } from './gurds/auth.guard';
 import { authLoggedInGuard } from './gaurds/auth-logged-in.guard';
 import { ServerErrorComponent } from './components/errors/server-error/server-error.component';
 import { NotFoundComponent } from './components/errors/not-found/not-found.component';
+import { AiChatComponent } from './components/ai-chat/ai-chat.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
+    { path: 'chat', component: AiChatComponent},
     {
         path: '',
         runGuardsAndResolvers: 'always',

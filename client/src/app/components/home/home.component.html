@@ -1,4 +1,41 @@
 <section class="container">
+    @if (!isChatOpen) {
+    <button #chatButton (click)="openChat($event)" class="chat">
+        <img src="images/comment-black.png" alt="" height="25px">
+    </button>
+    }
+
+    @if (isChatOpen) {
+    <div #chatBox class="chat-box">
+        <div class="chat-header">
+            <div class="left-side">
+                <div class="left">
+                    <img src="images/sparkles.png" alt="" height="30px">
+                </div>
+                <div class="content">
+                    <p class="item-1">AI Music Assistant</p>
+                    <p class="item-2">Discover perfect music</p>
+                </div>
+            </div>
+            <button class="close-btn" (click)="closeChat()">✕</button>
+        </div>
+
+        <div class="chat-body">
+            <div class="top">
+                <div class="logo">
+                    <img src="images/comment.png" alt="">
+                </div>
+                <h4 class="start">Start a Conversation</h4>
+                <p class="desc">Chat with our AI to discover music that matches your mood, genre preferences, and vibe.
+                </p>
+                <button mat-raised-button class="chat-btn" routerLink="/chat">
+                    <span class="label">Open AI Chat</span>
+                    <mat-icon class="arrow">arrow_forward</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    }
     <div class="hero">
         <h1 class="gradient-text heading">
             Share Your Sound
