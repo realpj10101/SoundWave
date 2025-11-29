@@ -14,6 +14,9 @@ export class AiChatService {
   private readonly _baseApiUrl = environment.apiUrl + 'api/ai/';
 
   recommend(request: UserPropmt): Observable<AiRecommend> {
+    console.log(request);
+    
+
     return this._http.post<AiRecommend>(this._baseApiUrl + 'recommend', request);
   }
 }

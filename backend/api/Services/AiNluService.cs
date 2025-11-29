@@ -62,8 +62,6 @@ public class AiNluService : IAiNluService
 
         using var response = await _client.PostAsJsonAsync("chat/completions", payload, cancellationToken);
 
-        Console.WriteLine(response);
-
         var body = await response.Content.ReadAsStringAsync(cancellationToken);
 
         Console.WriteLine("Groq body: " + body);
@@ -84,18 +82,24 @@ public class AiNluService : IAiNluService
         using var doc = JsonDocument.Parse(json);
         var root = doc.RootElement;
 
-        var filterElements = root.GetProperty("filters");
+        var filtersElement = root.GetProperty("filters");
 
-        string? message = root.TryGetProperty("message", out var msgEl) && 
-            msgEl.ValueKind == JsonValueKind.String ? msgEl.GetString() : null;
+        string? message = root.TryGetProperty("message", out var msgEl) &&
+                   msgEl.ValueKind == JsonValueKind.String
+                   ? msgEl.GetString()
+                   : null;
 
-        List<string>? arr(JsonElement e, string name)
-            => e.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.Array
-            ? p.EnumerateArray().Select(item => item.GetString()!).Where(item => !string.IsNullOrWhiteSpace(item)).ToList() : null;
-        
-        (double Min, double Max)? dblRange(JsonElement e, string name)
+        List<string>? Arr(string name)
+         => filtersElement.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.Array
+             ? p.EnumerateArray()
+                 .Select(item => item.GetString())
+                 .Where(s => !string.IsNullOrWhiteSpace(s))
+                 .ToList()!
+             : null;
+
+        (double Min, double Max)? DblRange(string name)
         {
-            if (!e.TryGetProperty(name, out var p) || p.ValueKind != JsonValueKind.Object)
+            if (!filtersElement.TryGetProperty(name, out var p) || p.ValueKind != JsonValueKind.Object)
                 return null;
 
             if (!p.TryGetProperty("min", out var min) || min.ValueKind != JsonValueKind.Number)
@@ -107,9 +111,9 @@ public class AiNluService : IAiNluService
             return (min.GetDouble(), max.GetDouble());
         }
 
-        (int Min, int Max)? intRange(JsonElement e, string name)
+        (int Min, int Max)? IntRange(string name)
         {
-            if (!e.TryGetProperty(name, out var p) || p.ValueKind != JsonValueKind.Object)
+            if (!filtersElement.TryGetProperty(name, out var p) || p.ValueKind != JsonValueKind.Object)
                 return null;
 
             if (!p.TryGetProperty("min", out var min) || min.ValueKind != JsonValueKind.Number)
@@ -121,23 +125,28 @@ public class AiNluService : IAiNluService
             return (min.GetInt32(), max.GetInt32());
         }
 
-        string? getStr(string name)
-            => root.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.String ? p.GetString() : null;
+        string? GetStr(string name)
+         => filtersElement.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.String
+             ? p.GetString()
+             : null;
 
-        int getInt(string name, int def)
-           => root.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.Number ? p.GetInt32() : def;
+        int GetInt(string name, int def)
+            => filtersElement.TryGetProperty(name, out var p) && p.ValueKind == JsonValueKind.Number
+                ? p.GetInt32()
+                : def;
+
 
         return new AiFilterDto(
-            Moods: arr(root, "moods"),
-            Genres: arr(root, "genres"),
-            EnergyRange: dblRange(root, "energyRange"),
-            TempoRange: intRange(root, "tempoRange"),
-            Language: getStr("language"),
-            YearRange: intRange(root, "yearRange"),
-            Text: getStr("text"),
-            Limit: getInt("limit", 30),
-            Sort: getStr("sort"),
+            Moods: Arr("moods"),
+            Genres: Arr("genres"),
+            EnergyRange: DblRange("energyRange"),
+            TempoRange: IntRange("tempoRange"),
+            Language: GetStr("language"),
+            YearRange: IntRange("yearRange"),
+            Text: GetStr("text"),
+            Limit: GetInt("limit", 30),
+            Sort: GetStr("sort"),
             Message: message
-        );
+         );
     }
 }

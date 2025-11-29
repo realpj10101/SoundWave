@@ -44,6 +44,8 @@ export class AiChatComponent {
   isListening = signal<boolean>(false);
 
   private pushUser(text: string): void {
+    console.log(text);
+    
     this.history.update(h => [...h, { role: 'user', text }]);
     this.loading.set(true);
     this.scrollToBottom();
@@ -53,8 +55,9 @@ export class AiChatComponent {
     let req = new UserPropmt();
     req.prompt = prompt;
 
-    req.prompt = this.SearchCtrl.value;
-
+    console.log(req.prompt);
+        
+    
     this._aiService.recommend(req).subscribe({
       next: (res) => {
         this.loading.set(false);
