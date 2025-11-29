@@ -1,1 +1,111 @@
-<p>ai-chat works!</p>
+<div class="ai-chat-room">
+    <div #historyEl class="history">
+        <div class="history-inner">
+            @for (msg of history(); track $index) {
+            <div class="message-row" [ngClass]="{ 'user': msg.role === 'user', 'agent': msg.role === 'agent' }">
+                @if (msg.role === 'agent') {
+                <div class="avatar agent-avatar">
+                    <span class="bot-icon">🤖</span>
+                </div>
+                }
+
+                <div class="bubble-wrapper" [ngClass]="{ 'user-order': msg.role === 'user' }">
+                    <div class="bubble" [ngClass]="msg.role">
+                        <p class="bubble-text">
+                            {{ msg.text }}
+                        </p>
+                    </div>
+
+                    @if (msg.meta?.items?.length) {
+                    <div class="tracks">
+                        @for (track of msg.meta!.items; track track.filePath) {
+                        <div class="track-card">
+                            <div class="track-main">
+                                <div class="track-icon-wrap">
+                                    🎵
+                                </div>
+                                <div class="track-info">
+                                    <h4 class="track-title">
+                                        {{ track.fileName }}
+                                    </h4>
+                                    <p class="track-artist">
+                                        {{ track.uploaderName }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="track-tags">
+                                <span class="tag tag-orange">
+                                    Likes: {{ track.likersCount }}
+                                </span>
+                                <span class="tag tag-red">
+                                    Added: {{ track.addersCount }}
+                                </span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                @if (msg.role === 'user') {
+                <div class="avatar user-avatar">
+                    <span class="user-icon">👤</span>
+                </div>
+                }
+            </div>
+            }
+
+            @if (loading()) {
+            <div class="message-row agent">
+                <div class="avatar agent-avatar">
+                    <span class="bot-icon">🤖</span>
+                </div>
+                <div class="bubble-wrapper">
+                    <div class="bubble agent loading">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="input-bar">
+        <div class="input-inner">
+            <form class="input-row" [formGroup]="submitFg" (ngSubmit)="onSubmit()">
+                <div class="textarea-wrapper">
+                    <textarea #q formControlName="searchCtrl" (keydown)="onKeyDown($event)" rows="1"
+                        placeholder="Ask me about music, moods, genres, or describe what you're looking for..."></textarea>
+                </div>
+
+                <button type="button" class="icon-btn mic-btn" (click)="onVoiceInput()"
+                    [class.listening]="isListening()">
+                    <span *ngIf="!isListening()">🎙️</span>
+                    <span *ngIf="isListening()">🔇</span>
+                </button>
+
+                <button type="submit" class="icon-btn send-btn"
+                    [disabled]="loading() || !((SearchCtrl.value || '').toString().trim())">
+                    ➤
+                </button>
+            </form>
+
+            <div class="quick-suggestions">
+                <button type="button" (click)="setSuggestion('Show me chill music')">
+                    Chill vibes
+                </button>
+                <button type="button" (click)="setSuggestion('Find energetic tracks')">
+                    Energetic
+                </button>
+                <button type="button" (click)="setSuggestion('Recommend ambient music')">
+                    Ambient
+                </button>
+                <button type="button" (click)="setSuggestion('I want workout music')">
+                    Workout
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
