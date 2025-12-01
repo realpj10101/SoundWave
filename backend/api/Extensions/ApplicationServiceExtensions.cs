@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using api.Settings;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -42,8 +43,15 @@ public static class ApplicationServiceExtensions
         {
             var cfg = sp.GetRequiredService<IOptions<GrokSettings>>().Value;
 
-            client.BaseAddress = new Uri(cfg.BaseUrl); 
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {cfg.ApiKey}");
+            var baseUrl = cfg.BaseUrl.TrimEnd('/') + "/";
+
+            client.BaseAddress = new Uri(baseUrl);
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", cfg.ApiKey);
+
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
         });
         #endregion
 
