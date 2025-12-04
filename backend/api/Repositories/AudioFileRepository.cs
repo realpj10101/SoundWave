@@ -60,7 +60,7 @@ public class AudioFileRepository : IAudioFileRepository
             .Select(item => item.NormalizedUserName)
             .FirstOrDefaultAsync(cancellationToken);
 
-        IMongoQueryable<AudioFile> query = _collection.AsQueryable();
+        IQueryable<AudioFile> query = _collection.AsQueryable();
 
         query = query.Where(doc => doc.UploaderName == userName);
 
@@ -146,9 +146,9 @@ public class AudioFileRepository : IAudioFileRepository
         );
     }
 
-    private IMongoQueryable<AudioFile> CreateQuery(AudioFileParams audioFileParams)
+    private IQueryable<AudioFile> CreateQuery(AudioFileParams audioFileParams)
     {
-        IMongoQueryable<AudioFile> query = _collection.AsQueryable();
+        IQueryable<AudioFile> query = _collection.AsQueryable();
 
         if (!string.IsNullOrEmpty(audioFileParams.Search))
         {

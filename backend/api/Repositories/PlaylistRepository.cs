@@ -193,7 +193,7 @@ public class PlaylistRepository : IPlaylistRepository
     {
         if (playlistParams.Predicate == PlaylistPredicateEnum.Addings)
         {
-            IMongoQueryable<AudioFile> query = _collection.AsQueryable()
+            IQueryable<AudioFile> query = _collection.AsQueryable()
                 .Where(playlist => playlist.AdderId == playlistParams.UserId)
                 .Join(_collectionAudios.AsQueryable<AudioFile>(),
                     playlist => playlist.AddedAudioId,

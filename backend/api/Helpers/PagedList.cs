@@ -30,7 +30,7 @@ public class PagedList<T> : List<T> // Generic (Type Agnostic)
     /// <param name="pageSize"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>PageList<T> object with its prop values</returns>
-    public static async Task<PagedList<T>> CreatePagedListAsync(IMongoQueryable<T>? query, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public static async Task<PagedList<T>> CreatePagedListAsync(IQueryable<T>? query, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         int count = await query.CountAsync<T>(cancellationToken);
 

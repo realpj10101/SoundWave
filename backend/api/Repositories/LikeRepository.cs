@@ -198,7 +198,7 @@ public class LikeRepository : ILikeRepository
     {
         if (likeParams.Predicate == LikePredicateEnum.Likings)
         {
-            IMongoQueryable<AudioFile> query = _collection.AsQueryable<Like>()
+            IQueryable<AudioFile> query = _collection.AsQueryable<Like>()
                 .Where(like => like.LikerId == likeParams.UserId)
                 .Join(_collectionAudios.AsQueryable<AudioFile>(),
                     like => like.LikedAudioId,
