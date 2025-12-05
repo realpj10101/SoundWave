@@ -1,152 +1,336 @@
-.upload-container {
-  padding: 2rem;
+/* upload.component.css */
+:host {
+  display: block;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* background example: you probably have a background image on body/html */
+.upload-root {
   display: flex;
+  min-height: 100vh;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+/* main content */
+.content {
+  flex: 1;
+  padding: 24px;
+}
+
+.container {
+  max-width: 940px;
+  margin: 0 auto;
+}
+
+/* header */
+.header h1 {
+  font-size: 28px;
+  margin: 0 0 6px 0;
+}
+
+.header .subtitle {
+  color: #cfcfcf;
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+/* card: semi-transparent + blur to show background */
+.card {
+  background: rgba(12, 12, 13, 0.45); /* darker translucent */
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+}
+
+.card-head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.card-head .muted {
+  color: #bdbdbd;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* body inside card */
+.card-body {
+  margin-top: 12px;
+  display: block;
+  gap: 12px;
+}
+
+/* dropzone */
+.dropzone {
+  border: 2px dashed rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 22px;
+  text-align: center;
+  transition: all .15s ease;
+  background: linear-gradient(180deg, rgba(255,255,255,0.008), transparent);
+}
+
+.dropzone.active {
+  border-color: #ff8a00;
+  background: rgba(255, 138, 0, 0.06);
+}
+
+.dropzone.has-file {
+  border-color: #2ecc71;
+  background: rgba(46, 204, 113, 0.04);
+}
+
+.empty {
+  color: #d1d1d1;
+}
+
+.empty .cloud {
+  font-size: 36px;
+}
+
+.empty .lead {
+  font-weight: 600;
+  color: #fff;
+  margin-top: 8px;
+}
+
+.empty .muted {
+  color: #bdbdbd;
+  margin-top: 6px;
+}
+
+.empty .actions {
+  margin-top: 12px;
+}
+
+/* file info center */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   justify-content: center;
+  flex-wrap: wrap;
+}
 
-  .mobile-toggle {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 50;
-    background: #1f2937;
-    color: #f97316;
-    border: none;
-    padding: 0.5rem 1rem;
-    font-size: 1.5rem;
-    // display: none;
-    border-radius: 0.375rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-  }
+.file-info .icon {
+  font-size: 28px;
+}
 
+.file-info .meta .name {
+  font-weight: 600;
+  color: #fff;
+}
 
-  .upload-inner {
-    width: 100%;
-    max-width: 700px;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
+.file-info .meta .size {
+  color: #bdbdbd;
+  font-size: 13px;
+}
 
-  .page-title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #fff;
-    margin: 0;
-  }
+/* cover area */
+.cover-area {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-  .page-sub {
-    color: #aaa;
-    margin-top: -1rem;
-  }
+/* preview */
+.preview {
+  width: 140px;
+  height: 140px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.04);
+}
 
-  .upload-card {
-    background-color: #1e1e1e;
-    border: 1px solid #333;
-    color: #fff;
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
-    mat-card-title,
-    mat-card-subtitle {
-      color: #fff;
-    }
+.preview-actions {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+}
 
-    mat-card-subtitle {
-      color: #999;
-    }
-  }
+/* cover placeholder */
+.cover-placeholder {
+  width: 140px;
+  height: 140px;
+  border: 2px dashed rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+  color: #e6e6e6;
+}
 
-  .drop-zone {
-    border: 2px dashed #555;
-    border-radius: 10px;
-    padding: 3rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    background-color: #2b2b2b;
+.cover-placeholder svg {
+  opacity: 0.95;
+}
 
-    &.file-over {
-      border-color: #f97316;
-      background-color: rgba(249, 115, 22, 0.1);
-    }
+.cover-placeholder .placeholder-text strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
 
-    .placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
+.cover-help {
+  font-size: 13px;
+  color: #bdbdbd;
+}
 
-      .choose-button {
-        background-color: white;
-        color: #f97316;
-        border: #f97316 solid 2px;
-        border-radius: 5px;
+/* fields */
+.field {
+  margin-top: 12px;
+}
 
-        &:hover {
-          background-color: #f97316;
-          color: white;
-        }
-      }
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
 
-      p {
-        margin: 0;
-        color: #bbb;
-      }
+.input,
+.textarea {
+  width: 100%;
+  padding: 10px;
+  background: rgba(8,8,9,0.5);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: #fff;
+  border-radius: 8px;
+  outline: none;
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
 
-      button {
-        margin-top: 0.5rem;
-      }
-    }
+.input:focus,
+.textarea:focus {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+  border-color: rgba(255,255,255,0.12);
+}
 
-    .uploaded-info {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
 
-      mat-icon.icon-lg {
-        font-size: 36px;
-        color: #4ade80;
-      }
+/* badges */
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
 
-      .file-meta {
-        flex: 1;
-        text-align: left;
+.badge {
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: transparent;
+  color: #dcdcdc;
+  cursor: pointer;
+  transition: transform .08s ease;
+}
 
-        .name {
-          font-weight: 600;
-          color: #fff;
-        }
+.badge:hover { transform: translateY(-2px); }
 
-        .size {
-          font-size: 0.9rem;
-          color: #aaa;
-        }
-      }
+.badge.active {
+  background: linear-gradient(90deg, #ff8a00, #ff3d00);
+  color: #fff;
+  border: none;
+}
 
-      button {
-        align-self: flex-start;
-      }
-    }
-  }
+/* tags */
+.tag-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 
-  .btn-group {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
+.tag-list {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-    .cancel-btn {
-      border-radius: 5px;
-      background-color: #999;
-    }
+.tag {
+  background: rgba(255,255,255,0.03);
+  padding: 6px 8px;
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .upload-btn {
-      color: #f97316;
-      border: #f97316 solid 2px;
-      border-radius: 5px;
+.tag .rm {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+}
 
-      &:hover {
-        background-color: #f97316;
-        color: white;
-      }
-    }
-  }
+/* buttons */
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.small {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #ff8a00, #ff3d00);
+  border: none;
+  color: #fff;
+}
+
+.btn.outline {
+  border: 1px solid rgba(255,138,0,0.9);
+  color: #ffb277;
+  background: transparent;
+}
+
+.btn.destructive {
+  background: #8b0000;
+  border: none;
+  color: #fff;
+}
+
+.actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 10px;
 }

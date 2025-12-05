@@ -13,7 +13,60 @@ public class PhotoService(
 {
     #region Constructor and variables
 
-    const string wwwRootUrl = "wwwroot/";
+    const string WwwRootUrl = "wwwroot/";
+
+    public async Task<string[]?> AddMainPhotoToDiskAsync(IFormFile formFile, ObjectId userId)
+    {
+        // copy file/s to the folder
+        if (formFile.Length > 0) // 301kb => 301_000 byte
+        {
+            #region Resize and/or Store Images to Disk
+
+            // await _photoModifyService.Crop(formFile, userId, 450, 800);
+            // await _photoModifyService.Crop_Square(formFile, userId, 400);
+            // await _photoModifyService.CropWithOriginalSide_Square(formFile, userId);
+            // await _photoModifyService.ResizeByPixel(formFile, userId, 500, 800);
+            // await _photoModifyService.ResizeByPixel_Square(formFile, userId, 500);
+            // await _photoModifyService.ResizeImageByScale(formFile, userId);
+
+            string filePath_165_sq = await _photoModifyService.ResizeByPixel_Square(
+              formFile, userId, side: 165
+            ); // navbar & thumbnail
+            string filePath_256_sq = await _photoModifyService.ResizeByPixel_Square(formFile, userId, side: 256); // card
+            string filePath_enlarged = await _photoModifyService.ResizeImageByScale(
+              formFile, userId, (int)DimensionsEnum._4_3_800x600
+            ); // enlarged photo
+               // string filePath_enlarged2 = await _photoModifyService.ResizeImageByScale(formFile, userId, (int)DimensionsEnum._4_3_1280x960); // enlarged photo
+
+
+            // if conversion fails
+            if (filePath_165_sq is null || filePath_256_sq is null || filePath_enlarged is null)
+            {
+                _logger.LogError("Photo addition failed. The returned filePath is null which is not allowed.");
+                return null;
+            }
+
+            #endregion Resize and Create Images to Disk
+
+            #region Create the photo URLs and return the result
+
+            // // generate "wwwroot/storage/photos/user-id/resize-pixel-square/128x128/my-photo.jpg"
+            return
+            [
+              filePath_165_sq.Split(WwwRootUrl)[1], // 0
+              filePath_256_sq.Split(WwwRootUrl)[1], // 1
+              filePath_enlarged.Split(WwwRootUrl)[1] // 2
+
+            // string name = "amirRshaghaghi";
+            // string[] names = name.Split("R"); // ["amir", "shaghaghi"];
+            // names[0] // "amir"
+            ];
+
+            #endregion
+        }
+
+        return null;
+    }
 
     #endregion
 
@@ -59,9 +112,9 @@ public class PhotoService(
             #region Create the photo URLs and return the result
             // // generate "wwwroot/storage/photos/user-id/resize-pixel-square/128x128/my-photo.jpg"
             return [
-                filePath_165_sq.Split(wwwRootUrl)[1], // 0
-                filePath_256_sq.Split(wwwRootUrl)[1], // 1
-                filePath_enlarged.Split(wwwRootUrl)[1] // 2
+                filePath_165_sq.Split(WwwRootUrl)[1], // 0
+                filePath_256_sq.Split(WwwRootUrl)[1], // 1
+                filePath_enlarged.Split(WwwRootUrl)[1] // 2
 
                 // string name = "amirRshaghaghi";
                 // string[] names = name.Split("R"); // ["amir", "shaghaghi"];
@@ -71,6 +124,26 @@ public class PhotoService(
         }
 
         return null;
+    }
+
+    public async Task<bool> DeleteMainPhotoFormDiskAsync(MainPhoto photo)
+    {
+        List<string> photoPaths = [];
+
+        photoPaths.Add(photo.Url_165);
+        photoPaths.Add(photo.Url_256);
+        photoPaths.Add(photo.Url_enlarged);
+
+        foreach (string photoPath in photoPaths)
+            if (File.Exists(WwwRootUrl + photoPath))
+            {
+                // Delete the file on a background thread and await the task
+                await Task.Run(() => File.Delete(WwwRootUrl + photoPath));
+            }
+            else
+                return false;
+
+        return true;
     }
 
     /// <summary>
@@ -88,10 +161,10 @@ public class PhotoService(
 
         foreach (string photoPath in photoPaths)
         {
-            if (File.Exists(wwwRootUrl + photoPath))
+            if (File.Exists(WwwRootUrl + photoPath))
             {
                 // Delete the file on a background thread and await the task
-                await Task.Run(() => File.Delete(wwwRootUrl + photoPath));
+                await Task.Run(() => File.Delete(WwwRootUrl + photoPath));
             }
             else
                 return false;

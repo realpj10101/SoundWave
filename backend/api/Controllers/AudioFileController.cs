@@ -30,7 +30,6 @@ public class AudioFileController(
         if (userId is null)
             return Unauthorized("You are not logged in. Please login again");
 
-
         OperationResult<AudioFile> opResult = await _audioFileRepository.UploadAsync(file, userId, cancellationToken);
 
         return opResult.IsSuccess

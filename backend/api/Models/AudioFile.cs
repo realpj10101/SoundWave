@@ -11,6 +11,7 @@ public record AudioFile(
     string UploaderName,
     string FileName,
     string FilePath,
+    MainPhoto CoverPath,
     int LikersCount,
     int AdderCount,
     DateTime UploadedAt,

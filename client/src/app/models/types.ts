@@ -5,3 +5,7 @@ export type Bubble = {
     text: string | undefined;
     meta?: Partial<AiRecommend>;
 }
+
+
+export const GENRES = ['rock', 'pop', 'metal', 'electronic', 'hiphop', 'jazz'];
+export const MOODS = ['energetic', 'dark', 'happy', 'calm', 'melancholic'];

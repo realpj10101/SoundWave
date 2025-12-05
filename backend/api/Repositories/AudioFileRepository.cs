@@ -19,14 +19,16 @@ public class AudioFileRepository : IAudioFileRepository
     private readonly IMongoCollection<AudioFile> _collection;
     private readonly IMongoCollection<AppUser>? _collectionUsers;
     private readonly IAudioService _audioservice;
+    private readonly IPhotoService _photoService;
 
-    public AudioFileRepository(IMongoClient client, IMyMongoDbSettings dbSettings, IAudioService audioService)
+    public AudioFileRepository(IMongoClient client, IMyMongoDbSettings dbSettings, IAudioService audioService, IPhotoService photoService)
     {
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collection = database.GetCollection<AudioFile>(AppVariablesExtensions.CollectionTracks);
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
 
         _audioservice = audioService;
+        _photoService = photoService;
     }
 
     public async Task<PagedList<AudioFile>?> GetAllAsync(AudioFileParams audioFileParams, CancellationToken cancellationToken)
@@ -116,17 +118,32 @@ public class AudioFileRepository : IAudioFileRepository
             return new OperationResult<AudioFile>(
                 false,
                 Error: new CustomError(
-                    Code: ErrorCode.SaveFailed,
+                    Code: ErrorCode.SaveAudioFailed,
                     Message: "Saving audio to disk failed"
                 )
             );
         }
 
+        ObjectId trackId = ObjectId.GenerateNewId();
+
+        string[]? photoUrls = await _photoService.AddMainPhotoToDiskAsync(audio.CoverFile, trackId);
+        if (photoUrls is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.SavePhotoFailed,
+                    "Saving cover to disk failed"
+                )
+            );
+        }
+
         AudioFile audioFile = new(
-            Id: ObjectId.GenerateNewId(),
+            Id: trackId,
             UploaderName: userName,
             FileName: audio.FileName,
             FilePath: filePath,
+            CoverPath: Mappers.ConvertMainPhotoUrlsToPhoto(photoUrls),
             LikersCount: 0,
             AdderCount: 0,
             UploadedAt: DateTime.UtcNow,
@@ -178,7 +195,7 @@ public class AudioFileRepository : IAudioFileRepository
         {
             filters.Add(fb.AnyIn(x => x.Genres, f.Genres));
         }
-        
+
         if (f.EnergyRange is not null)
         {
             filters.Add(

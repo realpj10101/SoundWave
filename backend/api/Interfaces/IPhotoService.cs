@@ -5,7 +5,9 @@ namespace api.Interfaces;
 
 public interface IPhotoService
 {
+    public Task<string[]?> AddMainPhotoToDiskAsync(IFormFile file, ObjectId userId);
     public Task<string[]?> AddPhotoToDiskAsync(IFormFile file, ObjectId userId);
 
     public Task<bool> DeletePhotoFromDisk(Photo photo);
+    public Task<bool> DeleteMainPhotoFormDiskAsync(MainPhoto photo);
 }
