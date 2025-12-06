@@ -97,27 +97,75 @@
 
     .like-section {
       display: flex;
+      align-items: center;
 
-      .like {
-        background-color: #1f2937;
+      .like-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
         border: none;
-        border-radius: 5px;
         cursor: pointer;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        color: inherit;
+        transition: color 0.2s;
+
+        .like-icon {
+          height: 25px;
+          transition: filter 0.2s;
+        }
+
+        .like-count {
+          transition: color 0.2s;
+          color: #9ca3af;
+        }
 
         &:hover {
-          background-color: #ea580c;
+          color: #ffffff;
+        }
+
+        &:hover .like-icon {
+          filter: brightness(0) invert(1);
         }
       }
     }
 
     .add-section {
       display: flex;
+      align-items: center;
 
-      .add {
-        background-color: #1f2937;
+      .add-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem; 
+        background: transparent;
         border: none;
-        border-radius: 5px;
         cursor: pointer;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        color: inherit;
+        transition: color 0.2s;
+
+        .add-icon {
+          height: 25px;
+          transition: filter 0.2s;
+        }
+
+        .add-count {
+          transition: color 0.2s;
+          color: #9ca3af;
+        }
+
+        &:hover {
+          color: #ffffff;    
+        }
+
+        &:hover .add-icon {
+          filter: brightness(0) invert(1); 
+        }
       }
     }
   }
