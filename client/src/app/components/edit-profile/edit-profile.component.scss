@@ -6,15 +6,17 @@
 
   .mobile-toggle {
     position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     top: 1rem;
-    left: 1rem;
+    left: 0.5rem;
     z-index: 50;
     background: #1f2937;
     color: #f97316;
     border: none;
     padding: 0.5rem 1rem;
     font-size: 1.5rem;
-    // display: none;
     border-radius: 0.375rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     cursor: pointer;

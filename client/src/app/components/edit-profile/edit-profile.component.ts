@@ -15,12 +15,13 @@ import { take } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { AccountService } from '../../services/account.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-edit-profile',
   imports: [
     SidebarComponent, MatTabsModule, FormsModule, ReactiveFormsModule,
-    PhotoEditorComponent, MatSlideToggleModule
+    PhotoEditorComponent, MatSlideToggleModule, MatIconModule
   ],
   templateUrl: './edit-profile.component.html',
   styleUrl: './edit-profile.component.scss'

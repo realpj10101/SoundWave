@@ -29,7 +29,7 @@ export class UploadComponent {
   private _uploadService = inject(UploadService);
   private _fB = inject(FormBuilder);
 
-  isSideBarOpen = false;
+  isSidebarOpen = false;
   uploadedFile: File | null = null;
   coverImage: File | null | undefined;
   coverPreview = '';
@@ -70,11 +70,11 @@ export class UploadComponent {
   }
 
   toggleSidebar(): void {
-    this.isSideBarOpen = !this.isSideBarOpen;
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
 
   closeSideBar(): void {
-    this.isSideBarOpen = false;
+    this.isSidebarOpen = false;
   }
 
   toggleGenre(g: string): void {

@@ -22,12 +22,13 @@ import { AccountService } from '../../services/account.service';
 import { environment } from '../../../environments/environment.development';
 import { PlaylistParams } from '../../models/helpers/playlist-params';
 import { PlaylistService } from '../../services/playlist.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-profile',
   imports: [
     SidebarComponent, MatButtonModule, MatTabsModule,
-    AudioCardComponent, RouterModule
+    AudioCardComponent, RouterModule, MatIconModule
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'

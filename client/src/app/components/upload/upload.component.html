@@ -1,9 +1,17 @@
 <!-- upload.component.html -->
-<app-sidebar [isOpen]="isSideBarOpen" (toggle)="toggleSidebar()" />
+<app-sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()" />
 
+@if (!isSidebarOpen) {
 <button class="mobile-toggle" (click)="toggleSidebar()">
-  ☰
+  <mat-icon>menu</mat-icon>
 </button>
+}
+@else {
+<button class="mobile-toggle" (click)="toggleSidebar()">
+  <mat-icon>close</mat-icon>
+</button>
+}
+
 <div class="upload-root">
   <main class="content">
     <div class="container">

@@ -10,11 +10,12 @@ import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@ang
 import { PaginatedResult } from '../../models/helpers/paginatedResult';
 import { AudioCardComponent } from "../audio-card/audio-card.component";
 import { isPlatformBrowser } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
-    SidebarComponent, AudioCardComponent, MatPaginatorModule, FormsModule, ReactiveFormsModule
+    SidebarComponent, AudioCardComponent, MatPaginatorModule, FormsModule, ReactiveFormsModule, MatIconModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

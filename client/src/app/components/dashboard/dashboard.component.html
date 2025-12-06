@@ -1,12 +1,19 @@
 <div class="dashboard-layout">
   <app-sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()"></app-sidebar>
 
-  <!-- Mobile toggle button -->
+  @if (!isSidebarOpen) {
   <button class="mobile-toggle" (click)="toggleSidebar()">
-    ☰
+    <mat-icon>menu</mat-icon>
   </button>
+  }
+  @else {
+  <button class="mobile-toggle" (click)="toggleSidebar()">
+    <mat-icon>close</mat-icon>
+  </button>
+  }
 
-  <div (click)="closeSideBar()" class="container"> 
+
+  <div (click)="closeSideBar()" class="container">
     <section class="search">
       <div class="info">
         <h1>Discover Music</h1>

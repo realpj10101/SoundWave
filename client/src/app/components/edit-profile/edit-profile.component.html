@@ -1,10 +1,18 @@
 <section class="container">
     <app-sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()"></app-sidebar>
 
-    <button class="mobile-toggle" (click)="toggleSidebar()">
-        ☰
-    </button>
 
+    @if (!isSidebarOpen) {
+    <button class="mobile-toggle" (click)="toggleSidebar()">
+        <mat-icon>menu</mat-icon>
+    </button>
+    }
+    @else {
+    <button class="mobile-toggle" (click)="toggleSidebar()">
+        <mat-icon>close</mat-icon>
+    </button>
+    }
+    
     <div class="top">
         <h1 class="settings">Settings</h1>
         <p class="details">Manage your account settings and preferences</p>
