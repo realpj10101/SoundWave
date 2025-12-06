@@ -12,8 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { GENRES, MOODS } from '../../models/types';
-import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
-import { generate } from 'rxjs';
+import { UploadService } from '../../services/upload.service';
 
 @Component({
   selector: 'app-upload',
@@ -26,11 +25,11 @@ import { generate } from 'rxjs';
   styleUrl: './upload.component.scss'
 })
 export class UploadComponent {
-  private _http = inject(HttpClient);
   private _snackbar = inject(MatSnackBar);
-  private _accountService = inject(AccountService);
+  private _uploadService = inject(UploadService);
   private _fB = inject(FormBuilder);
 
+  isSideBarOpen = false;
   uploadedFile: File | null = null;
   coverImage: File | null | undefined;
   coverPreview = '';
@@ -68,6 +67,14 @@ export class UploadComponent {
 
   get TagsInputCtrl(): FormControl {
     return this.submitFg.get('tagsInputCtrl') as FormControl;
+  }
+
+  toggleSidebar(): void {
+    this.isSideBarOpen = !this.isSideBarOpen;
+  }
+
+  closeSideBar(): void {
+    this.isSideBarOpen = false;
   }
 
   toggleGenre(g: string): void {
@@ -202,7 +209,7 @@ export class UploadComponent {
     (this.TagsCtrl.value || []).forEach((t: string) => fd.append('tags', t));
 
     this.uploadingProgress = 0;
-    this._http.post(environment.apiUrl + 'api/audiofile/upload', fd).subscribe({
+    this._uploadService.upload(fd).subscribe({
       next: (res) => {
         this._snackbar.open('Upload successfull', 'Close', {
           duration: 7000,

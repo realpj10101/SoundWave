@@ -1,4 +1,9 @@
 <!-- upload.component.html -->
+<app-sidebar [isOpen]="isSideBarOpen" (toggle)="toggleSidebar()" />
+
+<button class="mobile-toggle" (click)="toggleSidebar()">
+  ☰
+</button>
 <div class="upload-root">
   <main class="content">
     <div class="container">
@@ -17,8 +22,8 @@
 
           <div class="card-body">
             <div class="dropzone" [class.active]="dragActive" [class.has-file]="uploadedFile"
-                 (dragenter)="handleDrag($event)" (dragover)="handleDrag($event)"
-                 (dragleave)="handleDrag($event)" (drop)="handleDrop($event)">
+              (dragenter)="handleDrag($event)" (dragover)="handleDrag($event)" (dragleave)="handleDrag($event)"
+              (drop)="handleDrop($event)">
 
               <ng-container *ngIf="uploadedFile; else emptyDrop">
                 <div class="file-info">
@@ -40,8 +45,8 @@
                     <button type="button" class="btn outline" (click)="audioInput.click()">
                       Choose File
                     </button>
-                    <input #audioInput id="audio-input" type="file" accept="audio/*"
-                           (change)="handleFileInput($event)" hidden />
+                    <input #audioInput id="audio-input" type="file" accept="audio/*" (change)="handleFileInput($event)"
+                      hidden />
                   </div>
                 </div>
               </ng-template>
@@ -70,17 +75,18 @@
               <label class="cover-placeholder" for="cover-input">
                 <!-- SVG picture icon -->
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" 
-                        stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M8 13l2.5-3 3.5 4L16 11l3 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+                    stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M8 13l2.5-3 3.5 4L16 11l3 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                    stroke-linejoin="round" />
                 </svg>
 
                 <div class="placeholder-text">
                   <strong>Upload Cover</strong>
                   <span class="muted">Click to choose an image</span>
                 </div>
-                <input #coverInput id="cover-input" type="file" accept="image/*"
-                       (change)="handleCoverImage($event)" hidden />
+                <input #coverInput id="cover-input" type="file" accept="image/*" (change)="handleCoverImage($event)"
+                  hidden />
               </label>
             </ng-template>
 
@@ -108,8 +114,7 @@
               <span class="label">Genres</span>
               <div class="badges">
                 <button *ngFor="let genre of GENRES" type="button" class="badge"
-                        [class.active]="(GenresCtrl.value || []).includes(genre)"
-                        (click)="toggleGenre(genre)">
+                  [class.active]="(GenresCtrl.value || []).includes(genre)" (click)="toggleGenre(genre)">
                   {{genre}}
                 </button>
               </div>
@@ -119,16 +124,15 @@
               <span class="label">Moods</span>
               <div class="badges">
                 <button *ngFor="let mood of MOODS" type="button" class="badge"
-                        [class.active]="(MoodsCtrl.value || []).includes(mood)"
-                        (click)="toggleMood(mood)">{{mood}}</button>
+                  [class.active]="(MoodsCtrl.value || []).includes(mood)" (click)="toggleMood(mood)">{{mood}}</button>
               </div>
             </div>
 
             <div class="field">
               <span class="label">Tags</span>
               <div class="tag-input">
-                <input formControlName="tagsInputCtrl" (keydown.enter)="$event.preventDefault(); addTag()"
-                       class="input" placeholder="e.g., summer, vibes" />
+                <input formControlName="tagsInputCtrl" (keydown.enter)="$event.preventDefault(); addTag()" class="input"
+                  placeholder="e.g., summer, vibes" />
                 <button type="button" class="btn outline" (click)="addTag()">Add</button>
               </div>
 
@@ -143,7 +147,7 @@
 
         <div class="actions-row">
           <button type="submit" class="btn primary"
-                  [disabled]="!uploadedFile || !submitFg.value.fileNameCtrl || (GenresCtrl.length === 0)">
+            [disabled]="!uploadedFile || !submitFg.value.fileNameCtrl || (GenresCtrl.length === 0)">
             Upload Track
           </button>
         </div>
