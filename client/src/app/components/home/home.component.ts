@@ -3,12 +3,14 @@ import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, i
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { FooterComponent } from "../footer/footer.component";
 
 @Component({
   selector: 'app-home',
   imports: [
-    RouterModule, MatIconModule, MatButtonModule
-  ],
+    RouterModule, MatIconModule, MatButtonModule,
+    FooterComponent
+],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
