@@ -1,19 +1,18 @@
 <div class="dashboard-layout">
-  <app-sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()"></app-sidebar>
+  <app-sidebar #sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()"></app-sidebar>
 
   @if (!isSidebarOpen) {
-  <button class="mobile-toggle" (click)="toggleSidebar()">
+  <button #sidebarBtn class="mobile-toggle" (click)="toggleSidebar()">
     <mat-icon>menu</mat-icon>
   </button>
   }
   @else {
-  <button class="mobile-toggle" (click)="toggleSidebar()">
+  <button #sidebarBtn class="mobile-toggle" (click)="toggleSidebar()">
     <mat-icon>close</mat-icon>
   </button>
   }
 
-
-  <div (click)="closeSideBar()" class="container">
+  <div class="container">
     <section class="search">
       <div class="info">
         <h1>Discover Music</h1>

@@ -1,4 +1,4 @@
-import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { AudioService } from '../../services/audio.service';
 import { Observable, Subscription } from 'rxjs';
@@ -21,6 +21,9 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent {
+  @ViewChild('sidebar', { read: ElementRef}) sidebar!: ElementRef<HTMLElement>;
+  @ViewChild('sidebarBtn', { read: ElementRef}) sidebarBtn!: ElementRef<HTMLElement>;
+
   private audioService = inject(AudioService);
   private _platformId = inject(PLATFORM_ID);
 
@@ -99,4 +102,27 @@ export class DashboardComponent {
       this.audioParams.search = this.SearchCtrl.value;
     }
   }
+
+  @HostListener('document:keydown.escape')
+  onEsc(): void {
+    if (isPlatformBrowser(this._platformId)) {
+      this.closeSideBar();
+    }
+  }
+
+  // @HostListener('document:click', ['$event'])
+  // onClick(event: MouseEvent): void {
+  //   const target = event.target as Node | null;
+
+  //   const btnEl = this.sidebarBtn.nativeElement as HTMLElement | undefined;
+  //   const sidebarEl = this.sidebar.nativeElement as HTMLElement | undefined;
+    
+  //   if (btnEl?.contains(target as Node)) {
+  //     return;
+  //   }
+
+  //   if (this.isSidebarOpen && sidebarEl && !sidebarEl.contains(target as Node)) {
+  //     this.closeSideBar();
+  //   }
+  // }
 }
