@@ -37,10 +37,14 @@ public static class Mappers
             UploaderName: audioFile.UploaderName,
             FileName: audioFile.FileName,
             FilePath: audioFile.FilePath,
+            CoverPath: audioFile.CoverPath,
             IsLiking: isLiking,
             IsAdding: isAdding,
             LikersCount: audioFile.LikersCount,
             AddersCount: audioFile.AdderCount,
+            Genres: audioFile.Genres,
+            Moods: audioFile.Moods,
+            Tags: audioFile.Tags,
             UploadedAt: audioFile.UploadedAt
         );
 
