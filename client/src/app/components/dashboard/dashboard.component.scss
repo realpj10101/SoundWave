@@ -49,6 +49,7 @@
 
       .search-box {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         background-color: #222; // optional, dark UI
         padding: 8px 12px;
