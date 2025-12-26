@@ -6,6 +6,35 @@
   border-radius: 1rem;
   padding: 1rem;
   transition: border-color 0.3s;
+  position: relative;
+  overflow: hidden;
+
+  .bg-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.2;
+    z-index: 0;
+
+    .bg-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: blur(8px);
+      transform: scale(1.1);
+    }
+
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right,
+          rgba(0, 0, 0, 1),
+          rgba(0, 0, 0, 0.8),
+          rgba(0, 0, 0, 0));
+    }
+  }
 
   &:hover {
     border-color: #4b5563;
@@ -21,6 +50,37 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
+
+      .left {
+        .cover-img {
+          border-radius: 10px;
+        }
+      }
+
+      .bottom {
+        .genres {
+          border-radius: 10px;
+          padding-left: 10px;
+          padding-right: 10px;
+          margin-right: 5px;
+          background: linear-gradient(to right,
+              rgba(249, 115, 22, 0.2), // orange-500/20
+              rgba(239, 68, 68, 0.2) // red-500/20
+            );
+
+          color: #fdba74;
+          border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .moods {
+          border: 1px solid #4b5563;
+          color: #9ca3af;
+          border-radius: 10px;
+          padding-left: 10px;
+          padding-right: 10px;
+          margin-right: 5px;
+        }
+      }
 
       .avatar {
         width: 2.5rem;
@@ -90,83 +150,103 @@
     }
   }
 
-  .action-btns {
+  .bottom-side {
     display: flex;
-    gap: 1rem;
-    align-items: center;
+    flex-direction: column;
+    margin-top: 1rem;
 
-    .like-section {
+    .action-btns {
       display: flex;
+      gap: 1rem;
       align-items: center;
 
-      .like-button {
+      .like-section {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.375rem;
-        color: inherit;
-        transition: color 0.2s;
 
-        .like-icon {
-          height: 25px;
-          transition: filter 0.2s;
-        }
-
-        .like-count {
+        .like-button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-size: 0.875rem;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.375rem;
+          color: inherit;
           transition: color 0.2s;
-          color: #9ca3af;
-        }
 
-        &:hover {
-          color: #ffffff;
-        }
+          .like-icon {
+            height: 25px;
+            transition: filter 0.2s;
+          }
 
-        &:hover .like-icon {
-          filter: brightness(0) invert(1);
+          .like-count {
+            transition: color 0.2s;
+            color: #9ca3af;
+          }
+
+          &:hover {
+            color: #ffffff;
+          }
+
+          &:hover .like-icon {
+            filter: brightness(0) invert(1);
+          }
+        }
+      }
+
+      .add-section {
+        display: flex;
+        align-items: center;
+
+        .add-button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-size: 0.875rem;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.375rem;
+          color: inherit;
+          transition: color 0.2s;
+
+          .add-icon {
+            height: 25px;
+            transition: filter 0.2s;
+          }
+
+          .add-count {
+            transition: color 0.2s;
+            color: #9ca3af;
+          }
+
+          &:hover {
+            color: #ffffff;
+          }
+
+          &:hover .add-icon {
+            filter: brightness(0) invert(1);
+          }
         }
       }
     }
 
-    .add-section {
-      display: flex;
-      align-items: center;
+    .tags-cont {
+      margin-top: 10px;
+    }
 
-      .add-button {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem; 
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.375rem;
-        color: inherit;
-        transition: color 0.2s;
-
-        .add-icon {
-          height: 25px;
-          transition: filter 0.2s;
-        }
-
-        .add-count {
-          transition: color 0.2s;
-          color: #9ca3af;
-        }
-
-        &:hover {
-          color: #ffffff;    
-        }
-
-        &:hover .add-icon {
-          filter: brightness(0) invert(1); 
-        }
-      }
+    .tags {
+      border: 1px solid #4b5563;
+      border-radius: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-right: 5px;
+      background-color: #1f2937;
+      color: #9ca3af;
     }
   }
 }

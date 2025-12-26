@@ -1,10 +1,32 @@
 <div class="audio-card">
+  @if (audioInput?.coverPath) {
+    <div class="bg-layer">
+      <img [src]="apiUrl + audioInput?.coverPath?.url_enlarged" alt="" class="bg-image" />
+      <div class="bg-overlay"></div>
+    </div>
+  }
+
   <div class="header">
     <div class="user-info">
-      <!-- <img class="avatar" src="images/menu.png" alt="Avatar" /> -->
-      <div>
-        <h3 class="title">{{ audioInput?.fileName }}</h3>
-        <p class="artist">{{ audioInput?.uploaderName }}</p>
+      <div class="left">
+        <img class="cover-img" [src]="apiUrl + audioInput?.coverPath?.url_165" [alt]="audioInput?.uploaderName"
+          height="100px">
+      </div>
+      <div class="right">
+        <div class="top">
+          <h3 class="title">{{ audioInput?.fileName }}</h3>
+          <p class="artist">{{ audioInput?.uploaderName }}</p>
+        </div>
+        <div class="bottom">
+          <div class="moods-genres">
+            @for (gen of audioInput?.genres; track $index) {
+            <span class="genres">{{gen}}</span>
+            }
+            @for (mood of audioInput?.moods; track $index) {
+            <span class="moods">{{mood}}</span>
+            }
+          </div>
+        </div>
       </div>
     </div>
     <span class="duration">3:45</span>
@@ -25,26 +47,34 @@
       }
     </div>
   </div>
-  <div class="action-btns">
-    <div class="like-section">
-      <button class="like-button" [ngClass]="{
+
+  <div class="bottom-side">
+    <div class="action-btns">
+      <div class="like-section">
+        <button class="like-button" [ngClass]="{
       'text-red-500': audioInput?.isLiking,
       'text-gray-400': !audioInput?.isLiking
     }" (click)="audioInput?.isLiking ? dislike() : like()">
-        <img [src]="audioInput?.isLiking ? 'images/favorite-red.png' : 'images/favorite.png'" alt="like"
-          class="like-icon" />
-        <span class="like-count">{{ count }}</span>
-      </button>
-    </div>
+          <img [src]="audioInput?.isLiking ? 'images/favorite-red.png' : 'images/favorite.png'" alt="like"
+            class="like-icon" />
+          <span class="like-count">{{ count }}</span>
+        </button>
+      </div>
 
-    <div class="add-section">
-      <button class="add-button" [ngClass]="{
+      <div class="add-section">
+        <button class="add-button" [ngClass]="{
       'text-green-500': audioInput?.isAdding,
       'text-gray-400': !audioInput?.isAdding
-    }" (click)="audioInput?.isAdding ? removeFromPlaylist() : addToPlaylist()">
-        <img [src]="audioInput?.isAdding ? 'images/remove.png' : 'images/add.png'" alt="add" class="add-icon" />
-        <span class="add-count">{{ adderCount }}</span>
-      </button>
+        }" (click)="audioInput?.isAdding ? removeFromPlaylist() : addToPlaylist()">
+          <img [src]="audioInput?.isAdding ? 'images/remove.png' : 'images/add.png'" alt="add" class="add-icon" />
+          <span class="add-count">{{ adderCount }}</span>
+        </button>
+      </div>
+    </div>
+    <div class="tags-cont">
+      @for (tag of audioInput?.tags; track $index) {
+      <span class="tags">#{{tag}}</span>
+      }
     </div>
   </div>
 
