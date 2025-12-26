@@ -15,9 +15,9 @@ public record AudioFile(
     int LikersCount,
     int AdderCount,
     DateTime UploadedAt,
-    List<string>? Genres,
-    List<string>? Moods,
-    double? Energy,
-    int? TempoBpm,
+    List<string> Genres,
+    List<string> Moods,
+    double Energy,
+    int TempoBpm,
     List<string> Tags
 );
