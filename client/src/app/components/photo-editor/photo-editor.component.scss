@@ -8,6 +8,10 @@ main {
         flex-direction: column;
         gap: 1rem;
 
+        mat-error {
+            color: #aaa;
+        }
+
         .gallery {
             display: flex;
             flex-wrap: wrap;
