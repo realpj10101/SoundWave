@@ -12,14 +12,16 @@
         <mat-icon>close</mat-icon>
     </button>
     }
-    
+
     <div class="top">
         <div class="left-side">
             @if (loggedInUserSig && loggedInUserSig(); as user) {
+            @if (user.profilePhotoUrl) {
             <img src="{{apiUrl + user.profilePhotoUrl}}" class="profile-img" alt="">
             }
             @else {
             <img src="images/member.png" class="profile-img" alt="">
+            }
             }
             <div class="actions">
                 <h1>Parsa Jafary</h1>
