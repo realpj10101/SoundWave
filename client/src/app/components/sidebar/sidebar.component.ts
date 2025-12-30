@@ -2,11 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AccountService } from '../../services/account.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sidebar',
   imports: [
-    RouterModule
+    RouterModule, MatIconModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
