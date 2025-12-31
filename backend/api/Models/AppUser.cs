@@ -12,11 +12,5 @@ public class AppUser : MongoIdentityUser<ObjectId>
     public DateTime LastActive { get; init; }
     public int LikingsCount { get; init; }
     public int FavoritesCount { get; init; }
-    // public Photo Photo { get; set; } = new Photo(
-    //     Url_165: "",
-    //     Url_256: "",
-    //     Url_enlarged: "",
-    //     IsMain: false
-    // );
-    public List<Photo> Photos { get; init; } = [];
+    public MainPhoto Photo { get; init; } = default!;
 }
