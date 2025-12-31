@@ -126,7 +126,7 @@ public class AudioFileRepository : IAudioFileRepository
 
         ObjectId trackId = ObjectId.GenerateNewId();
 
-        string[]? photoUrls = await _photoService.AddMainPhotoToDiskAsync(audio.CoverFile, trackId);
+        string[]? photoUrls = await _photoService.AddPhotoToDiskAsync(audio.CoverFile, trackId);
         if (photoUrls is null)
         {
             return new(
