@@ -51,12 +51,9 @@ export class EditProfileComponent implements OnInit {
   get BioCtrl(): FormControl {
     return this.userFg.get('bioCtrl') as FormControl;
   }
-
-  constructor() {
-  }
-
+  
   ngOnInit(): void {
-    this.loggedInUser = this.accountService.loggedInUserSig()
+    this.loggedInUser = this.accountService.loggedInUserSig();
 
     this.initializeUploader();
 
@@ -87,10 +84,11 @@ export class EditProfileComponent implements OnInit {
       this.uploader.onSuccessItem = (item, response, status, header) => {
         if (response) {
           const photo: Photo = JSON.parse(response);
-          console.log(photo);
 
           // set navbar profile photo when first photo is uploaded
           if (this.member?.photo)
+            console.log('ok');
+            
             this.setNavbarProfilePhoto(photo.url_165);
         }
       }
@@ -102,7 +100,7 @@ export class EditProfileComponent implements OnInit {
 
       this.loggedInUser.profilePhotoUrl = url_165;
 
-      this.accountService.loggedInUserSig.set(this.loggedInUser);
+      this.accountService.setCurrentUser(this.loggedInUser);
     }
   }
 
