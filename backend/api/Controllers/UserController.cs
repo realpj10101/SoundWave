@@ -1,5 +1,6 @@
 using api.Controllers.Helpers;
 using api.DTOs.Account;
+using api.DTOs.Helpers;
 using api.Extensions;
 using api.Extensions.Validations;
 using api.Interfaces;
@@ -38,9 +39,24 @@ public class UserController(IUserRepository _userRepository, ITokenService _toke
     {
         if (file is null) return BadRequest("No file is selected with this request");
 
-        MainPhoto? photo = await _userRepository.UploadPhotoAsync(file, User.GetHashedUserId(), cancellationToken);
+        string? hashedUserId = User.GetHashedUserId();
 
-        return photo is null ? BadRequest("Add photo failed. See logger") : photo;
+        if (hashedUserId is null)
+            return Unauthorized("You are not logged in. Please login again.");
+
+        ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
+
+        OperationResult<MainPhoto> opResult = await _userRepository.UploadPhotoAsync(file, userId.Value, cancellationToken);
+
+        return opResult.IsSuccess
+        ? opResult.Result
+        : opResult.Error?.Code switch
+        {
+            ErrorCode.IsNotFound => BadRequest(opResult.Error.Message),
+            ErrorCode.IsUpdateFailed => BadRequest(opResult.Error.Message),
+            ErrorCode.IsAddPhotoFailed => BadRequest(opResult.Error.Message),
+            _ => BadRequest("Operation failed! Try again or contact support.")
+        };
     }
 
     // [HttpPut("set-main-photo")]

@@ -1,5 +1,6 @@
 using api.DTOs;
 using api.DTOs.Account;
+using api.DTOs.Helpers;
 using api.Extensions;
 using api.Interfaces;
 using api.Models;
@@ -67,22 +68,21 @@ public class UserRepository : IUserRepository
         return appUser;
     }
 
-    public async Task<MainPhoto?> UploadPhotoAsync(IFormFile file, string? hashedUserId, CancellationToken cancellationToken)
+    public async Task<OperationResult<MainPhoto>> UploadPhotoAsync(IFormFile file, ObjectId userId, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(hashedUserId)) return null;
-
-        ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
-
-        if (userId is null) return null;
-
-        AppUser? appUser = await GetByIdAsync(userId.Value, cancellationToken);
+        AppUser? appUser = await GetByIdAsync(userId, cancellationToken);
         if (appUser is null)
         {
-            _logger.LogError("appUser is Null / not found");
-            return null;
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.IsNotFound,
+                    "User not found."
+                )
+            );
         }
 
-        string[]? imageUrls = await _photoService.AddMainPhotoToDiskAsync(file, appUser.Photo, userId.Value);
+        string[]? imageUrls = await _photoService.AddMainPhotoToDiskAsync(file, appUser.Photo, userId);
 
         if (imageUrls is not null)
         {
@@ -91,15 +91,35 @@ public class UserRepository : IUserRepository
             photo = Mappers.ConvertMainPhotoUrlsToPhoto(imageUrls);
 
             var updatedUser = Builders<AppUser>.Update
-                .Set(doc => doc.Photo, appUser.Photo);
+                .Set(doc => doc.Photo, photo);
 
             UpdateResult result = await _collection.UpdateOneAsync<AppUser>(doc => doc.Id == userId, updatedUser, null, cancellationToken);
 
-            return result.ModifiedCount == 1 ? photo : null;
+            if (result.ModifiedCount == 1)
+            {
+                return new(
+                    true,
+                    photo,
+                    null
+                );
+            }
+
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.IsUpdateFailed,
+                    "Update failed."
+                )
+            );
         }
 
-        _logger.LogError("PhotoService saving photo to disk failed.");
-        return null;
+        return new(
+            false,
+            Error: new(
+                ErrorCode.IsAddPhotoFailed,
+                "Adding photo to disk failed."
+            )
+        );
     }
 
     // public async Task<UpdateResult?> SetMainPhotoAsync(string hashedUserId, string photoUrlIn, CancellationToken cancellationToken)
