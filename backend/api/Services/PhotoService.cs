@@ -15,8 +15,13 @@ public class PhotoService(
 
     const string WwwRootUrl = "wwwroot/";
 
-    public async Task<string[]?> AddMainPhotoToDiskAsync(IFormFile formFile, ObjectId userId)
+    public async Task<string[]?> AddMainPhotoToDiskAsync(IFormFile formFile, MainPhoto? photo, ObjectId userId)
     {
+        if (photo is not null)
+        {
+            await DeleteMainPhotoFormDiskAsync(photo);
+        }
+
         // copy file/s to the folder
         if (formFile.Length > 0) // 301kb => 301_000 byte
         {
