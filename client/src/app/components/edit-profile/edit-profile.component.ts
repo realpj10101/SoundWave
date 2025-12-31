@@ -51,7 +51,7 @@ export class EditProfileComponent implements OnInit {
   get BioCtrl(): FormControl {
     return this.userFg.get('bioCtrl') as FormControl;
   }
-  
+
   ngOnInit(): void {
     this.loggedInUser = this.accountService.loggedInUserSig();
 
@@ -77,10 +77,21 @@ export class EditProfileComponent implements OnInit {
         // itemAlias: 'file'
       });
 
-      this.uploader.onAfterAddingFile = (file) => {
-        file.withCredentials = false;
-      }
+      this.uploader.onAfterAddingFile = (fileItem) => {
+        fileItem.withCredentials = false;
 
+        if (fileItem.file.size < 250 * 1024) {
+
+          this._snack.open('File is too small (Min 250Kb)', 'Close', {
+            duration: 7000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+
+          fileItem.remove();
+        }
+      };
+      
       this.uploader.onSuccessItem = (item, response, status, header) => {
         if (response) {
           const photo: Photo = JSON.parse(response);
@@ -88,8 +99,8 @@ export class EditProfileComponent implements OnInit {
           // set navbar profile photo when first photo is uploaded
           if (this.member?.photo)
             console.log('ok');
-            
-            this.setNavbarProfilePhoto(photo.url_165);
+
+          this.setNavbarProfilePhoto(photo.url_165);
         }
       }
     }

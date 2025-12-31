@@ -28,7 +28,7 @@
                         </div>
                         <div class="bottom-side">
                             @if (accountService.loggedInUserSig(); as user) {
-                            <img src="{{apiUrl + user.profilePhotoUrl}}" class="profile-img" alt="">
+                        <img src="{{apiUrl + user.profilePhotoUrl}}" class="profile-img" alt="">
                             }
                             @else {
                             <img src="images/member.png" class="profile-img" alt="">
