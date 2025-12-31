@@ -131,24 +131,45 @@
     gap: 1rem;
     flex-wrap: wrap;
 
+    .photo-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .photo-text {
+        margin-top: 1rem;
+        font-size: 0.875rem;
+        color: #9ca3af; 
+      }
+    }
+
     img {
       height: 8rem;
       border-radius: 50%
     }
 
-    .photo-btn {
+    .upload-btn {
       display: flex;
-      align-items: center;
       gap: 1rem;
-      padding: 3px 6px;
-      background: linear-gradient(to right, #ff4e50, #f9d423);
-      border: none;
-      border-radius: 4px;
-      color: #333;
-      padding: 1rem;
+      align-items: center;
+      border: 1px solid #f97316;
+      color: #f97316;
       cursor: pointer;
-      font-weight: bold;
-      // font-size: rem;
+      padding: 10px;
+      border-radius: 8px;
+
+      .text-muted {
+        font-size: 0.875rem;
+      }
+
+      &:hover {
+        background-color: #f97316;
+        color: #000;
+      }
+    }
+
+    input[type=file] {
+      display: none;
     }
   }
 

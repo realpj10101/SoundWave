@@ -12,7 +12,7 @@
         <mat-icon>close</mat-icon>
     </button>
     }
-    
+
     <div class="top">
         <h1 class="settings">Settings</h1>
         <p class="details">Manage your account settings and preferences</p>
@@ -27,16 +27,25 @@
                             <p class="text">Update your profile and how others see you</p>
                         </div>
                         <div class="bottom-side">
-                            @if (loggedInUserSig && loggedInUserSig(); as user) {
+                            @if (accountService.loggedInUserSig(); as user) {
                             <img src="{{apiUrl + user.profilePhotoUrl}}" class="profile-img" alt="">
                             }
                             @else {
                             <img src="images/member.png" class="profile-img" alt="">
                             }
-                            <!-- <button class="photo-btn">
+                            
+                            <div class="photo-actions">
+                                <button class="upload-btn" (click)="fileInput.click()">
+                                    <mat-icon>photo_camera</mat-icon>
+                                    <span class="text-muted">   
+                                        Change Photo 
+                                    </span>
+                                </button>
                                 
-                            </button> -->
-                            <app-photo-editor [memberInput]="member"></app-photo-editor>
+                                <span class="photo-text">JPG, PNG or JPEG. Max size 4MB.</span>
+                            </div>
+                            
+                            <input multiple type="file" #fileInput ng2FileSelect [uploader]="uploader" id="file">
                         </div>
                         <div class="input-group">
                             <label for="email">Bio</label>

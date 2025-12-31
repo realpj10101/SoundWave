@@ -16,12 +16,14 @@ import { environment } from '../../../environments/environment.development';
 import { AccountService } from '../../services/account.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
+import { FileUploader, FileUploadModule } from 'ng2-file-upload';
+import { Photo } from '../../models/photo.model';
 
 @Component({
   selector: 'app-edit-profile',
   imports: [
     SidebarComponent, MatTabsModule, FormsModule, ReactiveFormsModule,
-    PhotoEditorComponent, MatSlideToggleModule, MatIconModule
+    MatSlideToggleModule, MatIconModule, FileUploadModule
   ],
   templateUrl: './edit-profile.component.html',
   styleUrl: './edit-profile.component.scss'
@@ -29,17 +31,18 @@ import { MatIconModule } from '@angular/material/icon';
 export class EditProfileComponent implements OnInit {
   private _userService = inject(UserService);
   private _memberService = inject(MemberService);
-  private _accountService = inject(AccountService);
+  accountService = inject(AccountService);
   private _fB = inject(FormBuilder);
   private _snack = inject(MatSnackBar);
   isSidebarOpen = false;
   private platFormId = inject(PLATFORM_ID);
-  loggedInUser: LoggedInUser | undefined;
+  loggedInUser: LoggedInUser | null | undefined;
   member: Member | undefined;
   apiUrl: string = environment.apiUrl;
   loggedInUserSig: Signal<LoggedInUser | null> | undefined;
   checked = false;
   disabled = false;
+  uploader: FileUploader | undefined;
 
   userFg = this._fB.group({
     bioCtrl: ''
@@ -49,14 +52,58 @@ export class EditProfileComponent implements OnInit {
     return this.userFg.get('bioCtrl') as FormControl;
   }
 
+  constructor() {
+  }
+
   ngOnInit(): void {
-    this.loggedInUserSig = this._accountService.loggedInUserSig;
+    this.loggedInUser = this.accountService.loggedInUserSig()
+
+    this.initializeUploader();
 
     this.getMember();
   }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  initializeUploader(): void {
+    if (this.loggedInUser) {
+      this.uploader = new FileUploader({
+        url: this.apiUrl + 'api/user/add-photo',
+        authToken: 'Bearer ' + this.loggedInUser.token,
+        isHTML5: true,
+        allowedFileType: ['image'],
+        removeAfterUpload: true,
+        autoUpload: true,
+        maxFileSize: 4_000_000, // bytes / 4MB
+        // itemAlias: 'file'
+      });
+
+      this.uploader.onAfterAddingFile = (file) => {
+        file.withCredentials = false;
+      }
+
+      this.uploader.onSuccessItem = (item, response, status, header) => {
+        if (response) {
+          const photo: Photo = JSON.parse(response);
+          console.log(photo);
+
+          // set navbar profile photo when first photo is uploaded
+          if (this.member?.photo)
+            this.setNavbarProfilePhoto(photo.url_165);
+        }
+      }
+    }
+  }
+
+  setNavbarProfilePhoto(url_165: string): void {
+    if (this.loggedInUser) {
+
+      this.loggedInUser.profilePhotoUrl = url_165;
+
+      this.accountService.loggedInUserSig.set(this.loggedInUser);
+    }
   }
 
   getMember(): void {

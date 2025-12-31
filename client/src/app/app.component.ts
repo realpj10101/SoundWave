@@ -11,7 +11,7 @@ import { isPlatformBrowser } from '@angular/common';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, NavbarComponent, FooterComponent, MatDividerModule, AnimatedWaveBackgroundComponent],
+  imports: [RouterOutlet, RouterModule, NavbarComponent, MatDividerModule, AnimatedWaveBackgroundComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -23,10 +23,10 @@ export class AppComponent  {
     if (isPlatformBrowser(this._platformId)) {
       const loggedInUserStr = localStorage.getItem('loggedInUser');
       
-      if (loggedInUserStr) {
+      if (loggedInUserStr) {        
         this._accountService.authorizeLoggedInUser();
 
-        this._accountService.setCurrentUser(JSON.parse(loggedInUserStr))
+        this._accountService.setCurrentUser(JSON.parse(loggedInUserStr))        
       }
     }
   }
