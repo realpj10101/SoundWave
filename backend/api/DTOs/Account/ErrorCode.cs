@@ -14,5 +14,7 @@ public enum ErrorCode
     IsFailed,
     SaveAudioFailed,
     SavePhotoFailed,
-    IsAlreadyExist
+    IsAlreadyExist,
+    IsUpdateFailed,
+    IsAddPhotoFailed
 }
