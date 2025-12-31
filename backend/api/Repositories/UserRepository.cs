@@ -67,7 +67,7 @@ public class UserRepository : IUserRepository
         return appUser;
     }
 
-    public async Task<Photo?> UploadPhotoAsync(IFormFile file, string? hashedUserId, CancellationToken cancellationToken)
+    public async Task<MainPhoto?> UploadPhotoAsync(IFormFile file, string? hashedUserId, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(hashedUserId)) return null;
 
@@ -82,26 +82,16 @@ public class UserRepository : IUserRepository
             return null;
         }
 
-        string[]? imageUrls = await _photoService.AddPhotoToDiskAsync(file, userId.Value);
+        string[]? imageUrls = await _photoService.AddMainPhotoToDiskAsync(file, appUser.Photo, userId.Value);
 
         if (imageUrls is not null)
         {
-            Photo photo;
-
-            photo = appUser.Photos.Count == 0
-                ? Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true)
-                : Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: false);
-
-            appUser.Photos.Add(photo);
-
-            // photo = string.IsNullOrWhiteSpace(appUser.Photo.Url_enlarged)
-            //     ? Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true)
-            //     : Mappers.ConvertPhotoUrlsToPhoto(imageUrls, isMain: true);
-
-            // appUser.Photo = photo;
+            MainPhoto photo;
+            
+            photo = Mappers.ConvertMainPhotoUrlsToPhoto(imageUrls);
 
             var updatedUser = Builders<AppUser>.Update
-                .Set(doc => doc.Photos, appUser.Photos);
+                .Set(doc => doc.Photo, appUser.Photo);
 
             UpdateResult result = await _collection.UpdateOneAsync<AppUser>(doc => doc.Id == userId, updatedUser, null, cancellationToken);
 
@@ -112,68 +102,68 @@ public class UserRepository : IUserRepository
         return null;
     }
 
-    public async Task<UpdateResult?> SetMainPhotoAsync(string hashedUserId, string photoUrlIn, CancellationToken cancellationToken)
-    {
-        ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
+    // public async Task<UpdateResult?> SetMainPhotoAsync(string hashedUserId, string photoUrlIn, CancellationToken cancellationToken)
+    // {
+    //     ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
 
-        if (userId is null) return null;
+    //     if (userId is null) return null;
 
-        #region Unset the previous main photo 
+    //     #region Unset the previous main photo 
 
-        FilterDefinition<AppUser>? filterOld = Builders<AppUser>.Filter
-            .Where(appUser =>
-                appUser.Id == userId && appUser.Photos.Any<Photo>(photo => photo.IsMain == true));
+    //     FilterDefinition<AppUser>? filterOld = Builders<AppUser>.Filter
+    //         .Where(appUser =>
+    //             appUser.Id == userId && appUser.Photo.Any<Photo>(photo => photo.IsMain == true));
 
-        UpdateDefinition<AppUser>? updateOld = Builders<AppUser>.Update
-            .Set(appUser => appUser.Photos.FirstMatchingElement().IsMain, false);
+    //     UpdateDefinition<AppUser>? updateOld = Builders<AppUser>.Update
+    //         .Set(appUser => appUser.Photo.FirstMatchingElement().IsMain, false);
 
-        await _collection.UpdateOneAsync(filterOld, updateOld, null, cancellationToken);
+    //     await _collection.UpdateOneAsync(filterOld, updateOld, null, cancellationToken);
 
-        #endregion
+    //     #endregion
 
-        #region set the new main photo
+    //     #region set the new main photo
 
-        FilterDefinition<AppUser>? filterNew = Builders<AppUser>.Filter
-            .Where(appUser =>
-                appUser.Id == userId && appUser.Photos.Any<Photo>(photo => photo.Url_165 == photoUrlIn));
+    //     FilterDefinition<AppUser>? filterNew = Builders<AppUser>.Filter
+    //         .Where(appUser =>
+    //             appUser.Id == userId && appUser.Photo.Any<Photo>(photo => photo.Url_165 == photoUrlIn));
 
-        UpdateDefinition<AppUser> updateNew = Builders<AppUser>.Update
-            .Set(appUser => appUser.Photos.FirstMatchingElement().IsMain, true);
+    //     UpdateDefinition<AppUser> updateNew = Builders<AppUser>.Update
+    //         .Set(appUser => appUser.Photo.FirstMatchingElement().IsMain, true);
 
-        return await _collection.UpdateOneAsync(filterNew, updateNew, null, cancellationToken);
+    //     return await _collection.UpdateOneAsync(filterNew, updateNew, null, cancellationToken);
 
-        #endregion
-    }
+    //     #endregion
+    // }
 
-    public async Task<UpdateResult?> DeletePhotoAsync(string hashedUserId, string? urlIn, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrEmpty(urlIn)) return null;
+    // public async Task<UpdateResult?> DeletePhotoAsync(string hashedUserId, string? urlIn, CancellationToken cancellationToken)
+    // {
+    //     if (string.IsNullOrEmpty(urlIn)) return null;
 
-        ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
+    //     ObjectId? userId = await _tokenService.GetActualUserIdAsync(hashedUserId, cancellationToken);
 
-        if (userId is null) return null;
+    //     if (userId is null) return null;
 
-        Photo photo = await _collection.AsQueryable()
-            .Where(appUser => appUser.Id == userId) // filter by user email
-            .SelectMany(appUser => appUser.Photos) // flatten
-            .Where(photo => photo.Url_165 == urlIn)
-            .FirstOrDefaultAsync(cancellationToken);
+    //     Photo photo = await _collection.AsQueryable()
+    //         .Where(appUser => appUser.Id == userId) // filter by user email
+    //         .SelectMany(appUser => appUser.Photo) // flatten
+    //         .Where(photo => photo.Url_165 == urlIn)
+    //         .FirstOrDefaultAsync(cancellationToken);
 
-        if (photo is null) return null;
+    //     if (photo is null) return null;
 
-        if (photo.IsMain) return null;
+    //     if (photo.IsMain) return null;
 
-        bool isDelereSuccess = await _photoService.DeletePhotoFromDisk(photo);
-        if (!isDelereSuccess)
-        {
-            _logger.LogError("Delete Photo from disk failed");
+    //     bool isDelereSuccess = await _photoService.DeletePhotoFromDisk(photo);
+    //     if (!isDelereSuccess)
+    //     {
+    //         _logger.LogError("Delete Photo from disk failed");
 
-            return null;
-        }
+    //         return null;
+    //     }
 
-        var update = Builders<AppUser>.Update
-            .PullFilter(appUser => appUser.Photos, photo => photo.Url_165 == urlIn);
+    //     var update = Builders<AppUser>.Update
+    //         .PullFilter(appUser => appUser.Photo, photo => photo.Url_165 == urlIn);
 
-        return await _collection.UpdateOneAsync<AppUser>(appUser => appUser.Id == userId, update, null, cancellationToken);
-    }
+    //     return await _collection.UpdateOneAsync<AppUser>(appUser => appUser.Id == userId, update, null, cancellationToken);
+    // }
 }
