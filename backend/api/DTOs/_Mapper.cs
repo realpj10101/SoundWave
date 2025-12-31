@@ -19,7 +19,7 @@ public static class Mappers
         {
             Token = tokenValue,
             UserName = appUser.UserName,
-            ProfilePhotoUrl = appUser.Photo.Url_165
+            ProfilePhotoUrl = appUser.Photo?.Url_165
         };
 
     public static MemberDto ConvertAppUserToMemberDto(AppUser appUser)
