@@ -12,7 +12,6 @@ public static class Mappers
         {
             Email = registerDto.Email,
             UserName = registerDto.UserName,
-            Photos = []
         };
 
     public static LoggedInDto ConvertAppUserToLoggedInDto(AppUser appUser, string tokenValue) =>
@@ -20,7 +19,7 @@ public static class Mappers
         {
             Token = tokenValue,
             UserName = appUser.UserName,
-            ProfilePhotoUrl = appUser.Photos.FirstOrDefault(photo => photo.IsMain)?.Url_165
+            ProfilePhotoUrl = appUser.Photo.Url_165
         };
 
     public static MemberDto ConvertAppUserToMemberDto(AppUser appUser)
@@ -28,7 +27,7 @@ public static class Mappers
         return new MemberDto(
             UserName: appUser.NormalizedUserName!,
             Bio: appUser.Bio,
-            Photos: appUser.Photos
+            Photo: appUser.Photo
         );
     }
 
