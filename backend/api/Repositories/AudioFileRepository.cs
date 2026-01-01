@@ -83,59 +83,85 @@ public class AudioFileRepository : IAudioFileRepository
             );
         }
 
-        AudioFile existAudioFile = await _collection.Find(doc => doc.FileName == audio.FileName).FirstOrDefaultAsync(cancellationToken);
+        Task<bool> duplicatCheckTask = _collection
+         .Find(doc => doc.FileName == audio.FileName)
+         .AnyAsync(cancellationToken);
 
-        if (existAudioFile is not null)
+        Task<string?> userLookupTask = _collectionUsers
+            .Find(doc => doc.Id == userId)
+            .Project(doc => doc.NormalizedUserName)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        await Task.WhenAll(duplicatCheckTask, userLookupTask);
+
+        bool isDuplicate = await duplicatCheckTask;
+        string? userName = await userLookupTask;
+
+        if (isDuplicate)
         {
-            return new OperationResult<AudioFile>(
+            return new(
                 false,
-                Error: new CustomError(
+                Error: new(
                     ErrorCode.IsAlreadyExist,
-                    "This audio is already exist"
+                    "This file is already exists."
                 )
             );
         }
-
-        string? userName = await _collectionUsers.AsQueryable()
-            .Where(doc => doc.Id == userId)
-            .Select(doc => doc.NormalizedUserName)
-            .FirstOrDefaultAsync(cancellationToken);
 
         if (userName is null)
         {
-            return new OperationResult<AudioFile>(
+            return new(
                 false,
-                Error: new CustomError(
-                    Code: ErrorCode.IsNotFound,
-                    Message: "User is not found"
-                )
-            );
-        }
-
-        string? filePath = await _audioservice.SaveAudioToDiskAsync(audio.File, userId.Value);
-        if (filePath is null)
-        {
-            return new OperationResult<AudioFile>(
-                false,
-                Error: new CustomError(
-                    Code: ErrorCode.SaveAudioFailed,
-                    Message: "Saving audio to disk failed"
+                Error: new(
+                    ErrorCode.IsNotFound,
+                    "User not found!"
                 )
             );
         }
 
         ObjectId trackId = ObjectId.GenerateNewId();
 
-        string[]? photoUrls = await _photoService.AddPhotoToDiskAsync(audio.CoverFile, trackId);
+        Task<string?> saveAudioTask = _audioservice.SaveAudioToDiskAsync(audio.File, userId.Value);
+
+        Task<string[]?> savePhotoTask = _photoService.AddPhotoToDiskAsync(audio.CoverFile, trackId);
+
+        await Task.WhenAll(saveAudioTask, savePhotoTask);
+
+        string? filePath = await saveAudioTask;
+        string[]? photoUrls = await savePhotoTask;
+
+        if (filePath is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.SaveAudioFailed,
+                    "Saving audio to disk failed."
+                )
+            );
+        }
+
         if (photoUrls is null)
         {
             return new(
                 false,
                 Error: new(
                     ErrorCode.SavePhotoFailed,
-                    "Saving cover to disk failed"
+                    "Save photo to disk failed."
                 )
             );
+        }
+
+        TimeSpan duration = TimeSpan.Zero;
+        try
+        {
+            string physicalPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", filePath);
+            using var tfile = TagLib.File.Create(physicalPath);
+            duration = tfile.Properties.Duration;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Metadata Error: {ex.Message}");
         }
 
         AudioFile audioFile = new(
@@ -151,12 +177,13 @@ public class AudioFileRepository : IAudioFileRepository
             Moods: audio.Moods,
             Energy: 0.0,
             TempoBpm: 0,
-            Tags: audio.Tags
+            Tags: audio.Tags,
+            Duration: duration.TotalSeconds
         );
 
         await _collection.InsertOneAsync(audioFile, null, cancellationToken);
 
-        return new OperationResult<AudioFile>(
+        return new(
             true,
             audioFile,
             null

@@ -44,6 +44,7 @@ public static class Mappers
             Genres: audioFile.Genres,
             Moods: audioFile.Moods,
             Tags: audioFile.Tags,
+            Duration: audioFile.Duration,
             UploadedAt: audioFile.UploadedAt
         );
 

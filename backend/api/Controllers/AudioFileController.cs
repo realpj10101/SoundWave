@@ -10,6 +10,7 @@ using api.Interfaces;
 using api.Models;
 using api.Models.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -35,9 +36,12 @@ public class AudioFileController(
         return opResult.IsSuccess
             ? Ok(new Response(Message: "File uploaded successfully."))
             : opResult.Error?.Code switch
-            {
-                ErrorCode.IsNotFound => BadRequest(opResult.Error.Message),
+            {   
+                ErrorCode.IsFailed => BadRequest(opResult.Error.Message),
                 ErrorCode.IsAlreadyExist => BadRequest(opResult.Error.Message),
+                ErrorCode.IsNotFound => BadRequest(opResult.Error.Message),
+                ErrorCode.SaveAudioFailed => BadRequest(opResult.Error.Message),
+                ErrorCode.SavePhotoFailed => BadRequest(opResult.Error.Message),
                 _ => BadRequest("Operation failed!. Try again or contact administrator")
             };
     }

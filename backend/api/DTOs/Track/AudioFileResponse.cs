@@ -14,5 +14,6 @@ public record AudioFileResponse(
     List<string> Genres,
     List<string> Moods,
     List<string> Tags,
+    Double Duration,
     DateTime UploadedAt
 );

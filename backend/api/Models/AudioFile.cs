@@ -19,5 +19,6 @@ public record AudioFile(
     List<string> Moods,
     double Energy,
     int TempoBpm,
-    List<string> Tags
+    List<string> Tags,
+    double Duration
 );
