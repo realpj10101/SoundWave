@@ -13,4 +13,5 @@ export interface Audio {
     genres: [];
     moods: [];
     tags: [];
+    duration: number;
 }
