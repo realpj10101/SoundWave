@@ -8,7 +8,7 @@ import { AudioParams } from '../../models/helpers/audio-params';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PaginatedResult } from '../../models/helpers/paginatedResult';
-import { AudioCardComponent } from "../audio-card/audio-card.component";
+import { AudioCardComponent } from '../audio/audio-card/audio-card.component';
 import { isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 

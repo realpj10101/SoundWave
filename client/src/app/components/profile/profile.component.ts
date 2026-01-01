@@ -9,7 +9,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { PaginatedResult } from '../../models/helpers/paginatedResult';
 import { Pagination } from '../../models/helpers/pagination';
 import { LikePredicate } from '../../enums/like-predicate-enum';
-import { AudioCardComponent } from "../audio-card/audio-card.component";
+import { AudioCardComponent } from '../audio/audio-card/audio-card.component';
 import { RouterModule } from '@angular/router';
 import { AudioService } from '../../services/audio.service';
 import { AudioParams } from '../../models/helpers/audio-params';

@@ -1,13 +1,13 @@
 import { Component, ElementRef, inject, Input, OnInit, Output, signal, ViewChild, EventEmitter } from '@angular/core';
-import { Audio } from '../../models/audio.model';
+import { Audio } from '../../../models/audio.model';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { LikeService } from '../../services/like.service';
+import { LikeService } from '../../../services/like.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs';
-import { ApiResponse } from '../../models/helpers/apiResponse.model';
-import { environment } from '../../../environments/environment.development';
-import { PlaylistService } from '../../services/playlist.service';
+import { ApiResponse } from '../../../models/helpers/apiResponse.model';
+import { environment } from '../../../../environments/environment.development';
+import { PlaylistService } from '../../../services/playlist.service';
 
 @Component({
   selector: 'app-audio-card',

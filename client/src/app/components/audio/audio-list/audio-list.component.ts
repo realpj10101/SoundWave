@@ -1,21 +1,21 @@
 import { Component, inject, PLATFORM_ID } from '@angular/core';
-import { AudioService } from '../../services/audio.service';
+import { AudioService } from '../../../services/audio.service';
 import { Observable, Subscription } from 'rxjs';
-import { Audio } from '../../models/audio.model';
-import { Pagination } from '../../models/helpers/pagination';
-import { AudioParams } from '../../models/helpers/audio-params';
+import { Audio } from '../../../models/audio.model';
+import { Pagination } from '../../../models/helpers/pagination';
+import { AudioParams } from '../../../models/helpers/audio-params';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { PaginatedResult } from '../../models/helpers/paginatedResult';
-import { AudioCardComponent } from "../audio-card/audio-card.component";
+import { PaginatedResult } from '../../../models/helpers/paginatedResult';
+import { AudioCardComponent } from '../audio-card/audio-card.component';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-audio-list',
   imports: [
     MatPaginatorModule,
-    AudioCardComponent,
-],
+    AudioCardComponent
+  ],
   templateUrl: './audio-list.component.html',
   styleUrl: './audio-list.component.scss'
 })
