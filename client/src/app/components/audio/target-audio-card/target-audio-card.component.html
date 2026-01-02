@@ -1,0 +1,99 @@
+<section class="container">
+    <button (click)="closedDialog()" class="close-btn">
+        <mat-icon>close</mat-icon>
+    </button>
+    <div class="bg-layer">
+        @if (audioData.coverPath) {
+        <img [src]="apiUrl + audioData.coverPath.url_enlarged" alt="background cover" class="bg-image">
+        }
+        <div class="bg-gradient"></div>
+    </div>
+    <div class="content">
+        <div class="top">
+            @if (audioData.coverPath) {
+            <img [src]="apiUrl + audioData.coverPath.url_165" [alt]="audioData.fileName" class="main-cover">
+            }
+        </div>
+    </div>
+    <div class="bottom">
+        <div class="top-side">
+            <div class="audio-title">
+                <h1 class="title">{{audioData.fileName}}</h1>
+                <span class="uploader-name">{{audioData.uploaderName}}</span>
+            </div>
+            <div class="player-wrapper">
+                <div class="progress-container">
+                    <span class="time-text">{{currentTime}}</span>
+                    <div class="progress-bar-wrapper" (click)="seek($event)">
+                        <div class="progress-bg"></div>
+                        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+                    </div>
+                    <span class="time-text">{{(audioData.duration || 0) * 1000 | date:'mm:ss':'UTC'}}</span>
+                </div>
+
+                <div class="main-controls">
+                    <button class="control-btn sm">
+                        <mat-icon>skip_previous</mat-icon>
+                    </button>
+
+                    <button class="play-btn-large" (click)="togglePlay();">
+                        <mat-icon>{{ isPlaying ? 'pause' : 'play_arrow' }}</mat-icon>
+                    </button>
+
+                    <button class="control-btn sm">
+                        <mat-icon>skip_next</mat-icon>
+                    </button>
+                </div>
+
+                <div class="meta-badges">
+                    <div class="genres">
+                        @for (genre of audioData.genres; track $index) {
+                        <span class="badge highlight">{{genre}}</span>
+                        }
+                        @for (mood of audioData.moods; track $index) {
+                        <span class="badge">{{mood}}</span>
+                        }
+                    </div>
+
+                    <div class="hashtags">
+                        @for (tag of audioData.tags; track $index) {
+                        <span class="tag">{{tag}}</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="action-footer">
+                    <div class="action-item">
+                        <button class="icon-btn">
+                            <mat-icon>favorite_border</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="action-item">
+                        <button class="icon-btn">
+                            <mat-icon>chat_bubble_outline</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="action-item">
+                        <button class="icon-btn">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="action-item">
+                        <button class="icon-btn">
+                            <mat-icon>share</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <audio #audioElement [src]="apiUrl + audioData.filePath" (timeupdate)="updateProgress()"
+                    (ended)="onAudioEnded()"></audio>
+            </div>
+        </div>
+        <div class="bottom-side">
+
+        </div>
+    </div>
+</section>
