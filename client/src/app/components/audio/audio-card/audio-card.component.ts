@@ -57,6 +57,10 @@ export class AudioCardComponent implements OnInit {
 
         data: this.audioInput
       })
+
+      dialogRef.afterClosed().subscribe(() => {
+        this.count = this.audioInput?.likersCount;
+      })
     }
   }
 
@@ -120,7 +124,11 @@ export class AudioCardComponent implements OnInit {
   getLikesCount(): void {
     if (this.audioInput)
       this._likeService.getLikesCount(this.audioInput.fileName).subscribe({
-        next: (res: number) => this.count = res
+        next: (res: number) => {
+          this.count = res
+
+          this.audioInput!.likersCount = res;
+        }
       });
   }
 

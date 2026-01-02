@@ -64,9 +64,11 @@
 
                 <div class="action-footer">
                     <div class="action-item">
-                        <button class="icon-btn">
-                            <mat-icon>favorite_border</mat-icon>
+                        <button class="icon-btn like" (click)="audioData.isLiking ? dislike() : like()"
+                            [class.active-like]="audioData.isLiking">
+                            <mat-icon>{{ audioData.isLiking ? 'favorite' : 'favorite_border' }}</mat-icon>
                         </button>
+                        <span class="count">{{count}}</span>
                     </div>
 
                     <div class="action-item">

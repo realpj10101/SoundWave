@@ -284,6 +284,10 @@ $primary-orange: #f97316;
                     opacity: 0.8;
                     transition: opacity 0.2s;
 
+                    &.like {
+                        color: red;
+                    }
+
                     mat-icon {
                         font-size: 24px;
                         width: 24px;
@@ -292,6 +296,16 @@ $primary-orange: #f97316;
 
                     &:hover {
                         opacity: 1;
+                    }
+
+                    &.active-like {
+                        color: #ef4444;
+
+                        animation: pulse 0.3s ease-in-out;
+
+                        &:hover {
+                            color: #dc2626;
+                        }
                     }
                 }
             }
