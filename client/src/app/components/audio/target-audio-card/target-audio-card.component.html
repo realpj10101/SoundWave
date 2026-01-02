@@ -68,25 +68,29 @@
                             [class.active-like]="audioData.isLiking">
                             <mat-icon>{{ audioData.isLiking ? 'favorite' : 'favorite_border' }}</mat-icon>
                         </button>
-                        <span class="count">{{count}}</span>
+                        <span class="count">{{audioData.likersCount}}</span>
                     </div>
 
                     <div class="action-item">
                         <button class="icon-btn">
                             <mat-icon>chat_bubble_outline</mat-icon>
                         </button>
+                        <span class="label">Comments</span>
                     </div>
 
                     <div class="action-item">
-                        <button class="icon-btn">
-                            <mat-icon>add</mat-icon>
+                        <button class="icon-btn" (click)="audioData.isAdding ? removeFromPlaylist() : addToPlaylist()"
+                            [class.active-add]="audioData.isAdding">
+                            <mat-icon>{{ audioData.isAdding ? 'check' : 'add' }}</mat-icon>
                         </button>
+                        <span class="label">Save</span>
                     </div>
 
                     <div class="action-item">
                         <button class="icon-btn">
                             <mat-icon>share</mat-icon>
                         </button>
+                        <span class="label">Share</span>
                     </div>
                 </div>
 

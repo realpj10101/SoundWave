@@ -17,7 +17,7 @@ import { take } from 'rxjs';
   templateUrl: './target-audio-card.component.html',
   styleUrl: './target-audio-card.component.scss'
 })
-export class TargetAudioCardComponent implements OnInit {
+export class TargetAudioCardComponent {
   @ViewChild('audioElement') audioRef!: ElementRef<HTMLAudioElement>;
   @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
 
@@ -32,11 +32,6 @@ export class TargetAudioCardComponent implements OnInit {
   apiUrl = environment.apiUrl;
   isPlaying = false;
   progressPercentage = 0;
-  count: number | undefined;
-
-  ngOnInit(): void {
-    this.count = this.audioData.likersCount || 0;
-  }
 
   like(): void {
     if (this.audioData) {
@@ -59,17 +54,63 @@ export class TargetAudioCardComponent implements OnInit {
   dislike(): void {
     if (this.audioData) {
       this._likeService.delete(this.audioData.fileName).pipe(take(1))
-      .subscribe({
-        next: (res) => {
-          this.audioData.isLiking = false;
-          this.dislikeAudioNameOut.emit(this.audioData.fileName);
-          this.getLikeCount();
+        .subscribe({
+          next: (res) => {
+            this.audioData.isLiking = false;
+            this.dislikeAudioNameOut.emit(this.audioData.fileName);
+            this.getLikeCount();
 
-          this._snack.open(res.message, 'Close', {
-            duration: 7000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center'
-          })
+            this._snack.open(res.message, 'Close', {
+              duration: 7000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center'
+            })
+          }
+        })
+    }
+  }
+
+  addToPlaylist(): void {
+    if (this.audioData) {
+      this._playlistService.add(this.audioData.fileName).pipe(take(1))
+        .subscribe({
+          next: (res) => {
+            this.audioData.isAdding = true;
+            this.getAddresCount();
+
+            this._snack.open(res.message, 'Close', {
+              duration: 7000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center'
+            });
+          }
+        })
+    }
+  }
+
+  removeFromPlaylist(): void {
+    if (this.audioData) {
+      this._playlistService.remove(this.audioData.fileName).pipe(take(1))
+        .subscribe({
+          next: (res) => {
+            this.audioData.isAdding = false;
+            this.getAddresCount();
+
+            this._snack.open(res.message, 'Close', {
+              duration: 7000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center'
+            });
+          }
+        })
+    }
+  }
+
+  getAddresCount(): void {
+    if (this.audioData) {
+      this._playlistService.getAddersCount(this.audioData.fileName).subscribe({
+        next: (res) => {
+          this.audioData.addersCount = res;
         }
       })
     }
@@ -79,10 +120,8 @@ export class TargetAudioCardComponent implements OnInit {
     if (this.audioData) {
       this._likeService.getLikesCount(this.audioData.fileName).subscribe({
         next: (res: number) => {
-          this.count = res;
-
           this.audioData.likersCount = res;
-        } 
+        }
       })
     }
   }

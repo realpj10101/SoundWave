@@ -307,6 +307,17 @@ $primary-orange: #f97316;
                             color: #dc2626;
                         }
                     }
+
+                    &.active-add {
+                        color: #22c55e;
+                        opacity: 1;
+
+                        animation: pulse 0.3s ease-in-out;
+
+                        &:hover {
+                            color: #16a34a;
+                        }
+                    }
                 }
             }
         }
