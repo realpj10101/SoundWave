@@ -56,7 +56,7 @@
     }" (click)="$event.stopPropagation(); audioInput?.isLiking ? dislike() : like()">
           <img [src]="audioInput?.isLiking ? 'images/favorite-red.png' : 'images/favorite.png'" alt="like"
             class="like-icon" />
-          <span class="like-count">{{ count }}</span>
+          <span class="like-count">{{ audioInput?.likersCount }}</span>
         </button>
       </div>
 

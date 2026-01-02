@@ -41,7 +41,6 @@ export class AudioCardComponent implements OnInit {
 
   ngOnInit() {
     this.generateBars();
-    this.count = this.audioInput?.likersCount;
     this.adderCount = this.audioInput?.addersCount;
   }
 
@@ -56,10 +55,6 @@ export class AudioCardComponent implements OnInit {
         panelClass: isMobile ? 'mobile-audio-card-dialog' : undefined,
 
         data: this.audioInput
-      })
-
-      dialogRef.afterClosed().subscribe(() => {
-        this.count = this.audioInput?.likersCount;
       })
     }
   }
@@ -175,7 +170,10 @@ export class AudioCardComponent implements OnInit {
   getAddersCount(): void {
     if (this.audioInput)
       this._playlistService.getAddersCount(this.audioInput.fileName).subscribe({
-        next: (res: number) => this.adderCount = res
+        next: (res: number) => { 
+          this.adderCount = res
+
+        }
       })
   }
 }
