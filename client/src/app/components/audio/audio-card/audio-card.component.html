@@ -1,11 +1,10 @@
-<div class="audio-card">
+<div class="audio-card" (click)="openDialog()">
   @if (audioInput?.coverPath) {
   <div class="bg-layer">
     <img [src]="apiUrl + audioInput?.coverPath?.url_enlarged" alt="" class="bg-image" />
     <div class="bg-overlay"></div>
   </div>
   }
-
   <div class="header">
     <div class="user-info">
       <div class="left">
@@ -32,12 +31,12 @@
     <span class="duration">{{(audioInput?.duration || 0) * 1000 | date:'mm:ss':'UTC'}}</span>
   </div>
 
-  <div class="waveform" (click)="togglePlay()">
+  <div class="waveform">
     <div class="play-button">
       @if (isPlaying()) {
-      <button><mat-icon>pause</mat-icon></button>
+      <button (click)="$event.stopPropagation(); togglePlay()"><mat-icon>pause</mat-icon></button>
       } @else {
-      <button><mat-icon>play_arrow</mat-icon></button>
+      <button (click)="$event.stopPropagation(); togglePlay()"><mat-icon>play_arrow</mat-icon></button>
       }
     </div>
 
@@ -54,7 +53,7 @@
         <button class="like-button" [ngClass]="{
       'text-red-500': audioInput?.isLiking,
       'text-gray-400': !audioInput?.isLiking
-    }" (click)="audioInput?.isLiking ? dislike() : like()">
+    }" (click)="$event.stopPropagation(); audioInput?.isLiking ? dislike() : like()">
           <img [src]="audioInput?.isLiking ? 'images/favorite-red.png' : 'images/favorite.png'" alt="like"
             class="like-icon" />
           <span class="like-count">{{ count }}</span>
@@ -65,7 +64,7 @@
         <button class="add-button" [ngClass]="{
       'text-green-500': audioInput?.isAdding,
       'text-gray-400': !audioInput?.isAdding
-        }" (click)="audioInput?.isAdding ? removeFromPlaylist() : addToPlaylist()">
+        }" (click)="$event.stopPropagation(); audioInput?.isAdding ? removeFromPlaylist() : addToPlaylist()">
           <img [src]="audioInput?.isAdding ? 'images/remove.png' : 'images/add.png'" alt="add" class="add-icon" />
           <span class="add-count">{{ adderCount }}</span>
         </button>

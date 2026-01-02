@@ -1,18 +1,20 @@
-import { Component, ElementRef, inject, Input, OnInit, Output, signal, ViewChild, EventEmitter } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, Output, signal, ViewChild, EventEmitter, PLATFORM_ID } from '@angular/core';
 import { Audio } from '../../../models/audio.model';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { LikeService } from '../../../services/like.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs';
 import { ApiResponse } from '../../../models/helpers/apiResponse.model';
 import { environment } from '../../../../environments/environment.development';
 import { PlaylistService } from '../../../services/playlist.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TargetAudioCardComponent } from '../target-audio-card/target-audio-card.component';
 
 @Component({
   selector: 'app-audio-card',
   imports: [
-    MatIconModule, CommonModule
+    MatIconModule, CommonModule,
   ],
   templateUrl: './audio-card.component.html',
   styleUrl: './audio-card.component.scss'
@@ -22,9 +24,14 @@ export class AudioCardComponent implements OnInit {
   @ViewChild('audioElem') audioElem!: ElementRef<HTMLAudioElement>;
   @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
   @Output('removeAudioOut') removedAudioOut = new EventEmitter<string>();
+
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
   private _playlistService = inject(PlaylistService);
+  private _platformId = inject(PLATFORM_ID);
+
+  readonly dialog = inject(MatDialog);
+
   count: number | undefined;
   adderCount: number | undefined;
   apiUrl = environment.apiUrl
@@ -36,6 +43,21 @@ export class AudioCardComponent implements OnInit {
     this.generateBars();
     this.count = this.audioInput?.likersCount;
     this.adderCount = this.audioInput?.addersCount;
+  }
+
+  openDialog(): void {
+    if (isPlatformBrowser(this._platformId)) {
+      const isMobile = window.innerWidth <= 768;
+
+      const dialogRef = this.dialog.open(TargetAudioCardComponent, {
+        width: isMobile ? '100vw' : '670px',
+        maxWidth: '100vw',
+        position: isMobile ? { bottom: '0', left: '0' } : undefined,
+        panelClass: isMobile ? 'mobile-audio-card-dialog' : undefined,
+
+        data: this.audioInput
+      })
+    }
   }
 
   togglePlay() {
