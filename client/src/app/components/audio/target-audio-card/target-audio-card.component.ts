@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, EventEmitter, inject, OnInit, Output, PLATFORM_ID, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { environment } from '../../../../environments/environment.development';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,7 @@ import { LikeService } from '../../../services/like.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlaylistService } from '../../../services/playlist.service';
 import { take } from 'rxjs';
+import ColorThief from 'colorthief';
 
 @Component({
   selector: 'app-target-audio-card',
@@ -24,6 +25,7 @@ export class TargetAudioCardComponent {
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
   private _playlistService = inject(PlaylistService);
+  private _platformId = inject(PLATFORM_ID);
 
   audioData: Audio = inject(MAT_DIALOG_DATA);
   dialogRef = inject(MatDialogRef<TargetAudioCardComponent>);
@@ -32,6 +34,7 @@ export class TargetAudioCardComponent {
   apiUrl = environment.apiUrl;
   isPlaying = false;
   progressPercentage = 0;
+  dynamicGradient = 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #000000 100%)';
 
   like(): void {
     if (this.audioData) {
@@ -188,5 +191,80 @@ export class TargetAudioCardComponent {
     const ss = partSeconds < 10 ? `0${partSeconds}` : `${partSeconds}`;
 
     return `${mm}:${ss}`;
+  }
+
+  async shareAudio() {
+    if (isPlatformBrowser(this._platformId)) {
+      const shareData = {
+        title: this.audioData.fileName,
+        text: `Check out "${this.audioData.fileName}" by ${this.audioData.uploaderName}`,
+        url: window.location.href
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+
+          this._snack.open('Shared successfully', 'Close', {
+            duration: 7000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          })
+        }
+        else {
+          this.copyToClipboard(shareData.url);
+        }
+      }
+      catch (err) {
+        this._snack.open('Error sharing', 'Close', {
+          duration: 7000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        })
+      }
+    }
+  }
+
+  private copyToClipboard(url: string): void {
+    navigator.clipboard.writeText(url).then(() => {
+      this._snack.open('Link copied to clipboard!', 'Close', {
+        duration: 7000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center'
+      })
+    })
+  }
+
+  extractColors(event: any): void {
+    if (isPlatformBrowser(this._platformId)) {
+      const img = event.target as HTMLImageElement;
+
+      if (img.complete) {
+        this.applyPallete(img);
+      }
+      else { 
+        img.onload = () => this.applyPallete(img);
+      }
+    }
+  }
+
+  private applyPallete(img: HTMLImageElement): void {
+    try {
+      const colorThief = new ColorThief();
+
+      const palette = colorThief.getPalette(img, 3);
+
+      if (palette && palette.length >= 3) {
+        const c1 = `rgb(${palette[0].join(',')})`;
+        const c2 = `rgb(${palette[1].join(',')})`;
+        const c3 = `rgb(${palette[2].join(',')})`;        
+
+        this.dynamicGradient = `linear-gradient(135deg, ${c1} 0%, ${c2} 50%, ${c3} 100%)`;
+      }
+    }
+    catch (error) {
+      console.error('CORS Error: Color cannot be extract', error);
+
+    }
   }
 }

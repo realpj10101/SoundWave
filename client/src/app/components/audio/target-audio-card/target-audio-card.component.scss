@@ -81,15 +81,16 @@ $primary-orange: #f97316;
 }
 
 .bottom {
-    background: linear-gradient(135deg,
-            #111827 0%,
-            #1f2937 50%,
-            #000000 100%);
+    // background: linear-gradient(135deg,
+    //         #111827 0%,
+    //         #1f2937 50%,
+    //         #000000 100%);
     border-top: 1px solid #374151;
     backdrop-filter: blur(4px);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     padding: 1.5rem;
     z-index: 20;
+    transition: background 1s ease-in-out;
     // width: 100%;
 
     .top-side {

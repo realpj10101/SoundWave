@@ -11,11 +11,17 @@
     <div class="content">
         <div class="top">
             @if (audioData.coverPath) {
-            <img [src]="apiUrl + audioData.coverPath.url_165" [alt]="audioData.fileName" class="main-cover">
+            <img 
+                [src]="apiUrl + audioData.coverPath.url_165"
+                [alt]="audioData.fileName"
+                class="main-cover"
+                crossorigin="anonymous"
+                (load)="extractColors($event)"
+            >
             }
         </div>
     </div>
-    <div class="bottom">
+    <div class="bottom" [style.background]="dynamicGradient">
         <div class="top-side">
             <div class="audio-title">
                 <h1 class="title">{{audioData.fileName}}</h1>
@@ -87,7 +93,7 @@
                     </div>
 
                     <div class="action-item">
-                        <button class="icon-btn">
+                        <button class="icon-btn" (click)="shareAudio()">
                             <mat-icon>share</mat-icon>
                         </button>
                         <span class="label">Share</span>
