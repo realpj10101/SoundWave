@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  inject,
   Inject,
   OnDestroy,
   PLATFORM_ID,
@@ -17,27 +18,28 @@ import { isPlatformBrowser } from '@angular/common';
 export class AnimatedWaveBackgroundComponent implements AfterViewInit, OnDestroy {
   @ViewChild('waveCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  private animationId: number = 0;
-  private time: number = 0;
-  private ctx!: CanvasRenderingContext2D | null;
-  private isBrowser: boolean;
-  private resizeHandler!: () => void;
+  private _animationId: number = 0;
+  private _time: number = 0;
+  private _ctx!: CanvasRenderingContext2D | null;
+  private _isBrowser: boolean;
+  private _resizeHandler!: () => void;
+  private _platformId = inject(PLATFORM_ID);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.isBrowser = isPlatformBrowser(platformId);
+  constructor() {
+    this._isBrowser = isPlatformBrowser(this._platformId);
   }
 
   ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
+    if (!this._isBrowser) return;
     setTimeout(() => this.startCanvasAnimation(), 0);
   }
 
   private startCanvasAnimation() {
     const canvas = this.canvasRef.nativeElement;
-    this.ctx = canvas.getContext('2d');
-    if (!this.ctx) return;
+    this._ctx = canvas.getContext('2d');
+    if (!this._ctx) return;
 
-    this.resizeHandler = () => {
+    this._resizeHandler = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
@@ -50,7 +52,7 @@ export class AnimatedWaveBackgroundComponent implements AfterViewInit, OnDestroy
       color: string,
       opacity: number
     ) => {
-      const ctx = this.ctx!;
+      const ctx = this._ctx!;
       ctx.beginPath();
       ctx.moveTo(0, canvas.height);
 
@@ -78,30 +80,30 @@ export class AnimatedWaveBackgroundComponent implements AfterViewInit, OnDestroy
     };
 
     const animate = () => {
-      if (!this.ctx) return;
-      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!this._ctx) return;
+      this._ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      drawWave(120, 0.8, this.time * 0.007, canvas.height * 0.6, '#ea580c', 0.4);
-      drawWave(150, 1.2, this.time * 0.005, canvas.height * 0.65, '#dc2626', 0.35);
-      drawWave(180, 1.0, this.time * 0.008, canvas.height * 0.7, '#f97316', 0.3);
-      drawWave(100, 1.5, this.time * 0.01, canvas.height * 0.75, '#b91c1c', 0.25);
-      drawWave(200, 0.6, this.time * 0.006, canvas.height * 0.8, '#fb923c', 0.2);
-      drawWave(80, 2.0, this.time * 0.01, canvas.height * 0.85, '#991b1b', 0.15);
+      drawWave(120, 0.8, this._time * 0.007, canvas.height * 0.6, '#ea580c', 0.4);
+      drawWave(150, 1.2, this._time * 0.005, canvas.height * 0.65, '#dc2626', 0.35);
+      drawWave(180, 1.0, this._time * 0.008, canvas.height * 0.7, '#f97316', 0.3);
+      drawWave(100, 1.5, this._time * 0.01, canvas.height * 0.75, '#b91c1c', 0.25);
+      drawWave(200, 0.6, this._time * 0.006, canvas.height * 0.8, '#fb923c', 0.2);
+      drawWave(80, 2.0, this._time * 0.01, canvas.height * 0.85, '#991b1b', 0.15);
 
-      this.time += 1;
-      this.animationId = requestAnimationFrame(animate);
+      this._time += 1;
+      this._animationId = requestAnimationFrame(animate);
     };
 
-    this.resizeHandler();
+    this._resizeHandler();
     animate();
-    window.addEventListener('resize', this.resizeHandler);
+    window.addEventListener('resize', this._resizeHandler);
   }
 
   ngOnDestroy(): void {
-    if (this.isBrowser) {
-      cancelAnimationFrame(this.animationId);
-      if (this.resizeHandler) {
-        window.removeEventListener('resize', this.resizeHandler);
+    if (this._isBrowser) {
+      cancelAnimationFrame(this._animationId);
+      if (this._resizeHandler) {
+        window.removeEventListener('resize', this._resizeHandler);
       }
     }
   }
