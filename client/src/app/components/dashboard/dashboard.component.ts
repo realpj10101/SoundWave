@@ -1,7 +1,7 @@
-import { Component, ElementRef, HostListener, inject, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { AudioService } from '../../services/audio.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { Audio } from '../../models/audio.model';
 import { Pagination } from '../../models/helpers/pagination';
 import { AudioParams } from '../../models/helpers/audio-params';
@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   @ViewChild('sidebar', { read: ElementRef}) sidebar!: ElementRef<HTMLElement>;
   @ViewChild('sidebarBtn', { read: ElementRef}) sidebarBtn!: ElementRef<HTMLElement>;
 
@@ -68,13 +68,9 @@ export class DashboardComponent {
     }
   }
 
-  ngOnDestroy(): void {
-    this.subscribed?.unsubscribe();
-  }
-
   getAll(): void {
     if (this.audioParams)
-      this.subscribed = this.audioService.getAll(this.audioParams).subscribe({
+      this.audioService.getAll(this.audioParams).pipe(take(1)).subscribe({
         next: (response: PaginatedResult<Audio[]>) => {
           if (response.body && response.pagination) {
             this.audios = response.body;
