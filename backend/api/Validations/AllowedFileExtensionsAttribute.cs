@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace api.Extensions.Validations;
+namespace api.Validations;
 
 public class AllowedFileExtensionsAttribute : ValidationAttribute
 {
@@ -120,14 +120,14 @@ public class AllowedFileExtensionsAttribute : ValidationAttribute
         //         new byte[] { 0x00, 0x00, 0xFE, 0xFF },
         //     }
         // },
-        { ".mp3", new List<byte[]>
-            {
-                new byte[] { 0x49, 0x44, 0x33 },
-                new byte[] { 0xFF, 0xFB },
-                new byte[] { 0xFF, 0xF3},
-                new byte[] { 0xFF, 0xF2},
-                new byte[] { 0x49, 0x44, 0x43},
-            }
-        },
+            // { ".mp3", new List<byte[]>
+            //     {
+            //         new byte[] { 0x49, 0x44, 0x33 },
+            //         new byte[] { 0xFF, 0xFB },
+            //         new byte[] { 0xFF, 0xF3},
+            //         new byte[] { 0xFF, 0xF2},
+            //         new byte[] { 0x49, 0x44, 0x43},
+            //     }
+            // },
     };
 }

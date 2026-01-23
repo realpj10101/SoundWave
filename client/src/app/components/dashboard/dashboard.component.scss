@@ -155,61 +155,47 @@
 
       .paginator {
         display: flex;
+        flex-direction: column;
         justify-content: center;
-        backdrop-filter: blur(10px);
-        background-color: rgba(55, 65, 81, 0.7); // dark gray with transparency
+        align-items: center;
         border-radius: 12px;
         padding: 8px;
         font-weight: bold;
 
-        // Style paginator container
-        ::ng-deep .mat-mdc-paginator-container {
-          background-color: transparent;
-          color: #f97316;
+        .top {
+          display: flex;
+          gap: 1rem;
         }
 
-        // Style icons (next, previous, first, last)
-        ::ng-deep .mat-mdc-icon-button {
-          font-weight: bold;
-          color: #f97316;
+        .details {
+          color: #9ca3af;
         }
 
-        // Style dropdown select text and arrow
-        ::ng-deep .mat-mdc-select-value,
-        ::ng-deep .mat-mdc-select-arrow {
-          color: #f97316;
-        }
-
-        // Style dropdown input box background
-        ::ng-deep .mat-mdc-text-field-wrapper {
-          background-color: transparent;
-        }
-
-        // Style dropdown panel (when open)
-        ::ng-deep .mat-mdc-select-panel {
-          background-color: #1f2937; // darker gray (Tailwind's gray-800)
-          color: #f97316;
-        }
-
-        // Style each option inside dropdown
-        ::ng-deep .mat-mdc-option {
-          color: #f97316;
-
-          &.mdc-list-item--selected {
-            background-color: #374151; // Tailwind's gray-700
-          }
+        .btn {
+          border-radius: 8px;
+          background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+          cursor: pointer;
+          color: white;
+          border: none;
+          display: flex;
 
           &:hover {
-            background-color: #4b5563; // Tailwind's gray-600
+            transform: scale(1.05);
+            box-shadow: 0 12px 25px rgba(249, 115, 22, 0.5);
           }
         }
 
-        // Style range label text
-        ::ng-deep .mat-mdc-paginator-range-label {
-          color: #f97316;
+        .btn:disabled {
+          background-color: #374151;
+          color: #6b7280;
+          cursor: auto;
+
+          &:hover {
+            transform: scale(1.0);
+            box-shadow: none;
+          }
         }
       }
-
     }
 
     @media (max-width: 768px) {

@@ -76,7 +76,7 @@ export class AudioCardComponent implements OnInit {
 
   like(): void {
     if (this.audioInput)
-      this._likeService.create(this.audioInput.fileName).pipe(
+      this._likeService.create(this.audioInput.id).pipe(
         take(1))
         .subscribe({
           next: (res: ApiResponse) => {
@@ -96,7 +96,7 @@ export class AudioCardComponent implements OnInit {
 
   dislike(): void {
     if (this.audioInput)
-      this._likeService.delete(this.audioInput.fileName).pipe(
+      this._likeService.delete(this.audioInput.id).pipe(
         take(1))
         .subscribe({
           next: (res: ApiResponse) => {
@@ -129,7 +129,7 @@ export class AudioCardComponent implements OnInit {
 
   addToPlaylist(): void {
     if (this.audioInput)
-      this._playlistService.add(this.audioInput.fileName).pipe(
+      this._playlistService.add(this.audioInput.id).pipe(
         take(1))
         .subscribe({
           next: (res: ApiResponse) => {
@@ -148,7 +148,7 @@ export class AudioCardComponent implements OnInit {
 
   removeFromPlaylist(): void {
     if (this.audioInput)
-      this._playlistService.remove(this.audioInput.fileName).pipe(
+      this._playlistService.remove(this.audioInput.id).pipe(
         take(1))
         .subscribe({
           next: (res: ApiResponse) => {

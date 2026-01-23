@@ -20,7 +20,7 @@ public class LikeRepository : ILikeRepository
     private readonly IMongoCollection<Like> _collection;
     private readonly ITokenService _tokenService;
     private readonly IMongoCollection<AudioFile> _collectionAudios;
-    private readonly IMongoCollection<AppUser> _colletionUsers;
+    private readonly IMongoCollection<AppUser> _collectionUsers;
     private readonly IAudioFileRepository _audioFileRepository;
     private readonly ILogger<LikeRepository> _logger;
 
@@ -33,7 +33,7 @@ public class LikeRepository : ILikeRepository
         IMongoDatabase? dbName = client.GetDatabase(dbSettings.DatabaseName);
         _collection = dbName.GetCollection<Like>(AppVariablesExtensions.CollectionLikes);
         _collectionAudios = dbName.GetCollection<AudioFile>(AppVariablesExtensions.CollectionTracks);
-        _colletionUsers = dbName.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
+        _collectionUsers = dbName.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
 
         _tokenService = tokenService;
 
@@ -44,14 +44,13 @@ public class LikeRepository : ILikeRepository
 
     #endregion
 
-    public async Task<LikeStatus> CreateAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken)
+    public async Task<LikeStatus> CreateAsync(ObjectId userId, ObjectId targetId, CancellationToken cancellationToken)
     {
         LikeStatus lS = new();
 
-        ObjectId? targetId =
-            await _audioFileRepository.GetObjectIdByAudioNameAsync(targetAudioName, cancellationToken);
-
-        if (targetId is null)
+        bool isExist = await _collectionAudios.Find(doc => doc.Id == targetId).AnyAsync(cancellationToken);
+        
+        if (!isExist)
         {
             lS.IsTargetAudioNotFound = true;
 
@@ -70,7 +69,7 @@ public class LikeRepository : ILikeRepository
             return lS;
         }
 
-        Like like = Mappers.ConvertLikeIdsToLike(userId, targetId.Value);
+        Like like = Mappers.ConvertLikeIdsToLike(userId, targetId);
 
         using IClientSessionHandle session = await _client.StartSessionAsync(null, cancellationToken);
 
@@ -85,7 +84,7 @@ public class LikeRepository : ILikeRepository
             UpdateDefinition<AppUser> updateLikingsCount = Builders<AppUser>.Update
                 .Inc(user => user.LikingsCount, 1);
 
-            await _colletionUsers.UpdateOneAsync<AppUser>(session, appUser =>
+            await _collectionUsers.UpdateOneAsync<AppUser>(session, appUser =>
                 appUser.Id == userId, updateLikingsCount, null, cancellationToken);
 
             UpdateDefinition<AudioFile> updateLikersCount = Builders<AudioFile>.Update
@@ -118,14 +117,13 @@ public class LikeRepository : ILikeRepository
         return lS;
     }
 
-    public async Task<LikeStatus> DeleteAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken)
+    public async Task<LikeStatus> DeleteAsync(ObjectId userId, ObjectId targetAudioId, CancellationToken cancellationToken)
     {
         LikeStatus lS = new();
-
-        ObjectId? targetId =
-            await _audioFileRepository.GetObjectIdByAudioNameAsync(targetAudioName, cancellationToken);
-
-        if (targetId is null)
+    
+        bool isExist = await _collectionAudios.Find(doc => doc.Id == targetAudioId).AnyAsync(cancellationToken);
+        
+        if (!isExist)
         {
             lS.IsTargetAudioNotFound = true;
 
@@ -140,7 +138,7 @@ public class LikeRepository : ILikeRepository
         {
             DeleteResult deleteResult = await _collection.DeleteOneAsync(
                 doc => doc.LikerId == userId
-                    && doc.LikedAudioId == targetId, cancellationToken
+                    && doc.LikedAudioId == targetAudioId, cancellationToken
             );
 
             if (deleteResult.DeletedCount < 1)
@@ -155,14 +153,14 @@ public class LikeRepository : ILikeRepository
             UpdateDefinition<AppUser> updateLikingsCount = Builders<AppUser>.Update
                 .Inc(appUser => appUser.LikingsCount, -1);
 
-            await _colletionUsers.UpdateOneAsync<AppUser>(session, appUser =>
+            await _collectionUsers.UpdateOneAsync<AppUser>(session, appUser =>
                 appUser.Id == userId, updateLikingsCount, null, cancellationToken);
 
             UpdateDefinition<AudioFile> updateLikersCount = Builders<AudioFile>.Update
                 .Inc(audio => audio.LikersCount, -1);
 
             await _collectionAudios.UpdateOneAsync<AudioFile>(session, audio =>
-                audio.Id == targetId, updateLikersCount, null, cancellationToken);
+                audio.Id == targetAudioId, updateLikersCount, null, cancellationToken);
 
             #endregion
 

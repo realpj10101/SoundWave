@@ -36,11 +36,23 @@
       </div>
 
       @if (pagination && audioParams) {
-      <mat-paginator #paginator (page)="handlePageEvent($event)" [length]="pagination.totalItems"
+      <div class="paginator">
+        <div class="top">
+          <button [disabled]="pagination.currentPage===1" class="btn prev" (click)="goToPreviousPage()">
+            <mat-icon class="icon">arrow_back</mat-icon>
+          </button>
+          <button [disabled]="pagination.currentPage===pagination.totalPages" class="btn nxt" (click)="goToNextPage()">
+            <mat-icon class="icon">arrow_forward</mat-icon>
+          </button>
+        </div>
+        <p class="details">Page {{pagination.currentPage}} of {{pagination.totalPages}}</p>
+      </div>
+
+      <!-- <mat-paginator #paginator (page)="handlePageEvent($event)" [length]="pagination.totalItems"
         [pageSize]="audioParams.pageSize" [disabled]="false" [showFirstLastButtons]="true"
         [pageSizeOptions]="true ? pageSizeOptions : []" [hidePageSize]="false" [pageIndex]="audioParams.pageNumber - 1"
         aria-label="Select page" class="paginator">
-      </mat-paginator>
+      </mat-paginator> -->
       }
     </section>
   </div>

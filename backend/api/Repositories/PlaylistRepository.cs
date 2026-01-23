@@ -41,14 +41,13 @@ public class PlaylistRepository : IPlaylistRepository
     }
 
 
-    public async Task<PlaylistStatus> AddAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken)
+    public async Task<PlaylistStatus> AddAsync(ObjectId userId, ObjectId targetAudioId, CancellationToken cancellationToken)
     {
         PlaylistStatus pS = new();
 
-        ObjectId? targetId =
-            await _audioFileRepository.GetObjectIdByAudioNameAsync(targetAudioName, cancellationToken);
-
-        if (targetId is null)
+        bool isExist = await _collectionAudios.Find(doc => doc.Id == targetAudioId).AnyAsync(cancellationToken);
+        
+        if (!isExist)
         {
             pS.IsTargetAudioNotFound = true;
 
@@ -57,7 +56,7 @@ public class PlaylistRepository : IPlaylistRepository
 
         bool isAdding = await _collection.Find(doc =>
                 doc.AdderId == userId &&
-                doc.AddedAudioId == targetId).AnyAsync(cancellationToken);
+                doc.AddedAudioId == targetAudioId).AnyAsync(cancellationToken);
 
         if (isAdding)
         {
@@ -66,7 +65,7 @@ public class PlaylistRepository : IPlaylistRepository
             return pS;
         }
 
-        Playlist playlist = Mappers.ConvertPlaylistIdToPlaylist(userId, targetId.Value);
+        Playlist playlist = Mappers.ConvertPlaylistIdToPlaylist(userId, targetAudioId);
 
         using IClientSessionHandle session = await _client.StartSessionAsync(null, cancellationToken);
 
@@ -88,7 +87,7 @@ public class PlaylistRepository : IPlaylistRepository
                 .Inc(audio => audio.AdderCount, 1);
 
             await _collectionAudios.UpdateOneAsync(session, audioFile =>
-                audioFile.Id == targetId, updateAddersCount, null, cancellationToken);
+                audioFile.Id == targetAudioId, updateAddersCount, null, cancellationToken);
 
             #endregion
 
@@ -114,14 +113,13 @@ public class PlaylistRepository : IPlaylistRepository
         return pS;
     }
 
-    public async Task<PlaylistStatus> RemoveAsync(ObjectId userId, string targetAudioName, CancellationToken cancellationToken)
+    public async Task<PlaylistStatus> RemoveAsync(ObjectId userId, ObjectId targetAudioId, CancellationToken cancellationToken)
     {
         PlaylistStatus pS = new();
 
-        ObjectId? targetId =
-            await _audioFileRepository.GetObjectIdByAudioNameAsync(targetAudioName, cancellationToken);
-
-        if (targetId is null)
+        bool isExist = await _collectionAudios.Find(doc => doc.Id == targetAudioId).AnyAsync(cancellationToken);
+        
+        if (!isExist)
         {
             pS.IsTargetAudioNotFound = true;
 
@@ -136,7 +134,7 @@ public class PlaylistRepository : IPlaylistRepository
         {
             DeleteResult deleteResult = await _collection.DeleteOneAsync(
                 doc => doc.AdderId == userId
-                && doc.AddedAudioId == targetId, cancellationToken
+                && doc.AddedAudioId == targetAudioId, cancellationToken
             );
 
             if (deleteResult.DeletedCount < 1)
@@ -158,7 +156,7 @@ public class PlaylistRepository : IPlaylistRepository
                 .Inc(audio => audio.AdderCount, -1);
 
             await _collectionAudios.UpdateOneAsync(session, audioFile =>
-                    audioFile.Id == targetId, updateAddersCount, null, cancellationToken);
+                    audioFile.Id == targetAudioId, updateAddersCount, null, cancellationToken);
 
             #endregion
 

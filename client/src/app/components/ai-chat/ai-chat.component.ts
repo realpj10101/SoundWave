@@ -4,11 +4,13 @@ import { Bubble } from '../../models/types';
 import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserPropmt } from '../../models/user-prompt.mode';
 import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-ai-chat',
   imports: [
-    CommonModule, ReactiveFormsModule, FormsModule
+    CommonModule, ReactiveFormsModule, FormsModule, SidebarComponent, MatIconModule
   ],
   templateUrl: './ai-chat.component.html',
   styleUrl: './ai-chat.component.scss'
@@ -20,6 +22,8 @@ export class AiChatComponent {
   private _aiService = inject(AiChatService);
   private _fB = inject(FormBuilder);
 
+  isSidebarOpen = false;
+
   submitFg = this._fB.group({
     searchCtrl: ['']
   })
@@ -29,6 +33,10 @@ export class AiChatComponent {
   }
 
   query = '';
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
 
   onSubmit(): void {
     const q = (this.SearchCtrl.value as string | null)?.trim();
@@ -45,7 +53,7 @@ export class AiChatComponent {
 
   private pushUser(text: string): void {
     console.log(text);
-    
+
     this.history.update(h => [...h, { role: 'user', text }]);
     this.loading.set(true);
     this.scrollToBottom();
@@ -56,8 +64,7 @@ export class AiChatComponent {
     req.prompt = prompt;
 
     console.log(req.prompt);
-        
-    
+
     this._aiService.recommend(req).subscribe({
       next: (res) => {
         this.loading.set(false);

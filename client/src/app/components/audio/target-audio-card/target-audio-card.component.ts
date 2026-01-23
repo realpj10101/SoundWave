@@ -9,23 +9,33 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlaylistService } from '../../../services/playlist.service';
 import { take } from 'rxjs';
 import ColorThief from 'colorthief';
+import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommentService } from '../../../services/comment.service';
+import { CommentResponse, CreateComment } from '../../../models/comment.model';
+import { ApiResponse } from '../../../models/helpers/apiResponse.model';
+import { IntlModule } from 'angular-ecmascript-intl';
+import { Member } from '../../../models/member.model';
+import { LoggedInUser } from '../../../models/account.model';
 
 @Component({
   selector: 'app-target-audio-card',
   imports: [
-    CommonModule, MatIconModule
+    CommonModule, MatIconModule, ReactiveFormsModule, FormsModule, IntlModule
   ],
   templateUrl: './target-audio-card.component.html',
   styleUrl: './target-audio-card.component.scss'
 })
-export class TargetAudioCardComponent {
+export class TargetAudioCardComponent implements OnInit {
   @ViewChild('audioElement') audioRef!: ElementRef<HTMLAudioElement>;
+  @ViewChild('comContainer') comContainer!: ElementRef<HTMLDivElement>;
   @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
 
   private _likeService = inject(LikeService);
   private _snack = inject(MatSnackBar);
   private _playlistService = inject(PlaylistService);
   private _platformId = inject(PLATFORM_ID);
+  private _fB = inject(FormBuilder);
+  private _commentService = inject(CommentService);
 
   audioData: Audio = inject(MAT_DIALOG_DATA);
   dialogRef = inject(MatDialogRef<TargetAudioCardComponent>);
@@ -35,10 +45,57 @@ export class TargetAudioCardComponent {
   isPlaying = false;
   progressPercentage = 0;
   dynamicGradient = 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #000000 100%)';
+  isCommentSectionOpen = false;
+  comments: CommentResponse[] = [];
+
+  commentFg = this._fB.group({
+    contentCtrl: ['']
+  })
+
+  get ContentCtrl(): FormControl {
+    return this.commentFg.get('contentCtrl') as FormControl;
+  }
+
+  ngOnInit(): void {
+    this.getAudioComments();
+  }
+
+  scrollToTop(): void {
+    setTimeout(() => {
+      if (this.comContainer) {
+        this.comContainer.nativeElement.scrollTop = 0;
+      }
+    }, 0);
+  }
+
+  toggleCommentSection(): void {
+    this.isCommentSectionOpen = !this.isCommentSectionOpen;
+  }
+
+  addComment(): void {
+    let req: CreateComment = {
+      content: this.ContentCtrl.value
+    }
+
+    this._commentService.create(req, this.audioData.id).subscribe({
+      next: (res) => {
+        this.comments = [...this.comments, res];
+        this.ContentCtrl.setValue('');
+      }
+    })
+  }
+
+  getAudioComments(): void {
+    this._commentService.getAllAudioComments(this.audioData.id).subscribe({
+      next: (res: CommentResponse[]) => {
+        this.comments = res.reverse();
+      }
+    })
+  }
 
   like(): void {
     if (this.audioData) {
-      this._likeService.create(this.audioData.fileName).pipe(take(1))
+      this._likeService.create(this.audioData.id).pipe(take(1))
         .subscribe({
           next: (res) => {
             this.audioData.isLiking = true;
@@ -56,7 +113,7 @@ export class TargetAudioCardComponent {
 
   dislike(): void {
     if (this.audioData) {
-      this._likeService.delete(this.audioData.fileName).pipe(take(1))
+      this._likeService.delete(this.audioData.id).pipe(take(1))
         .subscribe({
           next: (res) => {
             this.audioData.isLiking = false;
@@ -75,11 +132,11 @@ export class TargetAudioCardComponent {
 
   addToPlaylist(): void {
     if (this.audioData) {
-      this._playlistService.add(this.audioData.fileName).pipe(take(1))
+      this._playlistService.add(this.audioData.id).pipe(take(1))
         .subscribe({
           next: (res) => {
             this.audioData.isAdding = true;
-            this.getAddresCount();
+            this.getAddersCount();
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -93,11 +150,11 @@ export class TargetAudioCardComponent {
 
   removeFromPlaylist(): void {
     if (this.audioData) {
-      this._playlistService.remove(this.audioData.fileName).pipe(take(1))
+      this._playlistService.remove(this.audioData.id).pipe(take(1))
         .subscribe({
           next: (res) => {
             this.audioData.isAdding = false;
-            this.getAddresCount();
+            this.getAddersCount();
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -109,7 +166,7 @@ export class TargetAudioCardComponent {
     }
   }
 
-  getAddresCount(): void {
+  getAddersCount(): void {
     if (this.audioData) {
       this._playlistService.getAddersCount(this.audioData.fileName).subscribe({
         next: (res) => {
@@ -193,6 +250,13 @@ export class TargetAudioCardComponent {
     return `${mm}:${ss}`;
   }
 
+  onKeyDown(e: KeyboardEvent): void {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      this.addComment();
+    }
+  }
+
   async shareAudio() {
     if (isPlatformBrowser(this._platformId)) {
       const shareData = {
@@ -242,7 +306,7 @@ export class TargetAudioCardComponent {
       if (img.complete) {
         this.applyPallete(img);
       }
-      else { 
+      else {
         img.onload = () => this.applyPallete(img);
       }
     }
@@ -257,14 +321,13 @@ export class TargetAudioCardComponent {
       if (palette && palette.length >= 3) {
         const c1 = `rgb(${palette[0].join(',')})`;
         const c2 = `rgb(${palette[1].join(',')})`;
-        const c3 = `rgb(${palette[2].join(',')})`;        
+        const c3 = `rgb(${palette[2].join(',')})`;
 
         this.dynamicGradient = `linear-gradient(135deg, ${c1} 0%, ${c2} 50%, ${c3} 100%)`;
       }
     }
     catch (error) {
       console.error('CORS Error: Color cannot be extract', error);
-
     }
   }
 }

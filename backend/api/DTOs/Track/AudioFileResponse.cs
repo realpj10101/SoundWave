@@ -1,8 +1,10 @@
 using api.Models;
+using MongoDB.Bson;
 
 namespace api.DTOs.Track;
 
 public record AudioFileResponse(
+    string Id,
     string UploaderName,
     string FileName,
     string FilePath,

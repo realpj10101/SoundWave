@@ -8,12 +8,13 @@ public record AudioFile(
     [Optional]
     [property: BsonId, BsonRepresentation(BsonType.ObjectId)]
     ObjectId Id,
-    string UploaderName,
+    ObjectId UploaderId,
     string FileName,
     string FilePath,
     MainPhoto CoverPath,
     int LikersCount,
     int AdderCount,
+    int CommentsCount,
     DateTime UploadedAt,
     List<string> Genres,
     List<string> Moods,

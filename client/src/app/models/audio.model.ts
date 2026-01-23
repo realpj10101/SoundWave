@@ -1,6 +1,7 @@
 import { MainPhoto } from "./photo.model";
 
 export interface Audio {
+    id: string;
     uploaderName: string;
     fileName: string;
     filePath: string;

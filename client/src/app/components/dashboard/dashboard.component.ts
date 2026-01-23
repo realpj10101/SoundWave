@@ -21,8 +21,8 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  @ViewChild('sidebar', { read: ElementRef}) sidebar!: ElementRef<HTMLElement>;
-  @ViewChild('sidebarBtn', { read: ElementRef}) sidebarBtn!: ElementRef<HTMLElement>;
+  @ViewChild('sidebar', { read: ElementRef }) sidebar!: ElementRef<HTMLElement>;
+  @ViewChild('sidebarBtn', { read: ElementRef }) sidebarBtn!: ElementRef<HTMLElement>;
 
   private audioService = inject(AudioService);
   private _platformId = inject(PLATFORM_ID);
@@ -35,6 +35,20 @@ export class DashboardComponent implements OnInit {
   audioParams: AudioParams | undefined;
   pageSizeOptions = [5, 10, 25];
   pageEvent: PageEvent | undefined;
+
+  goToNextPage(): void {
+    if (this.audioParams && this.pagination && this.pagination.currentPage < this.pagination.totalPages) {
+      this.audioParams.pageNumber++
+      this.getAll();
+    }
+  }
+
+  goToPreviousPage(): void {
+    if (this.audioParams && this.pagination && this.pagination.currentPage > 1) {
+      this.audioParams.pageNumber--;
+      this.getAll();
+    }
+  }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
@@ -56,6 +70,12 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.audioParams = new AudioParams();
+
+    this.audioParams = {
+      pageNumber: 1,
+      pageSize: 5,
+      search: ''
+    }
 
     if (isPlatformBrowser(this._platformId)) {
       const userStr = localStorage.getItem('loggedInUser');
@@ -86,7 +106,7 @@ export class DashboardComponent implements OnInit {
         e.pageIndex = 0;
 
       this.pageEvent = e;
-      this.audioParams.pageSize = e.pageSize;
+      // this.audioParams.pageSize = e.pageSize;
       this.audioParams.pageNumber = e.pageIndex + 1;
 
       this.getAll();
@@ -112,7 +132,7 @@ export class DashboardComponent implements OnInit {
 
   //   const btnEl = this.sidebarBtn.nativeElement as HTMLElement | undefined;
   //   const sidebarEl = this.sidebar.nativeElement as HTMLElement | undefined;
-    
+
   //   if (btnEl?.contains(target as Node)) {
   //     return;
   //   }

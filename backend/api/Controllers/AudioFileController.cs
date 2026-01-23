@@ -9,6 +9,7 @@ using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using api.Models.Helpers;
+using api.Validations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,10 @@ namespace api.Controllers;
 
 [Authorize]
 public class AudioFileController(
-    IAudioFileRepository _audioFileRepository, ITokenService _tokenService, ILikeRepository _likeRepository, IPlaylistRepository _playlistRepository) : BaseApiController
+    IAudioFileRepository _audioFileRepository, ITokenService _tokenService,
+    ILikeRepository _likeRepository, IPlaylistRepository _playlistRepository,
+    IMemberRepository _memberRepository
+    ) : BaseApiController
 {
     [HttpPost("upload")]
     public async Task<ActionResult<Response>> Upload(
@@ -75,10 +79,11 @@ public class AudioFileController(
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
             isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
-
             isAdding = await _playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);
 
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking, isAdding));
+            OperationResult<string> opResult = await _memberRepository.GetUserNameByObjectIdAsync(audioFile.UploaderId, cancellationToken);
+
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, opResult.Result, isLiking, isAdding));
         }
 
         return audioFileResponses;
@@ -91,8 +96,7 @@ public class AudioFileController(
 
         if (userId is null)
             return Unauthorized("You are not logged in. Please login again");
-
-
+        
         PagedList<AudioFile>? pagedAudioFiles = await _audioFileRepository.GetUserAudioFiles(userId, audioFileParams, cancellationToken);
 
         if (pagedAudioFiles.Count == 0)
@@ -114,10 +118,11 @@ public class AudioFileController(
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
             isLiking = await _likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
-
             isAdding = await _playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);
 
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking, isAdding));
+            OperationResult<string> opResult = await _memberRepository.GetUserNameByObjectIdAsync(audioFile.Id, cancellationToken);
+
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, opResult.Result, isLiking, isAdding));
         }
 
         return audioFileResponses;

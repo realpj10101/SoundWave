@@ -1,4 +1,5 @@
 using api.DTOs;
+using api.DTOs.Helpers;
 using api.DTOs.Track;
 using api.Interfaces;
 using MongoDB.Bson;
@@ -11,16 +12,18 @@ public class AiRecommendService : IAiRecommendService
     private readonly IAudioFileRepository _audioFileRepository;
     private readonly ILikeRepository _likeRepository;
     private readonly IPlaylistRepository _playlistRepository;
+    private readonly IMemberRepository _memberRepository;
 
     public AiRecommendService(
         IAiNluService aiNluService, IAudioFileRepository audioFileRepository, ILikeRepository likeRepository,
-        IPlaylistRepository playlistRepository
+        IPlaylistRepository playlistRepository, IMemberRepository memberRepository
     )
     {
         _nluService = aiNluService;
         _audioFileRepository = audioFileRepository;
         _likeRepository = likeRepository;
         _playlistRepository = playlistRepository;
+        _memberRepository = memberRepository;
     }
 
     public async Task<AiRecommendResponse> RecommendAsync(string userPrompt, ObjectId userId, CancellationToken cancellationToken)
@@ -35,7 +38,10 @@ public class AiRecommendService : IAiRecommendService
             bool isLiking = await _likeRepository.CheckIsLikingAsync(userId, audio,cancellationToken);
             bool isAdding = await _playlistRepository.CheckIsAddingAsync(userId, audio, cancellationToken);
 
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audio, isLiking, isAdding));
+            OperationResult<string> opResult =
+                await _memberRepository.GetUserNameByObjectIdAsync(audio.UploaderId, cancellationToken);
+
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audio, opResult.Result, isLiking, isAdding));
         }
 
         return new(

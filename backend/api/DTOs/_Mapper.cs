@@ -31,9 +31,11 @@ public static class Mappers
         );
     }
 
-    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(this AudioFile audioFile, bool isLiking = false, bool isAdding = false) =>
+    public static AudioFileResponse ConvertAudioFileToAudioFileResponse(this AudioFile audioFile, string userName,
+        bool isLiking = false, bool isAdding = false) =>
         new(
-            UploaderName: audioFile.UploaderName,
+            Id: audioFile.Id.ToString(),
+            UploaderName: userName,
             FileName: audioFile.FileName,
             FilePath: audioFile.FilePath,
             CoverPath: audioFile.CoverPath,
@@ -55,13 +57,21 @@ public static class Mappers
         );
 
     public static Playlist ConvertPlaylistIdToPlaylist(ObjectId adderId, ObjectId addedId) =>
-     new(
+        new(
             AdderId: adderId,
             AddedAudioId: addedId
         );
 
+    public static Comment ConvertCommentIdToComment(ObjectId userId, ObjectId audioId, string content) =>
+        new(
+            UserId: userId,
+            AudioId: audioId,
+            Content: content,
+            CreatedAt: DateTime.UtcNow
+        );
+
     public static Photo ConvertPhotoUrlsToPhoto(string[] photoUrls, bool isMain) =>
-      new(
+        new(
             Url_165: photoUrls[0],
             Url_256: photoUrls[1],
             Url_enlarged: photoUrls[2],
@@ -73,5 +83,13 @@ public static class Mappers
             Url_165: photoUrls[0],
             Url_256: photoUrls[1],
             Url_enlarged: photoUrls[2]
+        );
+
+    public static CommentResponse ConvertCommentToCommentResponse(Comment comment, MemberDto member) =>
+        new(
+            CommentId: comment.Id.ToString(),
+            CommentOwner: member,
+            Content: comment.Content,
+            CreatedAt: comment.CreatedAt
         );
 }

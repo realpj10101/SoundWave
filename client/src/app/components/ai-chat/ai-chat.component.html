@@ -1,4 +1,17 @@
 <div class="ai-chat-room">
+    <app-sidebar #sidebar [isOpen]="isSidebarOpen" (toggle)="toggleSidebar()"></app-sidebar>
+
+    @if (!isSidebarOpen) {
+    <button #sidebarBtn class="mobile-toggle" (click)="toggleSidebar()">
+        <mat-icon>menu</mat-icon>
+    </button>
+    }
+    @else {
+    <button #sidebarBtn class="mobile-toggle" (click)="toggleSidebar()">
+        <mat-icon>close</mat-icon>
+    </button>
+    }
+
     <div #historyEl class="history">
         <div class="history-inner">
             @for (msg of history(); track $index) {
@@ -82,8 +95,12 @@
 
                 <button type="button" class="icon-btn mic-btn" (click)="onVoiceInput()"
                     [class.listening]="isListening()">
-                    <span *ngIf="!isListening()">🎙️</span>
-                    <span *ngIf="isListening()">🔇</span>
+                    @if (!isListening()) {
+                    <span>🎙️</span>
+                    }
+                    @else if (isListening()) {
+                    <span>🔇</span>
+                    }
                 </button>
 
                 <button type="submit" class="icon-btn send-btn"

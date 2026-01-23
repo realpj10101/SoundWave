@@ -11,6 +11,7 @@ public enum ErrorCode
     IsAccountCreationFailed,
     IsSessionExpired,
     IsNotFound,
+    IsUserNotFound,
     IsFailed,
     SaveAudioFailed,
     SavePhotoFailed,

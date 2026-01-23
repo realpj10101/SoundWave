@@ -1,4 +1,6 @@
 using api.DTOs;
+using api.DTOs.Account;
+using api.DTOs.Helpers;
 using api.Extensions;
 using api.Interfaces;
 using api.Models;
@@ -36,5 +38,30 @@ public class MemberRepository : IMemberRepository
         return appUser is not null
             ? Mappers.ConvertAppUserToMemberDto(appUser)
             : null;
+    }
+
+    public async Task<OperationResult<string>> GetUserNameByObjectIdAsync(ObjectId userId, CancellationToken cancellationToken)
+    {
+        string? userName = await _collection
+            .Find(doc => doc.Id == userId)
+            .Project(item => item.UserName)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (userName is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.IsNotFound,
+                    "No username found!"
+                    )
+            );
+        }
+
+        return new(
+            true,
+            userName,
+            null
+            );
     }
 }

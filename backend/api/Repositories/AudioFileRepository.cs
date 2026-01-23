@@ -57,14 +57,9 @@ public class AudioFileRepository : IAudioFileRepository
 
     public async Task<PagedList<AudioFile>?> GetUserAudioFiles(ObjectId? userId, AudioFileParams audioFileParams, CancellationToken cancellationToken)
     {
-        string? userName = await _collectionUsers.AsQueryable()
-            .Where(doc => doc.Id == userId)
-            .Select(item => item.NormalizedUserName)
-            .FirstOrDefaultAsync(cancellationToken);
-
         IQueryable<AudioFile> query = _collection.AsQueryable();
 
-        query = query.Where(doc => doc.UploaderName == userName);
+        query = query.Where(doc => doc.Id == userId);
 
         return await PagedList<AudioFile>
             .CreatePagedListAsync(query, audioFileParams.PageNumber, audioFileParams.PageSize, cancellationToken);
@@ -79,42 +74,6 @@ public class AudioFileRepository : IAudioFileRepository
                 Error: new CustomError(
                     ErrorCode.IsFailed,
                     "user id can not be null"
-                )
-            );
-        }
-
-        Task<bool> duplicatCheckTask = _collection
-         .Find(doc => doc.FileName == audio.FileName)
-         .AnyAsync(cancellationToken);
-
-        Task<string?> userLookupTask = _collectionUsers
-            .Find(doc => doc.Id == userId)
-            .Project(doc => doc.NormalizedUserName)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        await Task.WhenAll(duplicatCheckTask, userLookupTask);
-
-        bool isDuplicate = await duplicatCheckTask;
-        string? userName = await userLookupTask;
-
-        if (isDuplicate)
-        {
-            return new(
-                false,
-                Error: new(
-                    ErrorCode.IsAlreadyExist,
-                    "This file is already exists."
-                )
-            );
-        }
-
-        if (userName is null)
-        {
-            return new(
-                false,
-                Error: new(
-                    ErrorCode.IsNotFound,
-                    "User not found!"
                 )
             );
         }
@@ -166,12 +125,13 @@ public class AudioFileRepository : IAudioFileRepository
 
         AudioFile audioFile = new(
             Id: trackId,
-            UploaderName: userName,
+            UploaderId: userId.Value,
             FileName: audio.FileName,
             FilePath: filePath,
             CoverPath: Mappers.ConvertMainPhotoUrlsToPhoto(photoUrls),
             LikersCount: 0,
             AdderCount: 0,
+            CommentsCount: 0,
             UploadedAt: DateTime.UtcNow,
             Genres: audio.Genres,
             Moods: audio.Moods,
@@ -200,7 +160,6 @@ public class AudioFileRepository : IAudioFileRepository
 
             query = query.Where(
                 audio => audio.FileName.Contains(audioFileParams.Search, StringComparison.CurrentCultureIgnoreCase)
-                || audio.UploaderName.Contains(audioFileParams.Search, StringComparison.CurrentCultureIgnoreCase)
             );
         }
 
@@ -246,7 +205,7 @@ public class AudioFileRepository : IAudioFileRepository
             filters.Add(
                 fb.Or(
                     fb.Regex(item => item.FileName, new MongoDB.Bson.BsonRegularExpression(text, "i")),
-                    fb.Regex(item => item.UploaderName, new MongoDB.Bson.BsonRegularExpression(text, "i")),
+                    // fb.Regex(item => item.UploaderName, new MongoDB.Bson.BsonRegularExpression(text, "i")),
                     fb.AnyIn(item => item.Tags!, text.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                 )
             );

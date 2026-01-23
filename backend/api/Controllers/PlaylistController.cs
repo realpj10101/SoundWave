@@ -1,5 +1,6 @@
 using api.Controllers.Helpers;
 using api.DTOs;
+using api.DTOs.Helpers;
 using api.DTOs.Track;
 using api.Extensions;
 using api.Helpers;
@@ -15,44 +16,51 @@ namespace api.Controllers;
 public class PlaylistController(
     IPlaylistRepository playlistRepository,
     ITokenService tokenService,
-    ILikeRepository likeRepository
+    ILikeRepository likeRepository,
+    IMemberRepository _memberRepository
 ) : BaseApiController
 {
-    [HttpPost("add/{targetAudioName}")]
-    public async Task<ActionResult<Response>> Add(string targetAudioName, CancellationToken cancellationToken)
+    [HttpPost("add/{targetAudioId}")]
+    public async Task<ActionResult<Response>> Add(string targetAudioId, CancellationToken cancellationToken)
     {
         ObjectId? userId = await tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
 
         if (userId is null)
             return Unauthorized("Ypu are not logged in. Please login again");
 
-        PlaylistStatus pS = await playlistRepository.AddAsync(userId.Value, targetAudioName, cancellationToken);
+        if (!ObjectId.TryParse(targetAudioId, out var audioId))
+            return BadRequest("Enter valid audio information");
+        
+        PlaylistStatus pS = await playlistRepository.AddAsync(userId.Value, audioId, cancellationToken);
 
         return pS.IsSuccess
-            ? Ok(new Response(Message: $"You add {targetAudioName} to your playlist successfully."))
+            ? Ok(new Response(Message: $"You add audio to your playlist successfully."))
             : pS.IsTargetAudioNotFound
-            ? NotFound($"{targetAudioName} was not found")
+            ? NotFound($"Target audio was not found")
             : pS.IsAlreadyAdded
-            ? BadRequest($"{targetAudioName} already exists in the playlist")
+            ? BadRequest($"Target audio already exists in the playlist")
             : BadRequest("Add to playlist failed try again or contact the administrator");
     }
 
-    [HttpDelete("remove/{targetAudioName}")]
-    public async Task<ActionResult<Response>> Remove(string targetAudioName, CancellationToken cancellationToken)
+    [HttpDelete("remove/{targetAudioId}")]
+    public async Task<ActionResult<Response>> Remove(string targetAudioId, CancellationToken cancellationToken)
     {
         ObjectId? userId = await tokenService.GetActualUserIdAsync(User.GetHashedUserId(), cancellationToken);
 
         if (userId is null)
             return Unauthorized("Ypu are not logged in. Please login again");
-
-        PlaylistStatus pS = await playlistRepository.RemoveAsync(userId.Value, targetAudioName, cancellationToken);
+        
+        if (!ObjectId.TryParse(targetAudioId, out var audioId))
+            return BadRequest("Enter valid audio information");
+        
+        PlaylistStatus pS = await playlistRepository.RemoveAsync(userId.Value, audioId, cancellationToken);
 
         return pS.IsSuccess
-            ? Ok(new Response(Message: $"You removed {targetAudioName} form your playlist successfully."))
+            ? Ok(new Response(Message: $"You removed audio form your playlist successfully."))
             : pS.IsTargetAudioNotFound
-            ? NotFound($"{targetAudioName} was not found")
+            ? NotFound($"Target audio was not found")
             : pS.IsAlreadyRemoved
-            ? BadRequest($"{targetAudioName} is not on the playlist")
+            ? BadRequest($"Target audio is not on the playlist")
             : BadRequest("Remove from playlist failed try again or contact the administrator");
     }
 
@@ -97,10 +105,12 @@ public class PlaylistController(
         foreach (AudioFile audioFile in pagedAudioFiles)
         {
             isLiking = await likeRepository.CheckIsLikingAsync(userId.Value, audioFile, cancellationToken);
-
             isAdding = await playlistRepository.CheckIsAddingAsync(userId.Value, audioFile, cancellationToken);
+            
+            OperationResult<string> opResult =
+                await _memberRepository.GetUserNameByObjectIdAsync(audioFile.UploaderId, cancellationToken);
 
-            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, isLiking, isAdding));
+            audioFileResponses.Add(Mappers.ConvertAudioFileToAudioFileResponse(audioFile, opResult.Result, isLiking, isAdding));
         }
 
         return audioFileResponses;

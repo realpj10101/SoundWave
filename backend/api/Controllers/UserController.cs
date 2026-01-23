@@ -5,6 +5,7 @@ using api.Extensions;
 using api.Extensions.Validations;
 using api.Interfaces;
 using api.Models;
+using api.Validations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

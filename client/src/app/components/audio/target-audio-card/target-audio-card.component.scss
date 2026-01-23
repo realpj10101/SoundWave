@@ -121,6 +121,144 @@ $primary-orange: #f97316;
             flex-direction: column;
             gap: 1.5rem;
             padding: 1rem 0;
+
+            .comment-section {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 10px;
+                position: relative;
+                height: 190px;
+
+                .close-com {
+                    position: absolute;
+                    top: 3px;
+                    left: 10px;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    color: white;
+                    border-radius: 9999px;
+                    cursor: pointer;
+                    z-index: 500;
+                    border: none;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 1px;
+                    transition: background-color 0.2s ease;
+
+                    &:hover {
+                        background-color: rgba(0, 0, 0, 0.7);
+                    }
+                }
+
+                .comments-container {
+                    height: 70px;
+                    display: flex;
+                    flex-direction: column-reverse;
+                    gap: 10px;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    padding: 10px;
+                    border-radius: 0.5rem;
+                    scroll-behavior: smooth;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: thin;
+                }
+
+                .action-section {
+                    margin-top: 25px;
+                    display: flex;
+                    gap: 10px;
+
+                    .comment-inp {
+                        flex: 1 1 0%;
+                        background: rgba(184, 138, 138, 0.22);
+                        border-radius: 0.5rem;
+                        padding: 0.5rem 0.75rem;
+                        font-size: 0.875rem;
+                        line-height: 1.25rem;
+                        border: none;
+                        outline: none;
+                        backdrop-filter: blur(8px);
+                        -webkit-backdrop-filter: blur(8px);
+                    }
+
+                    .action-btn {
+                        border-radius: 0.5rem;
+                        border: none;
+                        background: rgba(184, 138, 138, 0.40);
+                        backdrop-filter: blur(8px);
+                        -webkit-backdrop-filter: blur(8px);
+                        cursor: pointer;
+                        color: #374151;
+                        transition: transform 0.2s;
+
+                        &:hover {
+                            transform: scale(1.05);
+                        }
+                    }
+                }
+
+                .comment-info {
+                    display: flex;
+                    justify-content: space-between;
+                    width: 100%;
+                    height: 50px;
+                    padding: 4px;
+                    background: rgba(250, 250, 250, 0.50);
+                    backdrop-filter: blur(8px);
+                    -webkit-backdrop-filter: blur(8px);
+                    border-radius: 0.5rem;
+
+                    .left {
+                        margin-left: 5px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+
+                        .img-container {
+                            height: 30px;
+                            width: 30px;
+                            background: rgba(250, 250, 250, 0.70);
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            img {
+                                border-radius: 50%;
+                                height: 30px;
+                                width: 30px;
+                            }
+                        }
+
+                        .info {
+                            display: flex;
+                            gap: 4px;
+                            flex-direction: column;
+                            align-items: flex-start;
+
+                            .username {
+                                color: $primary-orange;
+                            }
+
+                            .com {
+                                color: #6b7280;
+                            }
+                        }
+                    }
+
+                    .right {
+                        align-self: center;
+                        margin-right: 5px;
+                        color: $text-gray;
+                    }
+                }
+
+                .comment-inp::placeholder {
+                    color: #6b7280;
+                }
+            }
         }
 
         .progress-container {
@@ -201,7 +339,8 @@ $primary-orange: #f97316;
                 justify-content: center;
                 cursor: pointer;
                 box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
-                transition: transform 0.2s, box-shadow 0.2s;
+                transition: transform 0.2s,
+                    box-shadow 0.2s;
 
                 mat-icon {
                     font-size: 32px;
