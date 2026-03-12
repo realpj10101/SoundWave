@@ -16,6 +16,9 @@ public class AccountController(IAccountRepository accountRepository) : BaseApiCo
     [HttpPost("register")]
     public async Task<ActionResult<LoggedInDto>> Register(RegisterDto userInput, CancellationToken cancellationToken)
     {
+        if (userInput.Password != userInput.ConfirmPassword)
+            return BadRequest("Passwords do not match");
+        
         OperationResult<LoggedInDto> opResult =
             await accountRepository.RegisterAsync(userInput, cancellationToken);
 
