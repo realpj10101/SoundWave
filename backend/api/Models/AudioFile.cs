@@ -21,5 +21,6 @@ public record AudioFile(
     double Energy,
     int TempoBpm,
     List<string> Tags,
-    double Duration
+    double Duration,
+    string MimeType
 );
