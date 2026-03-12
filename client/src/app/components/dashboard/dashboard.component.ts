@@ -50,6 +50,31 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  getPageNumbers(): number[] {
+    if (!this.pagination) return [];
+
+    const total = this.pagination.totalPages;
+    const current = this.pagination.currentPage;
+
+    const pages: number[] = [];
+
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    if (this.audioParams && this.pagination && page !== this.pagination.currentPage) {
+      this.audioParams.pageNumber = page;
+      this.getAll();
+    }
+  }
+
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
@@ -96,6 +121,18 @@ export class DashboardComponent implements OnInit {
             this.audios = response.body;
             this.pagination = response.pagination;
           }
+          else {
+            this.audios = [];
+            this.pagination = {
+              currentPage: 1,
+              itemsPerPage: 0,
+              totalItems: 0,
+              totalPages: 0
+            }
+          }
+        },
+        error: () => {
+          this.audios = [];
         }
       })
   }
