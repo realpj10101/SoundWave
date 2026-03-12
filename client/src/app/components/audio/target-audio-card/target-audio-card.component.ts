@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, EventEmitter, inject, OnInit, Output, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, EventEmitter, inject, OnInit, Output, PLATFORM_ID, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { environment } from '../../../../environments/environment.development';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,9 @@ import { ApiResponse } from '../../../models/helpers/apiResponse.model';
 import { IntlModule } from 'angular-ecmascript-intl';
 import { Member } from '../../../models/member.model';
 import { LoggedInUser } from '../../../models/account.model';
+import { AudioPlayerService } from '../../../services/audio-player.service';
+import { TargetAudioDialogData } from '../../../models/target-audio-dialog.model';
+import { AudioService } from '../../../services/audio.service';
 
 @Component({
   selector: 'app-target-audio-card',
@@ -31,19 +34,37 @@ export class TargetAudioCardComponent implements OnInit {
   @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
 
   private _likeService = inject(LikeService);
-  private _snack = inject(MatSnackBar);
   private _playlistService = inject(PlaylistService);
+  private _audioPlayerService = inject(AudioPlayerService);
+  private _audioService = inject(AudioService);
+  private _snack = inject(MatSnackBar);
   private _platformId = inject(PLATFORM_ID);
   private _fB = inject(FormBuilder);
   private _commentService = inject(CommentService);
 
-  audioData: Audio = inject(MAT_DIALOG_DATA);
+  isPlaying = computed(() => {
+    const currentId = this._audioPlayerService.currentAudioIdSig();
+
+    return currentId === this.audioData.id &&
+      this._audioPlayerService.isPlayingSig();
+  });
+
+  currentTime = computed(() =>
+    this.formatTime(this._audioPlayerService.currentTime())
+  );
+
+  progressPercentage = computed(() =>
+    (this._audioPlayerService.progressSig())
+  );
+
+  dialogData = inject<TargetAudioDialogData>(MAT_DIALOG_DATA);
   dialogRef = inject(MatDialogRef<TargetAudioCardComponent>);
 
-  currentTime = '0:00';
+  audioData: Audio = this.dialogData.audio;
+  pageIndex: number = this.dialogData.pageIndex;
+  itemIndex: number = this.dialogData.itemIndex;
+
   apiUrl = environment.apiUrl;
-  isPlaying = false;
-  progressPercentage = 0;
   dynamicGradient = 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #000000 100%)';
   isCommentSectionOpen = false;
   comments: CommentResponse[] = [];
@@ -79,7 +100,7 @@ export class TargetAudioCardComponent implements OnInit {
 
     this._commentService.create(req, this.audioData.id).subscribe({
       next: (res) => {
-        this.comments = [...this.comments, res];
+        this.comments = [res, ...this.comments];
         this.ContentCtrl.setValue('');
       }
     })
@@ -88,7 +109,10 @@ export class TargetAudioCardComponent implements OnInit {
   getAudioComments(): void {
     this._commentService.getAllAudioComments(this.audioData.id).subscribe({
       next: (res: CommentResponse[]) => {
-        this.comments = res.reverse();
+        this.comments = res ?? [];
+      },
+      error: (err) => {
+        this.comments = [];
       }
     })
   }
@@ -99,7 +123,7 @@ export class TargetAudioCardComponent implements OnInit {
         .subscribe({
           next: (res) => {
             this.audioData.isLiking = true;
-            this.getLikeCount();
+            this.audioData.likersCount++;
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -118,7 +142,7 @@ export class TargetAudioCardComponent implements OnInit {
           next: (res) => {
             this.audioData.isLiking = false;
             this.dislikeAudioNameOut.emit(this.audioData.fileName);
-            this.getLikeCount();
+            this.audioData.likersCount--;
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -136,7 +160,7 @@ export class TargetAudioCardComponent implements OnInit {
         .subscribe({
           next: (res) => {
             this.audioData.isAdding = true;
-            this.getAddersCount();
+            this.audioData.addersCount++;
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -154,7 +178,7 @@ export class TargetAudioCardComponent implements OnInit {
         .subscribe({
           next: (res) => {
             this.audioData.isAdding = false;
-            this.getAddersCount();
+            this.audioData.addersCount--;
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -166,37 +190,86 @@ export class TargetAudioCardComponent implements OnInit {
     }
   }
 
-  getAddersCount(): void {
-    if (this.audioData) {
-      this._playlistService.getAddersCount(this.audioData.fileName).subscribe({
-        next: (res) => {
-          this.audioData.addersCount = res;
-        }
-      })
+  togglePlay() {
+    if (this.isPlaying()) {
+      this._audioPlayerService.pause();
+    } else {
+      this._audioPlayerService.loadAndPlay(this.audioData.id);
     }
   }
 
-  getLikeCount(): void {
-    if (this.audioData) {
-      this._likeService.getLikesCount(this.audioData.fileName).subscribe({
-        next: (res: number) => {
-          this.audioData.likersCount = res;
+  goToNextComp(): void {
+    this._audioService.goToNextAudio(this.audioData.id).subscribe({
+      next: (res) => {
+        this.audioData = res;
+
+        const itemsPerPage = 5;
+
+        let newPageIndex = this.pageIndex;
+        let newItemIndex = this.itemIndex + 1;
+
+        if (newItemIndex >= itemsPerPage) {
+          newPageIndex = this.pageIndex + 1;
+          newItemIndex = 0;
         }
-      })
-    }
+
+        this.pageIndex = newPageIndex;
+        this.itemIndex = newItemIndex;
+
+        this._audioPlayerService.loadAndPlay(
+          res.id,
+
+        );
+      },
+      error: (err) => {
+        this._snack.open(err.error, 'Close', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        })
+      }
+    })
   }
 
-  togglePlay(): void {
-    const audio = this.audioRef.nativeElement;
+  goToPreviousComp(): void {
+    const currentTime = this._audioPlayerService.currentTime();
 
-    if (audio.paused) {
-      audio.play();
-      this.isPlaying = true;
+    if (currentTime >= 5) {
+      this._audioPlayerService.seekTo(0);
+      this._audioPlayerService.loadAndPlay(
+        this.audioData.id
+      );
+      return;
     }
-    else {
-      audio.pause();
-      this.isPlaying = false;
-    }
+
+    this._audioService.goToPrevious(this.audioData.id).subscribe({
+      next: (res) => {
+        this.audioData = res;
+
+        const itemsPerPage = 5;
+        let newPageIndex = this.pageIndex;
+        let newItemIndex = this.itemIndex - 1;
+
+        if (newItemIndex < 0) {
+          newPageIndex = this.pageIndex - 1;
+          newItemIndex = itemsPerPage - 1;
+        }
+
+        this.pageIndex = newPageIndex;
+        this.itemIndex = newItemIndex;
+
+        this._audioPlayerService.loadAndPlay(
+          res.id
+        );
+      },
+      error: (err) => {
+        this._snack.open(err.error, 'Close', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        });
+      }
+    })
   }
 
   closedDialog(): void {
@@ -204,7 +277,6 @@ export class TargetAudioCardComponent implements OnInit {
   }
 
   seek(event: MouseEvent): void {
-    const audio = this.audioRef.nativeElement;
     const progressbar = event.currentTarget as HTMLElement;
 
     const clickPosition = event.offsetX;
@@ -212,32 +284,7 @@ export class TargetAudioCardComponent implements OnInit {
 
     const ratio = clickPosition / totalWidth;
 
-    this.progressPercentage = ratio * 100;
-
-    if (audio.duration) {
-      const newTime = ratio * audio.duration;
-
-      audio.currentTime = newTime;
-    }
-  }
-
-  updateProgress(): void {
-    const audio = this.audioRef.nativeElement;
-    const duration = audio.duration;
-    const currentTime = audio.currentTime;
-
-    if (duration > 0) {
-      this.progressPercentage = (currentTime / duration) * 100;
-
-      this.currentTime = this.formatTime(currentTime);
-    }
-  }
-
-  onAudioEnded(): void {
-    this.isPlaying = false;
-    this.progressPercentage = 0;
-    this.currentTime = '0:00';
-    this.audioRef.nativeElement.currentTime = 0;
+    this._audioPlayerService.seekTo(ratio * 100);
   }
 
   formatTime(seconds: number): string {

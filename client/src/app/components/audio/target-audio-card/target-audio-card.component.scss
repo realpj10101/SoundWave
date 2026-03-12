@@ -25,14 +25,21 @@ $primary-orange: #f97316;
         cursor: pointer;
         z-index: 500;
         border: none;
+
         display: flex;
         align-items: center;
         justify-content: center;
+
         padding: 8px;
         transition: background-color 0.2s ease;
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        svg {
+            width: 20px;
+            height: 20px;
         }
     }
 }
@@ -81,17 +88,12 @@ $primary-orange: #f97316;
 }
 
 .bottom {
-    // background: linear-gradient(135deg,
-    //         #111827 0%,
-    //         #1f2937 50%,
-    //         #000000 100%);
     border-top: 1px solid #374151;
     backdrop-filter: blur(4px);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     padding: 1.5rem;
     z-index: 20;
     transition: background 1s ease-in-out;
-    // width: 100%;
 
     .top-side {
         text-align: center;
@@ -145,6 +147,12 @@ $primary-orange: #f97316;
                     justify-content: center;
                     padding: 1px;
                     transition: background-color 0.2s ease;
+
+                    svg {
+                        width: 20px;
+                        height: 20px;
+                        fill: currentColor;
+                    }
 
                     &:hover {
                         background-color: rgba(0, 0, 0, 0.7);
@@ -311,13 +319,14 @@ $primary-orange: #f97316;
                 border: none;
                 color: $text-gray;
                 cursor: pointer;
+
                 display: flex;
                 align-items: center;
                 justify-content: center;
+
                 transition: color 0.2s;
 
-                mat-icon {
-                    font-size: 28px;
+                svg {
                     width: 28px;
                     height: 28px;
                 }
@@ -339,13 +348,12 @@ $primary-orange: #f97316;
                 justify-content: center;
                 cursor: pointer;
                 box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
-                transition: transform 0.2s,
-                    box-shadow 0.2s;
+                transition: transform 0.2s, box-shadow 0.2s;
 
-                mat-icon {
-                    font-size: 32px;
+                svg {
                     width: 32px;
                     height: 32px;
+                    fill: currentColor;
                 }
 
                 &:hover {
@@ -357,6 +365,7 @@ $primary-orange: #f97316;
                     transform: scale(0.95);
                 }
             }
+
         }
 
         .meta-badges {
@@ -428,10 +437,10 @@ $primary-orange: #f97316;
                         color: red;
                     }
 
-                    mat-icon {
-                        font-size: 24px;
+                    svg {
                         width: 24px;
                         height: 24px;
+                        fill: currentColor;
                     }
 
                     &:hover {
@@ -440,7 +449,6 @@ $primary-orange: #f97316;
 
                     &.active-like {
                         color: #ef4444;
-
                         animation: pulse 0.3s ease-in-out;
 
                         &:hover {
@@ -451,7 +459,6 @@ $primary-orange: #f97316;
                     &.active-add {
                         color: #22c55e;
                         opacity: 1;
-
                         animation: pulse 0.3s ease-in-out;
 
                         &:hover {
