@@ -30,12 +30,10 @@
     .bg-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.85),
-        rgba(0, 0, 0, 0.6),
-        rgba(0, 0, 0, 0.9)
-      );
+      background: linear-gradient(to bottom,
+          rgba(0, 0, 0, 0.85),
+          rgba(0, 0, 0, 0.6),
+          rgba(0, 0, 0, 0.9));
     }
   }
 
@@ -48,7 +46,7 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 1rem;
-    z-index: 1; 
+    z-index: 1;
 
     .user-info {
       display: flex;
@@ -148,11 +146,23 @@
         background-color: #f97316;
         color: black;
 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        border: none;
+
         &:hover {
           background-color: #ea580c;
         }
+
+        svg {
+          width: 1.25rem;
+          height: 1.25rem;
+        }
       }
     }
+
 
     .bars {
       position: absolute;
@@ -184,11 +194,13 @@
       gap: 1rem;
       flex-wrap: wrap;
 
-      .like-section, .add-section {
+      .like-section,
+      .add-section {
         display: flex;
         align-items: center;
 
-        .like-button, .add-button {
+        .like-button,
+        .add-button {
           display: flex;
           align-items: center;
           gap: 0.5rem;
@@ -238,8 +250,10 @@
     }
   }
 
-  @media (max-width: 1024px) { // tablet
+  @media (max-width: 1024px) {
+    // tablet
     padding: 0.75rem;
+
     .header {
       .user-info {
         .left {
@@ -248,24 +262,43 @@
             height: 60px;
           }
         }
+
         .right {
           .top {
-            .title { font-size: 0.9rem; }
-            .artist { font-size: 0.8rem; }
+            .title {
+              font-size: 0.9rem;
+            }
+
+            .artist {
+              font-size: 0.8rem;
+            }
           }
-          .bottom { 
-            .genres, .moods { font-size: 0.7rem; padding: 0 8px; }
+
+          .bottom {
+
+            .genres,
+            .moods {
+              font-size: 0.7rem;
+              padding: 0 8px;
+            }
           }
         }
       }
     }
 
-    .waveform { padding: 0.75rem; }
-    .bottom-side { gap: 0.5rem; }
+    .waveform {
+      padding: 0.75rem;
+    }
+
+    .bottom-side {
+      gap: 0.5rem;
+    }
   }
 
-  @media (max-width: 640px) { // mobile
+  @media (max-width: 640px) {
+    // mobile
     padding: 0.5rem;
+
     .header {
       flex-direction: column;
       align-items: flex-start;
@@ -280,21 +313,42 @@
             height: 50px;
           }
         }
+
         .right {
           .top {
-            .title { font-size: 0.85rem; }
-            .artist { font-size: 0.75rem; }
+            .title {
+              font-size: 0.85rem;
+            }
+
+            .artist {
+              font-size: 0.75rem;
+            }
           }
+
           .bottom {
-            .genres, .moods { font-size: 0.65rem; padding: 0 6px; }
+
+            .genres,
+            .moods {
+              font-size: 0.65rem;
+              padding: 0 6px;
+            }
           }
         }
       }
     }
 
-    .waveform { padding: 0.5rem; }
-    .bottom-side { gap: 0.25rem; }
+    .waveform {
+      padding: 0.5rem;
+    }
 
-    .action-btns { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .bottom-side {
+      gap: 0.25rem;
+    }
+
+    .action-btns {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
   }
 }

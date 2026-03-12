@@ -34,9 +34,18 @@
   <div class="waveform">
     <div class="play-button">
       @if (isPlaying()) {
-      <button (click)="$event.stopPropagation(); togglePlay()"><mat-icon>pause</mat-icon></button>
+      <button (click)="$event.stopPropagation(); togglePlay()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+          <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+        </svg>
+      </button>
       } @else {
-      <button (click)="$event.stopPropagation(); togglePlay()"><mat-icon>play_arrow</mat-icon></button>
+      <button (click)="$event.stopPropagation(); togglePlay()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"></polygon>
+        </svg>
+      </button>
       }
     </div>
 
@@ -51,22 +60,22 @@
     <div class="action-btns">
       <div class="like-section">
         <button class="like-button" [ngClass]="{
-      'text-red-500': audioInput?.isLiking,
-      'text-gray-400': !audioInput?.isLiking
-    }" (click)="$event.stopPropagation(); audioInput?.isLiking ? dislike() : like()">
-          <img [src]="audioInput?.isLiking ? 'images/favorite-red.png' : 'images/favorite.png'" alt="like"
+      'text-red-500': audioInput.isLiking,
+      'text-gray-400': !audioInput.isLiking
+    }" (click)="$event.stopPropagation(); audioInput.isLiking ? dislike() : like()">
+          <img [src]="audioInput.isLiking ? 'images/favorite-red.png' : 'images/favorite.png'" alt="like"
             class="like-icon" />
-          <span class="like-count">{{ audioInput?.likersCount }}</span>
+          <span class="like-count">{{ audioInput.likersCount }}</span>
         </button>
       </div>
 
       <div class="add-section">
         <button class="add-button" [ngClass]="{
-      'text-green-500': audioInput?.isAdding,
-      'text-gray-400': !audioInput?.isAdding
-        }" (click)="$event.stopPropagation(); audioInput?.isAdding ? removeFromPlaylist() : addToPlaylist()">
-          <img [src]="audioInput?.isAdding ? 'images/remove.png' : 'images/add.png'" alt="add" class="add-icon" />
-          <span class="add-count">{{ audioInput?.addersCount }}</span>
+      'text-green-500': audioInput.isAdding,
+      'text-gray-400': !audioInput.isAdding
+        }" (click)="$event.stopPropagation(); audioInput.isAdding ? removeFromPlaylist() : addToPlaylist()">
+          <img [src]="audioInput.isAdding ? 'images/remove.png' : 'images/add.png'" alt="add" class="add-icon" />
+          <span class="add-count">{{ audioInput.addersCount }}</span>
         </button>
       </div>
     </div>
@@ -76,6 +85,4 @@
       }
     </div>
   </div>
-
-  <audio [src]="apiUrl + audioInput?.filePath" #audioElem></audio>
 </div>

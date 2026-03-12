@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnInit, Output, signal, ViewChild, EventEmitter, PLATFORM_ID } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, Output, signal, ViewChild, EventEmitter, PLATFORM_ID, computed } from '@angular/core';
 import { Audio } from '../../../models/audio.model';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -10,6 +10,7 @@ import { environment } from '../../../../environments/environment.development';
 import { PlaylistService } from '../../../services/playlist.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TargetAudioCardComponent } from '../target-audio-card/target-audio-card.component';
+import { AudioPlayerService } from '../../../services/audio-player.service';
 
 @Component({
   selector: 'app-audio-card',
@@ -20,14 +21,17 @@ import { TargetAudioCardComponent } from '../target-audio-card/target-audio-card
   styleUrl: './audio-card.component.scss'
 })
 export class AudioCardComponent implements OnInit {
-  @Input('audioInput') audioInput: Audio | undefined;
+  @Input() audioInput!: Audio;
+  @Input() pageIndex!: number;
+  @Input() itemIndex!: number;
   @ViewChild('audioElem') audioElem!: ElementRef<HTMLAudioElement>;
   @Output('dislikeAudioNameOut') dislikeAudioNameOut = new EventEmitter<string>();
   @Output('removeAudioOut') removedAudioOut = new EventEmitter<string>();
 
   private _likeService = inject(LikeService);
-  private _snack = inject(MatSnackBar);
   private _playlistService = inject(PlaylistService);
+  private _audioPlayerService = inject(AudioPlayerService);
+  private _snack = inject(MatSnackBar);
   private _platformId = inject(PLATFORM_ID);
 
   readonly dialog = inject(MatDialog);
@@ -36,7 +40,13 @@ export class AudioCardComponent implements OnInit {
   adderCount: number | undefined;
   apiUrl = environment.apiUrl
 
-  isPlaying = signal(false);
+  isPlaying = computed(() => {
+    const currentId = this._audioPlayerService.currentAudioIdSig();
+
+    return currentId === this.audioInput.id &&
+      this._audioPlayerService.isPlayingSig();
+  });
+
   bars: number[] = [];
 
   ngOnInit() {
@@ -54,19 +64,20 @@ export class AudioCardComponent implements OnInit {
         position: isMobile ? { bottom: '0', left: '0' } : undefined,
         panelClass: isMobile ? 'mobile-audio-card-dialog' : undefined,
 
-        data: this.audioInput
+        data: {
+          audio: this.audioInput,
+          pageIndex: this.pageIndex,
+          itemIndex: this.itemIndex
+        }
       })
     }
   }
 
   togglePlay() {
-    const audio = this.audioElem.nativeElement;
     if (this.isPlaying()) {
-      audio.pause();
-      this.isPlaying.set(false);
+      this._audioPlayerService.pause();
     } else {
-      audio.play();
-      this.isPlaying.set(true);
+      this._audioPlayerService.loadAndPlay(this.audioInput.id);
     }
   }
 
@@ -82,7 +93,7 @@ export class AudioCardComponent implements OnInit {
           next: (res: ApiResponse) => {
             if (this.audioInput) {
               this.audioInput.isLiking = true;
-              this.getLikesCount();
+              this.audioInput.likersCount++
 
               this._snack.open(res.message, 'Close', {
                 duration: 7000,
@@ -105,7 +116,7 @@ export class AudioCardComponent implements OnInit {
               this.dislikeAudioNameOut.emit(this.audioInput.fileName);
             }
 
-            this.getLikesCount();
+            this.audioInput.likersCount--;
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -135,7 +146,7 @@ export class AudioCardComponent implements OnInit {
           next: (res: ApiResponse) => {
             if (this.audioInput)
               this.audioInput.isAdding = true;
-            this.getAddersCount();
+            this.audioInput.addersCount++;
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -156,7 +167,7 @@ export class AudioCardComponent implements OnInit {
               this.audioInput.isAdding = false;
               this.removedAudioOut.emit(this.audioInput.fileName)
             }
-            this.getAddersCount();
+            this.audioInput.addersCount--;
 
             this._snack.open(res.message, 'Close', {
               duration: 7000,
@@ -170,9 +181,8 @@ export class AudioCardComponent implements OnInit {
   getAddersCount(): void {
     if (this.audioInput)
       this._playlistService.getAddersCount(this.audioInput.fileName).subscribe({
-        next: (res: number) => { 
+        next: (res: number) => {
           this.adderCount = res
-
         }
       })
   }
