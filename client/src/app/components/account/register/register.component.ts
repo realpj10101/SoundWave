@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { Register } from '../../../models/account.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-register',
