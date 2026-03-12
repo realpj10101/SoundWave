@@ -16,4 +16,7 @@ public interface IAudioFileRepository
     public Task<ObjectId?> GetObjectIdByAudioNameAsync(string audioName, CancellationToken cancellationToken);
     public Task<PagedList<AudioFile>?> GetUserAudioFiles(ObjectId? userId, AudioFileParams audioFileParams, CancellationToken cancellationToken);
     public Task<List<AudioFile>>RecommendAsync(AiFilterDto filters, CancellationToken cancellationToken);
+    public Task<OperationResult<AudioFile>> GetAudioFileByIdAsync(ObjectId audioId, CancellationToken cancellationToken);
+    public Task<OperationResult<AudioFile>> GetNextAudioFileAsync(ObjectId currentAudioId, ObjectId userId, CancellationToken cancellationToken);
+    public Task<OperationResult<AudioFile>> GetPreviousAudioFileAsync(ObjectId currentAudioId, ObjectId userId, CancellationToken cancellationToken);
 }

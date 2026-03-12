@@ -18,20 +18,22 @@ public class AudioFileRepository : IAudioFileRepository
 {
     private readonly IMongoCollection<AudioFile> _collection;
     private readonly IMongoCollection<AppUser>? _collectionUsers;
-    private readonly IAudioService _audioservice;
+    private readonly IAudioService _audioService;
     private readonly IPhotoService _photoService;
 
-    public AudioFileRepository(IMongoClient client, IMyMongoDbSettings dbSettings, IAudioService audioService, IPhotoService photoService)
+    public AudioFileRepository(IMongoClient client, IMyMongoDbSettings dbSettings, IAudioService audioService,
+        IPhotoService photoService)
     {
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collection = database.GetCollection<AudioFile>(AppVariablesExtensions.CollectionTracks);
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
 
-        _audioservice = audioService;
+        _audioService = audioService;
         _photoService = photoService;
     }
 
-    public async Task<PagedList<AudioFile>?> GetAllAsync(AudioFileParams audioFileParams, CancellationToken cancellationToken)
+    public async Task<PagedList<AudioFile>?> GetAllAsync(AudioFileParams audioFileParams,
+        CancellationToken cancellationToken)
     {
         PagedList<AudioFile> audioFiles = await PagedList<AudioFile>.CreatePagedListAsync(
             CreateQuery(audioFileParams), audioFileParams.PageNumber, audioFileParams.PageSize, cancellationToken
@@ -40,7 +42,8 @@ public class AudioFileRepository : IAudioFileRepository
         return audioFiles;
     }
 
-    public Task<OperationResult<AudioFileResponse>> GetByTrackNameAsync(string trackName, CancellationToken cancellationToken)
+    public Task<OperationResult<AudioFileResponse>> GetByTrackNameAsync(string trackName,
+        CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
@@ -55,17 +58,19 @@ public class AudioFileRepository : IAudioFileRepository
         return ValidationsExtensions.TestValidateObjectId(audioId);
     }
 
-    public async Task<PagedList<AudioFile>?> GetUserAudioFiles(ObjectId? userId, AudioFileParams audioFileParams, CancellationToken cancellationToken)
+    public async Task<PagedList<AudioFile>?> GetUserAudioFiles(ObjectId? userId, AudioFileParams audioFileParams,
+        CancellationToken cancellationToken)
     {
         IQueryable<AudioFile> query = _collection.AsQueryable();
 
-        query = query.Where(doc => doc.Id == userId);
+        query = query.Where(doc => doc.UploaderId == userId);
 
         return await PagedList<AudioFile>
             .CreatePagedListAsync(query, audioFileParams.PageNumber, audioFileParams.PageSize, cancellationToken);
     }
 
-    public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId, CancellationToken cancellationToken)
+    public async Task<OperationResult<AudioFile>> UploadAsync(CreateAudioFile audio, ObjectId? userId,
+        CancellationToken cancellationToken)
     {
         if (userId is null)
         {
@@ -80,7 +85,7 @@ public class AudioFileRepository : IAudioFileRepository
 
         ObjectId trackId = ObjectId.GenerateNewId();
 
-        Task<string?> saveAudioTask = _audioservice.SaveAudioToDiskAsync(audio.File, userId.Value);
+        Task<string?> saveAudioTask = _audioService.SaveAudioToDiskAsync(audio.File, userId.Value);
 
         Task<string[]?> savePhotoTask = _photoService.AddPhotoToDiskAsync(audio.CoverFile, trackId);
 
@@ -138,7 +143,8 @@ public class AudioFileRepository : IAudioFileRepository
             Energy: 0.0,
             TempoBpm: 0,
             Tags: audio.Tags,
-            Duration: duration.TotalSeconds
+            Duration: duration.TotalSeconds,
+            audio.File.ContentType
         );
 
         await _collection.InsertOneAsync(audioFile, null, cancellationToken);
@@ -236,5 +242,108 @@ public class AudioFileRepository : IAudioFileRepository
             .Limit(limit)
             .ToListAsync(cancellationToken);
     }
-}
 
+    public async Task<OperationResult<AudioFile>> GetAudioFileByIdAsync(ObjectId audioId,
+        CancellationToken cancellationToken)
+    {
+        AudioFile targetAudio = await _collection.Find(doc => doc.Id == audioId).FirstOrDefaultAsync(cancellationToken);
+
+        if (targetAudio is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.AudioNotFound,
+                    "Target audio not found."
+                )
+            );
+        }
+
+        return new(
+            true,
+            targetAudio,
+            null
+        );
+    }
+
+    public async Task<OperationResult<AudioFile>> GetNextAudioFileAsync(ObjectId currentAudioId,
+        ObjectId userId,
+        CancellationToken cancellationToken)
+    {
+        AudioFile? currentAudio =
+            await _collection.Find(doc => doc.Id == currentAudioId).FirstOrDefaultAsync(cancellationToken);
+
+        if (currentAudio is null)
+        {
+            return new(
+                true,
+                Error: new(
+                    ErrorCode.AudioNotFound,
+                    "Target audio not found."
+                )
+            );
+        }
+
+        AudioFile nextAudio = await _collection
+            .Find(doc => doc.UploadedAt > currentAudio.UploadedAt)
+            .SortBy(doc => doc.UploadedAt)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (nextAudio is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.NextAudioNotFound,
+                    "No next audio found."
+                )
+            );
+        }
+
+        return new(
+            true,
+            nextAudio,
+            null
+        );
+    }
+
+    public async Task<OperationResult<AudioFile>> GetPreviousAudioFileAsync(ObjectId currentAudioId, ObjectId userId,
+        CancellationToken cancellationToken)
+    {
+        AudioFile currentAudio = await _collection
+            .Find(doc => doc.Id == currentAudioId).FirstOrDefaultAsync(cancellationToken);
+
+        if (currentAudio is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.AudioNotFound,
+                    "Target audio not found."
+                )
+            );
+        }
+
+        AudioFile previousAudio = await _collection
+            .Find(doc => doc.UploadedAt < currentAudio.UploadedAt)
+            .SortByDescending(doc => doc.UploadedAt)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (previousAudio is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.PreviousAudioNotFound,
+                    "No previous audio found."
+                )
+            );
+        }
+
+        return new(
+            true,
+            previousAudio,
+            null
+        );
+    }
+}
