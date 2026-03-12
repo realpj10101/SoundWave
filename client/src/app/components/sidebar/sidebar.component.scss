@@ -2,7 +2,7 @@ $gray-300: #d1d5db;
 $red-500: #ef4444;
 
 .sidebar {
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   height: 100%;
@@ -85,10 +85,17 @@ $red-500: #ef4444;
       border: none;
       cursor: pointer;
 
+      svg {
+        width: 22px;
+        height: 22px;
+        fill: currentColor;
+      }
+
       &:hover {
-        background-color: #f97316;
+        background-color: red;
         color: #fff;
       }
     }
+
   }
 }
