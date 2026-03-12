@@ -37,7 +37,6 @@ public static class Mappers
             Id: audioFile.Id.ToString(),
             UploaderName: userName,
             FileName: audioFile.FileName,
-            FilePath: audioFile.FilePath,
             CoverPath: audioFile.CoverPath,
             IsLiking: isLiking,
             IsAdding: isAdding,
