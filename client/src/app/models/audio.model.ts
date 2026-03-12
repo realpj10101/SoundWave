@@ -4,7 +4,6 @@ export interface Audio {
     id: string;
     uploaderName: string;
     fileName: string;
-    filePath: string;
     coverPath: MainPhoto;
     uploadedAt: Date;
     isLiking: boolean;
