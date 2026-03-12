@@ -7,7 +7,6 @@ public record AudioFileResponse(
     string Id,
     string UploaderName,
     string FileName,
-    string FilePath,
     MainPhoto CoverPath,
     bool IsLiking,
     bool IsAdding,
