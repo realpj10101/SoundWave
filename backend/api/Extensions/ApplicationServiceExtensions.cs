@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using api.Settings;
 using Microsoft.Extensions.Options;
+using Minio;
 using MongoDB.Driver;
 using OpenAI;
 
@@ -52,6 +53,26 @@ public static class ApplicationServiceExtensions
 
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
+        });
+        #endregion
+
+        #region Minio Settings
+        services.Configure<MinioSettings>(configuration.GetSection("Minio"));
+
+        services.AddSingleton<IMinioSettings>(serviceProvider =>
+            serviceProvider.GetRequiredService<IOptions<MinioSettings>>().Value
+        );
+
+        MinioSettings minioSettings = configuration
+            .GetSection("Minio")
+            .Get<MinioSettings>()!;
+
+        services.AddMinio(client =>
+        {
+            client
+                .WithEndpoint(minioSettings.Endpoint)
+                .WithCredentials(minioSettings.AccessKey, minioSettings.SecretKey)
+                .WithSSL(minioSettings.UseSSL);
         });
         #endregion
 
